@@ -36,6 +36,16 @@
       "category": "arts"
     },
     {
+      "id": "student_teacher_relationships",
+      "gradeLevel": "all",
+      "fact": "Students consistently praise their teachers for going above and beyond",
+      "context": "Watch students talk about their favorite teachers and what makes Saint Stephen's special",
+      "category": "community",
+      "videoUrl": "https://youtu.be/chFGkSoSXqg",
+      "videoTitle": "Students Talk About Their Teachers",
+      "priority": "high"
+    },
+    {
       "id": "athletics_options",
       "gradeLevel": "all",
       "fact": "23 varsity sports teams with no-cut policy for Middle School",

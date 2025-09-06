@@ -215,7 +215,7 @@
       "lastName": "Cotton",
       "title": "STEAM, Math & Engineering Teacher",
       "photoUrl": "/images/faculty/placeholder-faculty.jpg",
-      "videoUrl": "https://youtu.be/qydHeyOCVUo",
+      "videoUrl": "https://www.youtube.com/watch?v=qydHeyOCVUo",
       "specializesIn": ["STEAM", "mathematics", "engineering", "problem_solving"],
       "whyStudentsLoveThem": "Makes math come alive with real-world applications and enthusiasm",
       "department": "Mathematics",
@@ -240,7 +240,7 @@
       "lastName": "Johnson",
       "title": "English Teacher",
       "photoUrl": "/images/faculty/placeholder-faculty.jpg",
-      "videoUrl": "",
+      "videoUrl": "https://www.youtube.com/watch?v=M4uIGP9yZqQ",
       "specializesIn": ["literature", "writing", "creative_expression", "communication"],
       "whyStudentsLoveThem": "Inspires students to find their voice through creative writing",
       "department": "English",
@@ -252,8 +252,7 @@
       "lastName": "Batson",
       "title": "Reading & Foundational Skills Teacher",
       "photoUrl": "/images/faculty/placeholder-faculty.jpg",
-      "videoUrl": "https://youtu.be/iOQ2DeXZDgM",
-      "videoUrl2": "https://youtu.be/TTvbZyWYd2U",
+      "videoUrl": "https://www.youtube.com/watch?v=TTvbZyWYd2U",
       "specializesIn": ["reading", "foundational_skills", "literacy", "comprehension"],
       "whyStudentsLoveThem": "Helps every student unlock the joy of reading at their own pace",
       "department": "English",
@@ -282,6 +281,18 @@
       "whyStudentsLoveThem": "Makes learning about the world an adventure through interactive projects",
       "department": "Social Studies",
       "yearsAtSSES": 6
+    },
+    {
+      "id": "andrew_angelo",
+      "firstName": "Andrew",
+      "lastName": "Angelo",
+      "title": "Faculty Member",
+      "photoUrl": "/images/faculty/placeholder-faculty.jpg",
+      "videoUrl": "https://www.youtube.com/watch?v=8dla2PGFWpI",
+      "specializesIn": ["education", "mentorship", "student_development"],
+      "whyStudentsLoveThem": "Dedicated to helping every student reach their full potential",
+      "department": "Faculty",
+      "yearsAtSSES": 5
     }
   ],
   "departments": {
