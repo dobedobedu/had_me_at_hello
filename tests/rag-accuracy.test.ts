@@ -1,8 +1,8 @@
-import { OpenRouterClient } from '@/lib/ai/openrouter-client';
-import { QuizResponse, RAGContext } from '@/lib/ai/types';
-import storiesData from '@/knowledge/current-student-stories.json';
-import facultyData from '@/knowledge/faculty-story.json';
-import factsData from '@/knowledge/facts.json';
+import { OpenRouterClient } from '../lib/ai/openrouter-client';
+import { QuizResponse, RAGContext } from '../lib/ai/types';
+import storiesData from '../knowledge/current-student-stories.json';
+import facultyData from '../knowledge/faculty-story.json';
+import factsData from '../knowledge/facts.json';
 
 describe('RAG Accuracy Tests', () => {
   const client = new OpenRouterClient();

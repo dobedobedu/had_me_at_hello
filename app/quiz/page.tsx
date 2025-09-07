@@ -14,7 +14,7 @@ import ChildDescriptionQuestion from '@/components/quiz/ChildDescriptionQuestion
 import ProgressBar from '@/components/quiz/ProgressBar';
 
 export interface QuizData {
-  gradeLevel?: 'prek-k' | 'elementary' | 'middle' | 'high';
+  gradeLevel?: 'lower' | 'intermediate' | 'middle' | 'upper' | 'prek-k' | 'elementary' | 'high';
   currentSituation?: string;
   interests?: string[];
   familyValues?: string[];

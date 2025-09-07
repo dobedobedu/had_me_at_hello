@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Card {
@@ -13,17 +13,25 @@ interface Card {
 interface SwipeableCardsProps {
   cards: Card[];
   className?: string;
+  disableDrag?: boolean;
+  headerOffset?: number; // extra pixels above video (title/subtitle paddings)
 }
 
-export function SwipeableCards({ cards, className = '' }: SwipeableCardsProps) {
+export function SwipeableCards({ cards, className = '', disableDrag = false, headerOffset = 56 }: SwipeableCardsProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
+  const [containerHeight, setContainerHeight] = useState<number>(300);
+  const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
     const updateWidth = () => {
       if (containerRef.current) {
-        setContainerWidth(containerRef.current.offsetWidth);
+        const w = containerRef.current.offsetWidth;
+        setContainerWidth(w);
+        const videoH = Math.round(w * 9 / 16);
+        const h = Math.max(220, videoH + headerOffset); // ensure enough room but minimize whitespace
+        setContainerHeight(h);
       }
     };
     
@@ -57,7 +65,7 @@ export function SwipeableCards({ cards, className = '' }: SwipeableCardsProps) {
         className="relative overflow-visible mx-auto"
         style={{ maxWidth: '100%' }}
       >
-        <div className="relative h-[320px] md:h-[300px]">
+        <div className="relative" style={{ height: containerHeight }}>
           <AnimatePresence initial={false} custom={currentIndex}>
             {cards.map((card, index) => {
               const isActive = index === currentIndex;
@@ -71,33 +79,40 @@ export function SwipeableCards({ cards, className = '' }: SwipeableCardsProps) {
                 <motion.div
                   key={card.id}
                   custom={currentIndex}
-                  initial={{ 
+                  initial={prefersReducedMotion ? false : { 
                     x: index > currentIndex ? containerWidth : -containerWidth,
                     opacity: 0
                   }}
-                  animate={{
+                  animate={prefersReducedMotion ? {
+                    x: isActive ? 0 : 0,
+                    opacity: isActive ? 1 : 0.6,
+                    scale: 1,
+                    zIndex: isActive ? 10 : 0
+                  } : {
                     x: isActive ? 0 : index < currentIndex ? -containerWidth * 0.9 : containerWidth * 0.1,
                     opacity: isActive ? 1 : 0.3,
                     scale: isActive ? 1 : 0.95,
                     zIndex: isActive ? 10 : 0
                   }}
-                  exit={{
+                  exit={prefersReducedMotion ? { opacity: 0 } : {
                     x: index < currentIndex ? -containerWidth : containerWidth,
                     opacity: 0
                   }}
-                  transition={{
+                  transition={prefersReducedMotion ? { duration: 0 } : {
                     x: { type: "spring", stiffness: 300, damping: 30 },
                     opacity: { duration: 0.2 }
                   }}
-                  drag={isActive ? "x" : false}
+                  drag={isActive && !disableDrag && !prefersReducedMotion ? "x" : false}
                   dragConstraints={{ left: 0, right: 0 }}
                   dragElastic={1}
                   onDragEnd={handleDragEnd}
                   className={`absolute inset-0 ${isNext ? 'pointer-events-none' : ''}`}
                   style={{
-                    cursor: isActive ? 'grab' : 'default'
+                    cursor: isActive && !prefersReducedMotion ? 'grab' : 'default',
+                    touchAction: 'pan-y'
                   }}
                   whileDrag={{ cursor: 'grabbing' }}
+                  dragMomentum={false}
                 >
                   <div className="h-full">
                     {card.content}
@@ -109,26 +124,7 @@ export function SwipeableCards({ cards, className = '' }: SwipeableCardsProps) {
         </div>
       </div>
 
-      {/* Navigation Arrows - Hidden on mobile */}
-      {currentIndex > 0 && (
-        <button
-          onClick={goToPrevious}
-          className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12 w-10 h-10 items-center justify-center rounded-full bg-white shadow-lg hover:shadow-xl transition-shadow z-20"
-          aria-label="Previous card"
-        >
-          <ChevronLeft className="w-5 h-5 text-gray-700" />
-        </button>
-      )}
-      
-      {currentIndex < cards.length - 1 && (
-        <button
-          onClick={goToNext}
-          className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 w-10 h-10 items-center justify-center rounded-full bg-white shadow-lg hover:shadow-xl transition-shadow z-20"
-          aria-label="Next card"
-        >
-          <ChevronRight className="w-5 h-5 text-gray-700" />
-        </button>
-      )}
+      {/* Navigation arrows removed per KISS request */}
 
       {/* Pagination Dots */}
       <div className="flex justify-center gap-2 mt-6">
@@ -148,7 +144,7 @@ export function SwipeableCards({ cards, className = '' }: SwipeableCardsProps) {
 
       {/* Mobile Swipe Hint */}
       {cards.length > 1 && (
-        <p className="text-center text-sm text-gray-500 mt-2 md:hidden">
+        <p className="text-center text-xs text-gray-500 mt-1 md:hidden">
           Swipe to explore more stories
         </p>
       )}

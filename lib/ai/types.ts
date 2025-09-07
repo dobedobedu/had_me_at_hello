@@ -10,6 +10,7 @@ export interface AnalysisResult {
   personalizedMessage: string;
   matchedStories: StudentStory[];
   matchedFaculty: FacultyProfile[];
+  matchedFacts?: SchoolFact[];
   keyInsights: string[];
   recommendedPrograms?: string[];
   provider?: 'lmstudio' | 'openai' | 'claude' | 'openrouter';
@@ -56,10 +57,13 @@ export interface SchoolFact {
   fact: string;
   context: string;
   category?: string;
+  videoUrl?: string;
+  videoTitle?: string;
+  priority?: string;
 }
 
 export interface QuizResponse {
-  gradeLevel: 'prek-k' | 'elementary' | 'middle' | 'high';
+  gradeLevel: 'lower' | 'intermediate' | 'middle' | 'upper' | 'prek-k' | 'elementary' | 'high';
   currentSituation: string;
   interests: string[];
   familyValues: string[];

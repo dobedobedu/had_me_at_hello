@@ -8,15 +8,27 @@ interface ConfettiProps {
   particleCount?: number;
   spread?: number;
   origin?: { x: number; y: number };
+  oncePerSession?: boolean;
+  storageKey?: string;
 }
 
 export function Confetti({ 
   duration = 3000,
   particleCount = 100,
   spread = 70,
-  origin = { x: 0.5, y: 0.5 }
+  origin = { x: 0.5, y: 0.5 },
+  oncePerSession = true,
+  storageKey = 'confettiShown'
 }: ConfettiProps) {
   useEffect(() => {
+    if (oncePerSession && typeof window !== 'undefined') {
+      try {
+        const shown = sessionStorage.getItem(storageKey);
+        if (shown === '1') return;
+        sessionStorage.setItem(storageKey, '1');
+      } catch {}
+    }
+
     // Single burst instead of continuous
     confetti({
       particleCount,
@@ -28,7 +40,7 @@ export function Confetti({
       decay: 0.94,
       startVelocity: 30,
     });
-  }, [duration, particleCount, spread, origin]);
+  }, [duration, particleCount, spread, origin, oncePerSession, storageKey]);
 
   return null;
 }
