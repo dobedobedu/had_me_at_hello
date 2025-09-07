@@ -64,7 +64,7 @@ export class OpenRouterClient {
       if (!this.apiKey) {
         console.warn('⚠️ No OpenRouter API key configured; using fallback');
         const result = this.getFallbackAnalysis(quiz, context);
-        return { ...result, provider: 'fallback', processingTime: Date.now() - start } as AnalysisResult;
+        return { ...result, provider: 'local', processingTime: Date.now() - start } as AnalysisResult;
       }
 
       const prompt = this.buildAnalysisPrompt(quiz, context);
@@ -154,7 +154,7 @@ export class OpenRouterClient {
           console.error('❌ Fallback model request also failed', { status: res2.status, body: (await res2.text()).slice(0, 500) });
         }
         const result = this.getFallbackAnalysis(quiz, context);
-        return { ...result, provider: 'fallback', processingTime: Date.now() - start } as AnalysisResult;
+        return { ...result, provider: 'local', processingTime: Date.now() - start } as AnalysisResult;
       }
 
       const data = await res.json();
@@ -168,12 +168,12 @@ export class OpenRouterClient {
         content = data?.choices?.[0]?.message?.content || '';
       }
       const parsed = this.parseAnalysisResponse(content, context);
-      return { ...parsed, provider: `openrouter:${this.model}`, processingTime: Date.now() - start } as AnalysisResult;
+      return { ...parsed, provider: 'openrouter', processingTime: Date.now() - start } as AnalysisResult;
 
     } catch (err) {
       console.error('❌ OpenRouter analyze error:', err);
       const result = this.getFallbackAnalysis(quiz, context);
-      return { ...result, provider: 'fallback', processingTime: Date.now() - start } as AnalysisResult;
+      return { ...result, provider: 'local', processingTime: Date.now() - start } as AnalysisResult;
     }
   }
 

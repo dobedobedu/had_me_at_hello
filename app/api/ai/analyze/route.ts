@@ -41,7 +41,7 @@ export async function POST(request: Request) {
     const result: AnalysisResult = {
       ...deterministic,
       personalizedMessage: llmText || deterministic.personalizedMessage,
-      provider: engine ? `hybrid:${engine}` : 'local',
+      provider: engine ? 'openrouter' : 'local',
     };
 
     return NextResponse.json(result);

@@ -100,7 +100,7 @@ We're excited to meet you and learn more about your family's educational journey
       matchedStories,
       matchedFaculty,
       keyInsights: this.extractKeyInsights(quiz),
-      provider: 'openrouter',
+      provider: 'local',
       processingTime: 0
     };
   }
