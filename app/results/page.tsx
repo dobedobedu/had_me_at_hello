@@ -51,6 +51,10 @@ export default function ResultsPage() {
         const aiService = AIService.getInstance();
         
         // Perform analysis
+        if (!parsedQuizData) {
+          throw new Error('No quiz data found');
+        }
+        
         const analysisResult = await aiService.analyze(parsedQuizData, {
           stories: [...currentStudentData.stories, ...alumniData.stories] as any[],
           faculty: facultyData.faculty as any[],
@@ -73,7 +77,7 @@ export default function ResultsPage() {
         );
         
         // Goal: 1 current student + 1 teacher with videos
-        const currentStudents = allStories.filter(s => s.gradeLevel && !s.classYear);
+        const currentStudents = allStories.filter(s => s.gradeLevel && !('classYear' in s));
         
         // Broad category matching system
         const categoryMapping = {
@@ -129,35 +133,35 @@ export default function ResultsPage() {
         const candidateStudents = [];
         
         if (matchesCategory(categoryMapping.creativity)) {
-          candidateStudents.push(...currentStudents.filter(s => s.category === 'creative'));
+          candidateStudents.push(...currentStudents.filter(s => 'category' in s && s.category === 'creative'));
           console.log('Added creative students based on broad creativity matching');
         }
         
         if (matchesCategory(categoryMapping.athletics)) {
-          candidateStudents.push(...currentStudents.filter(s => s.category === 'athletics'));
+          candidateStudents.push(...currentStudents.filter(s => 'category' in s && s.category === 'athletics'));
           console.log('Added athletics students based on broad athletics matching');
         }
         
         if (matchesCategory(categoryMapping.academics)) {
-          candidateStudents.push(...currentStudents.filter(s => s.category === 'academic'));
+          candidateStudents.push(...currentStudents.filter(s => 'category' in s && s.category === 'academic'));
           console.log('Added academic students based on broad academics matching');
         }
         
         if (matchesCategory(categoryMapping.entrepreneurs)) {
-          candidateStudents.push(...currentStudents.filter(s => s.category === 'academic')); // Business minded students often in academic track
+          candidateStudents.push(...currentStudents.filter(s => 'category' in s && s.category === 'academic')); // Business minded students often in academic track
           console.log('Added students based on entrepreneurial matching');
         }
         
         // If no matches or add some variety, include some default category students
         if (candidateStudents.length === 0) {
-          candidateStudents.push(...currentStudents.filter(s => s.category === 'default'));
+          candidateStudents.push(...currentStudents.filter(s => 'category' in s && s.category === 'default'));
         }
         
         // Enhanced alumni matching with broad categories
         if (candidateStudents.length <= 2) {
           // Find alumni that match broad categories
           const categoryMatchedAlumni = allStories.filter(s => {
-            if (!s.classYear || !s.videoUrl || !s.videoUrl.includes('youtube')) return false;
+            if (!('classYear' in s) || !s.videoUrl || !s.videoUrl.includes('youtube')) return false;
             
             return s.interests?.some(storyInterest => {
               const storyInterestLower = storyInterest.toLowerCase();
@@ -177,14 +181,14 @@ export default function ResultsPage() {
           });
           
           if (categoryMatchedAlumni.length > 0) {
-            console.log('Adding category-matched alumni:', categoryMatchedAlumni.map(s => `${s.firstName} ${s.lastName}`));
+            console.log('Adding category-matched alumni:', categoryMatchedAlumni.map(s => `${s.firstName} ${'lastName' in s ? s.lastName : ''}`));
             candidateStudents.push(...categoryMatchedAlumni.slice(0, 2)); // Add up to 2 alumni
           }
         }
         
         // Separate current students and alumni for proper card ordering
-        const currentStudentCandidates = candidateStudents.filter(s => s.gradeLevel && !s.classYear);
-        const alumniCandidates = candidateStudents.filter(s => s.classYear);
+        const currentStudentCandidates = candidateStudents.filter(s => s.gradeLevel && !('classYear' in s));
+        const alumniCandidates = candidateStudents.filter(s => 'classYear' in s);
         
         // Always try to get one current student first
         const selectedCurrentStudent = currentStudentCandidates
@@ -194,8 +198,8 @@ export default function ResultsPage() {
         const selectedAlumni = alumniCandidates
           .sort((a, b) => (a.videoUrl ? -1 : 1) - (b.videoUrl ? -1 : 1) || a.id.localeCompare(b.id))[0] || null;
         
-        console.log('Selected current student:', selectedCurrentStudent?.firstName, selectedCurrentStudent?.lastName);
-        console.log('Selected alumni for bottom card:', selectedAlumni?.firstName, selectedAlumni?.lastName);
+        console.log('Selected current student:', selectedCurrentStudent?.firstName, 'lastName' in (selectedCurrentStudent || {}) ? (selectedCurrentStudent as any).lastName : '');
+        console.log('Selected alumni for bottom card:', selectedAlumni?.firstName, 'lastName' in (selectedAlumni || {}) ? (selectedAlumni as any).lastName : '');
         
         // Build stories array: [current student (or faculty if none), faculty, alumni]
         const fallbackStories = [];
@@ -359,12 +363,10 @@ export default function ResultsPage() {
           personalizedMessage: "Thank you for your interest in Saint Stephen's! We're excited to share what makes our school special and help you discover the perfect fit for your child.",
           matchedStories: fallbackStories as any[],
           matchedFaculty: fallbackFaculty as any[],
-          selectedCurrentStudent,
-          selectedAlumni,
           keyInsights: ['Academic Excellence', 'Character Development', 'Individual Attention', 'Community Focus'],
           recommendedPrograms: ['College Preparatory Program', 'Fine Arts', 'Athletics'],
           provider: 'client-fallback'
-        });
+        } as any);
       } finally {
         setLoading(false);
       }
@@ -467,7 +469,7 @@ Full results: ${shareData.link}`);
     
     try {
       const tourId = generateTourId();
-      const studentName = quizData.studentName || 'Student';
+      const studentName = (quizData as any).studentName || 'Student';
       
       // Create tour pass data
       const tourPassData: TourPassData = {
@@ -476,9 +478,9 @@ Full results: ${shareData.link}`);
         timestamp: new Date().toISOString(),
         quizResults: {
           interests: quizData.interests || [],
-          matchedFaculty: results.matchedFaculty || [],
-          matchedStudent: results.matchedStories?.filter(s => s.gradeLevel && !s.classYear) || [],
-          matchedAlumni: results.matchedStories?.filter(s => s.classYear) || []
+          matchedFaculty: (results.matchedFaculty || []) as any,
+          matchedStudent: (results.matchedStories?.filter(s => s.gradeLevel && !('classYear' in s)) || []) as any,
+          matchedAlumni: (results.matchedStories?.filter(s => 'classYear' in s) || []) as any
         },
         selectedTours: selectedTourItems.map(itemId => {
           const option = tourOptions?.find(opt => opt.id === itemId);
@@ -862,7 +864,7 @@ Full results: ${shareData.link}`);
                           })()}
                         </div>
                         <div className="relative w-full aspect-video bg-black">
-                          {results.matchedStories[0]?.videoUrl && playingVideo === 'alumni-story' ? (
+                          {(results.matchedStories[0] as any)?.videoUrl && playingVideo === 'alumni-story' ? (
                             <iframe
                               className="w-full h-full"
                               src={`https://www.youtube.com/embed/${(results.matchedStories[0]?.videoUrl || '').split('v=')[1]?.split('&')[0] || (results.matchedStories[0]?.videoUrl || '').split('/').pop()}?autoplay=1&rel=0`}
