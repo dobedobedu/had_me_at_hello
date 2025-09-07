@@ -6,7 +6,7 @@
       "lastName": "Courier",
       "classYear": "1987",
       "currentRole": "#1 Ranked Professional Tennis Player & Sports Commentator",
-      "photoUrl": "/images/alumni/placeholder-alumni.jpg",
+      "photoUrl": "https://media.rolex.com/image/upload/q_auto:eco/f_auto/c_limit,w_1920/v1735829150/rolexcom/rolex-testimonees/sports/tennis/jim-courier/rolex-and-testimonies-tennis-jim-courier-gettyimages-517296645_r.jpg",
       "interests": [
         "athletics",
         "tennis",
@@ -25,7 +25,7 @@
       "lastName": "Roslansky",
       "classYear": "1996",
       "currentRole": "CEO of LinkedIn",
-      "photoUrl": "/images/alumni/placeholder-alumni.jpg",
+      "photoUrl": "https://content.linkedin.com/content/dam/me/news/en-us/new-execs/Ryan-Headshot-Header-2022.png.original.png",
       "interests": [
         "technology",
         "leadership",
@@ -44,7 +44,7 @@
       "lastName": "Silverman",
       "classYear": "1998",
       "currentRole": "Tech Entrepreneur (CrowdTangle Founder)",
-      "photoUrl": "/images/alumni/placeholder-alumni.jpg",
+      "photoUrl": "https://static01.nyt.com/images/2022/01/03/business/02JPbensmith-print/02bensmith-superJumbo.jpg?quality=75&auto=webp",
       "interests": [
         "technology",
         "entrepreneurship",
@@ -63,7 +63,7 @@
       "lastName": "Coutts",
       "classYear": "2004",
       "currentRole": "NASA Analytical Chemist",
-      "photoUrl": "/images/alumni/placeholder-alumni.jpg",
+      "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/7/70/CSI-_Chemistry_Space_Investigation_%28KSC-20210707-PH-FMX01_0247%29.jpg",
       "interests": [
         "science",
         "chemistry",
@@ -82,7 +82,7 @@
       "lastName": "Skoda",
       "classYear": "2005",
       "currentRole": "Managing Director, Global Head of Software Banking at Morgan Stanley",
-      "photoUrl": "/images/alumni/placeholder-alumni.jpg",
+      "photoUrl": "https://imageio.forbes.com/blogs-images/workday/files/2018/06/Brittany-Skoda-e1528760983384-1200x1200.jpg?format=jpg&width=1440",
       "interests": [
         "business",
         "finance",
@@ -101,7 +101,7 @@
       "lastName": "Jacobs",
       "classYear": "2010",
       "currentRole": "Singer & Actress",
-      "photoUrl": "/images/alumni/placeholder-alumni.jpg",
+      "photoUrl": "https://syracuseorchestra.org/wp-content/uploads/2023/04/Jacobs-Naarai-for-web.jpg",
       "interests": [
         "arts",
         "music",
@@ -120,7 +120,7 @@
       "lastName": "Pezzola",
       "classYear": "2010",
       "currentRole": "Fox Sports TV Host & Golf Channel Personality",
-      "photoUrl": "/images/alumni/placeholder-alumni.jpg",
+      "photoUrl": "https://observermediagroup.media.clients.ellingtoncms.com/img/photos/2022/05/13/172711_standard.jpeg",
       "interests": [
         "sports",
         "media",
@@ -139,7 +139,8 @@
       "lastName": "Brown",
       "classYear": "2018",
       "currentRole": "NFL Player & All-Big Ten Football Star",
-      "photoUrl": "/images/alumni/placeholder-alumni.jpg",
+      "photoUrl": "https://img.youtube.com/vi/Xq3HJUqallU/maxresdefault.jpg",
+      "videoUrl": "https://www.youtube.com/watch?v=Xq3HJUqallU",
       "interests": [
         "athletics",
         "football",
@@ -153,105 +154,13 @@
       "gradeLevel": "high"
     },
     {
-      "id": "heidi_otto_salmon_85",
-      "firstName": "Heidi",
-      "lastName": "Otto Salmon",
-      "classYear": "1985",
-      "currentRole": "Mayor of Melbourne Village, FL",
-      "photoUrl": "/images/alumni/placeholder-alumni.jpg",
-      "interests": [
-        "leadership",
-        "politics",
-        "service",
-        "government",
-        "community"
-      ],
-      "storyTldr": "SSES student council member now serving as city mayor",
-      "achievement": "Elected Mayor of Melbourne Village, serving her community in public office",
-      "quote": "Leadership lessons from Saint Stephen's guide my work serving our community as mayor",
-      "gradeLevel": "high"
-    },
-    {
-      "id": "robert_sanford_91",
-      "firstName": "Robert",
-      "lastName": "Sanford",
-      "classYear": "1991",
-      "currentRole": "Court Judge, Second Judicial District",
-      "photoUrl": "/images/alumni/placeholder-alumni.jpg",
-      "interests": [
-        "law",
-        "justice",
-        "leadership",
-        "government",
-        "service"
-      ],
-      "storyTldr": "From SSES debate team to presiding as court judge",
-      "achievement": "Appointed Court Judge for the Second Judicial District",
-      "quote": "The critical thinking and ethics I learned at SSES are essential to my work on the bench",
-      "gradeLevel": "high"
-    },
-    {
-      "id": "jason_kaplan_91",
-      "firstName": "Jason",
-      "lastName": "Kaplan",
-      "classYear": "1991",
-      "currentRole": "FBI Supervisory Special Agent",
-      "photoUrl": "/images/alumni/placeholder-alumni.jpg",
-      "interests": [
-        "law enforcement",
-        "justice",
-        "leadership",
-        "service",
-        "security"
-      ],
-      "storyTldr": "SSES grad protecting America as decorated FBI agent",
-      "achievement": "FBI Supervisory Special Agent awarded the Meritorious Achievement Medal",
-      "quote": "The integrity and discipline instilled at Saint Stephen's prepared me for the FBI",
-      "gradeLevel": "high"
-    },
-    {
-      "id": "zach-bessette-2015",
-      "firstName": "Zach",
-      "lastName": "Bessette",
-      "classYear": "2015",
-      "currentRole": "Software Development Manager at Amazon Web Services",
-      "photoUrl": "/images/alumni/placeholder-alumni.jpg",
-      "interests": [
-        "technology",
-        "aws",
-        "software",
-        "engineering"
-      ],
-      "storyTldr": "Looking back, what I value most was how the Saint Stephen's ...",
-      "achievement": "Software Development Manager at Amazon Web Services",
-      "quote": "The Saint Stephen's faculty fostered my curiosity and encouraged me to discover my interests.",
-      "gradeLevel": "high"
-    },
-    {
-      "id": "jennifer-boothby-2010",
-      "firstName": "Jennifer",
-      "lastName": "Boothby",
-      "classYear": "2010",
-      "currentRole": "Senior Biomaterials Engineer at Johns Hopkins Applied Physics Lab",
-      "photoUrl": "/images/alumni/placeholder-alumni.jpg",
-      "interests": [
-        "science",
-        "engineering",
-        "biomaterials",
-        "research"
-      ],
-      "storyTldr": "I'm still realizing how unique my experience was at Saint St...",
-      "achievement": "Senior Biomaterials Engineer at Johns Hopkins Applied Physics Lab",
-      "quote": "I've always credited my love of science to my incredible teachers at SSES.",
-      "gradeLevel": "high"
-    },
-    {
       "id": "chase-brown-2018",
       "firstName": "Chase",
       "lastName": "Brown",
       "classYear": "2018",
       "currentRole": "Running Back at Cincinnati Bengals",
-      "photoUrl": "/images/alumni/placeholder-alumni.jpg",
+      "photoUrl": "https://img.youtube.com/vi/Xq3HJUqallU/maxresdefault.jpg",
+      "videoUrl": "https://www.youtube.com/watch?v=Xq3HJUqallU",
       "interests": [
         "sports",
         "nfl",
@@ -261,207 +170,6 @@
       "storyTldr": "The focus on academics and the relationships I built at Sain...",
       "achievement": "Running Back at Cincinnati Bengals",
       "quote": "My leadership skills, work ethic, my whole mindset started at SSES.",
-      "gradeLevel": "high"
-    },
-    {
-      "id": "janelle-coutts-2004",
-      "firstName": "Dr.",
-      "lastName": "Janelle Coutts",
-      "classYear": "2004",
-      "currentRole": "Analytical Lab Branch Technical Lead at NASA",
-      "photoUrl": "/images/alumni/placeholder-alumni.jpg",
-      "interests": [
-        "science",
-        "nasa",
-        "chemistry",
-        "space",
-        "research"
-      ],
-      "storyTldr": "The passion of my AP chemistry teacher inspired my love of t...",
-      "achievement": "Analytical Lab Branch Technical Lead at NASA",
-      "quote": "Without the dedication Saint Stephen's puts into allowing their teachers to be the best at teaching, I don't think I would have ended up where I am now.",
-      "gradeLevel": "high"
-    },
-    {
-      "id": "natalie-haschek-2013",
-      "firstName": "Natalie",
-      "lastName": "Haschek",
-      "classYear": "2013",
-      "currentRole": "International Accounting Manager at SpaceX",
-      "photoUrl": "/images/alumni/placeholder-alumni.jpg",
-      "interests": [
-        "business",
-        "spacex",
-        "accounting",
-        "space",
-        "finance"
-      ],
-      "storyTldr": "The faculty at Saint Stephen's had a profound impact on my l...",
-      "achievement": "International Accounting Manager at SpaceX",
-      "quote": "I will be forever grateful for their wisdom and guidance that helped instill in me a sense of curiosity.",
-      "gradeLevel": "high"
-    },
-    {
-      "id": "sharif-hassan-1995",
-      "firstName": "Dr.",
-      "lastName": "Sharif Hassan",
-      "classYear": "1995",
-      "currentRole": "International Business Development, Readiness & Response at Lockheed Martin",
-      "photoUrl": "/images/alumni/placeholder-alumni.jpg",
-      "interests": [
-        "business",
-        "defense",
-        "aerospace",
-        "international"
-      ],
-      "storyTldr": "Saint Stephen's was the foundation that enabled me to effect...",
-      "achievement": "International Business Development, Readiness & Response at Lockheed Martin",
-      "quote": "Saint Stephen's was the foundation that enabled me to effectively take on life's future academic endeavors.",
-      "gradeLevel": "high"
-    },
-    {
-      "id": "sunny-jin-2013",
-      "firstName": "Qing",
-      "lastName": "'Sunny' Jin",
-      "classYear": "2013",
-      "currentRole": "Senior Technical Program & Product Manager at Amazon",
-      "photoUrl": "/images/alumni/placeholder-alumni.jpg",
-      "interests": [
-        "technology",
-        "amazon",
-        "product management",
-        "international"
-      ],
-      "storyTldr": "I still remember all the inspiring talks, unwavering support...",
-      "achievement": "Senior Technical Program & Product Manager at Amazon",
-      "quote": "They helped me grow into a more confident person and ultimately, adapt to American culture.",
-      "gradeLevel": "high"
-    },
-    {
-      "id": "catherine-van-keuren-2020",
-      "firstName": "Catherine",
-      "lastName": "Van Keuren",
-      "classYear": "2020",
-      "currentRole": "Software Engineer at Pinterest",
-      "photoUrl": "/images/alumni/placeholder-alumni.jpg",
-      "interests": [
-        "technology",
-        "pinterest",
-        "software",
-        "engineering"
-      ],
-      "storyTldr": "Even though I wasn't initially planning on working in tech w...",
-      "achievement": "Software Engineer at Pinterest",
-      "quote": "The rigor of the STEM curriculum prepared me tremendously for the challenges I faced.",
-      "gradeLevel": "high"
-    },
-    {
-      "id": "bryant-kirkland-2003",
-      "firstName": "Dr.",
-      "lastName": "Bryant Kirkland",
-      "classYear": "2003",
-      "currentRole": "Associate Professor of Classics at UCLA",
-      "photoUrl": "/images/alumni/placeholder-alumni.jpg",
-      "interests": [
-        "education",
-        "academia",
-        "classics",
-        "professor"
-      ],
-      "storyTldr": "The faculty taught me to avoid being too rigid in developing...",
-      "achievement": "Associate Professor of Classics at UCLA",
-      "quote": "I strive to model for my students the same openness and curiosity that the faculty at SSES showed me.",
-      "gradeLevel": "high"
-    },
-    {
-      "id": "conner-lynch-2013",
-      "firstName": "Conner",
-      "lastName": "Lynch",
-      "classYear": "2013",
-      "currentRole": "Aerospace Engineer at Lockheed Martin",
-      "photoUrl": "/images/alumni/placeholder-alumni.jpg",
-      "interests": [
-        "engineering",
-        "aerospace",
-        "defense",
-        "technology"
-      ],
-      "storyTldr": "Saint Stephen's gave me the tools to succeed at the highest ...",
-      "achievement": "Aerospace Engineer at Lockheed Martin",
-      "quote": "The most important thing I came out of SSES with was knowing the importance of being a lifelong learner.",
-      "gradeLevel": "high"
-    },
-    {
-      "id": "ben-petlock-1990",
-      "firstName": "Ben",
-      "lastName": "Petlock",
-      "classYear": "1990",
-      "currentRole": "Foreign Agricultural Affairs, U.S. Department of Agriculture at USDA",
-      "photoUrl": "/images/alumni/placeholder-alumni.jpg",
-      "interests": [
-        "government",
-        "agriculture",
-        "international",
-        "policy"
-      ],
-      "storyTldr": "My time at Saint Stephen's was incredibly fulfilling and rem...",
-      "achievement": "Foreign Agricultural Affairs, U.S. Department of Agriculture at USDA",
-      "quote": "My favorite thing was the strong community I was able to build there.",
-      "gradeLevel": "high"
-    },
-    {
-      "id": "kaelan-richards-2001",
-      "firstName": "Kaelan",
-      "lastName": "Richards",
-      "classYear": "2001",
-      "currentRole": "Former White House Senior Regional Communications Director, CEO and founder of Compass Rose Communications at The White House",
-      "photoUrl": "/images/alumni/placeholder-alumni.jpg",
-      "interests": [
-        "government",
-        "politics",
-        "communications",
-        "entrepreneurship"
-      ],
-      "storyTldr": "Saint Stephen's prepared me to succeed in college and beyond...",
-      "achievement": "Former White House Senior Regional Communications Director, CEO and founder of Compass Rose Communications at The White House",
-      "quote": "Saint Stephen's prepared me to succeed in college and beyond - from politics to tech to starting my own company.",
-      "gradeLevel": "high"
-    },
-    {
-      "id": "rob-sanford-1991",
-      "firstName": "Rob",
-      "lastName": "Sanford",
-      "classYear": "1991",
-      "currentRole": "Circuit Court Judge, Wyoming's Second Judicial District at U.S. District Court, Wyoming",
-      "photoUrl": "/images/alumni/placeholder-alumni.jpg",
-      "interests": [
-        "law",
-        "judiciary",
-        "government",
-        "legal"
-      ],
-      "storyTldr": "I attended great colleges after Saint Stephen's - outstandin...",
-      "achievement": "Circuit Court Judge, Wyoming's Second Judicial District at U.S. District Court, Wyoming",
-      "quote": "Nothing compares to the deep impact SSES had on me.",
-      "gradeLevel": "high"
-    },
-    {
-      "id": "drew-vigne-2016",
-      "firstName": "Drew",
-      "lastName": "Vigne",
-      "classYear": "2016",
-      "currentRole": "Senior Mechanical/Design Engineer at Tesla",
-      "photoUrl": "/images/alumni/placeholder-alumni.jpg",
-      "interests": [
-        "engineering",
-        "tesla",
-        "automotive",
-        "design",
-        "technology"
-      ],
-      "storyTldr": "Looking back, my senior year IQ class at Saint Stephen's rea...",
-      "achievement": "Senior Mechanical/Design Engineer at Tesla",
-      "quote": "SSES creates opportunities for students to discover their interests and passions in a way that has a lasting impact.",
       "gradeLevel": "high"
     }
   ]

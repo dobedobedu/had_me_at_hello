@@ -32,8 +32,8 @@ const GRADE_LEVELS = [
     color: 'bg-[#3a6c4f]',
   },
   {
-    id: 'high',
-    title: 'High School',
+    id: 'upper',
+    title: 'Upper School',
     icon: GraduationCap,
     description: 'Grades 9-12',
     color: 'bg-[#004b34]',

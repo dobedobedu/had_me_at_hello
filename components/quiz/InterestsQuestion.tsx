@@ -46,7 +46,7 @@ const INTERESTS_BY_GRADE: Record<string, Array<{id: string, label: string, icon:
     { id: 'drama', label: 'Drama & Theater', icon: Camera },
     { id: 'leadership', label: 'Student Leadership', icon: Rocket },
   ],
-  'high': [
+  'upper': [
     { id: 'stem', label: 'STEM Research', icon: Beaker },
     { id: 'arts', label: 'Arts & Design', icon: Palette },
     { id: 'athletics', label: 'Athletics', icon: Trophy },
@@ -93,7 +93,7 @@ export default function InterestsQuestion({ data, onNext, onBack }: InterestsQue
       case 'lower': return 'What does your child love to do?';
       case 'intermediate': return 'What interests your child most?';
       case 'middle': return 'What activities excite your student?';
-      case 'high': return 'What are your student\'s passions?';
+      case 'upper': return 'What are your student\'s passions?';
       default: return 'What excites your child?';
     }
   };

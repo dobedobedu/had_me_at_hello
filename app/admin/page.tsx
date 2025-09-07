@@ -13,6 +13,8 @@ interface Settings {
 }
 
 export default function AdminPage() {
+  const [authed, setAuthed] = useState<boolean>(false);
+  const [password, setPassword] = useState<string>('');
   const [settings, setSettings] = useState<Settings>({
     aiProvider: 'openrouter',
     openrouterKey: '',
@@ -25,6 +27,10 @@ export default function AdminPage() {
   const [hasLoadedSettings, setHasLoadedSettings] = useState(false);
 
   useEffect(() => {
+    // Simple client-side auth gate (KISS): check session/localStorage
+    const ok = typeof window !== 'undefined' && (sessionStorage.getItem('adminAuthed') === '1');
+    if (ok) setAuthed(true);
+
     // Load settings from localStorage first
     const savedSettings = localStorage.getItem('aiSettings');
     if (savedSettings) {
@@ -39,6 +45,17 @@ export default function AdminPage() {
       }));
     }
   }, []);
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    const expected = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'admin123';
+    if (password === expected) {
+      try { sessionStorage.setItem('adminAuthed', '1'); } catch {}
+      setAuthed(true);
+    } else {
+      alert('Incorrect password');
+    }
+  };
 
   const handleSave = () => {
     // In a real app, you'd save these to a backend
@@ -78,6 +95,26 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {!authed ? (
+        <div className="min-h-screen flex items-center justify-center p-6">
+          <form onSubmit={handleLogin} className="w-full max-w-sm bg-white rounded-lg shadow-sm p-6">
+            <h1 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+              <Settings className="w-5 h-5 text-[#004b34] mr-2" /> Admin Login
+            </h1>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-[#d4a017] focus:border-[#d4a017]"
+              placeholder="Enter admin password"
+            />
+            <button type="submit" className="mt-4 w-full px-4 py-2 bg-[#003825] text-white rounded-md hover:bg-[#004b34]">Sign in</button>
+            <p className="text-xs text-gray-500 mt-3">Tip: set NEXT_PUBLIC_ADMIN_PASSWORD in .env.local</p>
+          </form>
+        </div>
+      ) : (
+        <>
       {/* Header */}
       <header className="px-6 py-4 bg-[#004b34]">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
@@ -244,6 +281,8 @@ export default function AdminPage() {
           </div>
         </motion.div>
       </main>
+        </>
+      )}
     </div>
   );
 }

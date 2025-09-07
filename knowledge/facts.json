@@ -150,5 +150,25 @@
       "context": "Professional-quality venue for student performances",
       "category": "facilities"
     }
+    ,
+    {
+      "id": "athletics_facilities",
+      "gradeLevel": "all",
+      "fact": "Comprehensive athletics facilities and coaching",
+      "context": "Coach Brown discusses Falcons athletics and training culture",
+      "category": "facilities",
+      "videoUrl": "https://www.youtube.com/watch?v=eIjS5GZjwzk",
+      "videoTitle": "Falcons Athletics Facilities & Coaching"
+    },
+    {
+      "id": "marine_science_lab",
+      "gradeLevel": "all",
+      "fact": "On-campus REEF Marine Science Lab for hands-on ocean research",
+      "context": "Students study marine ecology and conservation in local waters",
+      "category": "science",
+      "videoUrl": "https://www.youtube.com/watch?v=NzVRhVB2VfE",
+      "videoTitle": "REEF Marine Science Lab Overview",
+      "priority": "high"
+    }
   ]
 }

@@ -4,15 +4,16 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Calendar, Clock } from 'lucide-react';
 import Link from 'next/link';
 import { ShimmerButton } from '@/components/ui/shimmer-button-simple';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function HomePage() {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoReady, setVideoReady] = useState(false);
 
   useEffect(() => {
     // Ensure video plays on mount and set playback speed
     if (videoRef.current) {
-      videoRef.current.playbackRate = 0.5; // Half speed
+      videoRef.current.playbackRate = 0.75; // Subtle motion
       videoRef.current.play().catch(error => {
         console.log('Video autoplay was prevented:', error);
       });
@@ -47,14 +48,14 @@ export default function HomePage() {
             loop={true}
             muted={true}
             playsInline={true}
-            preload="auto"
-            className="absolute top-0 left-0 w-full h-full object-cover animate-ken-burns"
+            preload="metadata"
+            className={`absolute top-0 left-0 w-full h-full object-cover animate-ken-burns transition-opacity duration-500 ${videoReady ? 'opacity-100' : 'opacity-0'}`}
             style={{ 
               transformOrigin: 'center center'
             }}
             onLoadedData={(e) => {
               const video = e.target as HTMLVideoElement;
-              video.play().catch(error => {
+              video.play().then(() => setVideoReady(true)).catch(error => {
                 console.log('Video autoplay failed:', error);
               });
             }}
