@@ -61,7 +61,7 @@ export default function ChildDescriptionQuestion({
             maxLength={100}
           />
           <p className="text-sm text-gray-500 text-center mt-2">
-            {threeWords.split(' ').filter(word => word.trim()).length} words • {threeWords.length}/100 characters
+            {threeWords.split(' ').filter((word: string) => word.trim()).length} words • {threeWords.length}/100 characters
           </p>
         </div>
       </motion.div>

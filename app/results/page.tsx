@@ -867,8 +867,8 @@ Full results: ${shareData.link}`);
                           {(results.matchedStories[0] as any)?.videoUrl && playingVideo === 'alumni-story' ? (
                             <iframe
                               className="w-full h-full"
-                              src={`https://www.youtube.com/embed/${(results.matchedStories[0]?.videoUrl || '').split('v=')[1]?.split('&')[0] || (results.matchedStories[0]?.videoUrl || '').split('/').pop()}?autoplay=1&rel=0`}
-                              title={`${results.matchedStories[0].firstName} ${results.matchedStories[0].lastName || ''}`}
+                              src={`https://www.youtube.com/embed/${((results.matchedStories[0] as any)?.videoUrl || '').split('v=')[1]?.split('&')[0] || ((results.matchedStories[0] as any)?.videoUrl || '').split('/').pop()}?autoplay=1&rel=0`}
+                              title={`${results.matchedStories[0].firstName} ${(results.matchedStories[0] as any).lastName || ''}`}
                               frameBorder="0"
                               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                               allowFullScreen
