@@ -13,7 +13,7 @@ export interface AnalysisResult {
   matchedFacts?: SchoolFact[];
   keyInsights: string[];
   recommendedPrograms?: string[];
-  provider?: 'lmstudio' | 'openai' | 'claude' | 'openrouter';
+  provider?: 'lmstudio' | 'openai' | 'claude' | 'openrouter' | 'local' | 'client-fallback' | `hybrid:${string}`;
   processingTime?: number;
 }
 
