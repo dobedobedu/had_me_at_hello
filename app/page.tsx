@@ -90,7 +90,7 @@ export default function HomePage() {
                   href="/quiz"
                   className="block text-center py-4 px-6 border-2 border-white text-white hover:bg-white/10 transition-all duration-200 backdrop-blur-sm"
                 >
-                  <div className="text-xl md:text-2xl font-bold mb-1">FIND Your Journey</div>
+                  <div className="text-xl md:text-2xl font-bold mb-1">Begin Your Falcon's Journey</div>
                   <div className="text-xs md:text-sm uppercase tracking-wide">TAKE THE QUIZ</div>
                 </Link>
               </div>

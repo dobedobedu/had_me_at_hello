@@ -25,13 +25,13 @@ const SITUATIONS = [
   },
   {
     id: 'first_time',
-    title: 'First School',
+    title: 'First Independent School',
     icon: School,
     color: 'bg-green-100 text-green-600',
   },
   {
-    id: 'growing_needs',
-    title: 'Growing Needs',
+    id: 'just_exploring',
+    title: 'Just Exploring',
     icon: TrendingUp,
     color: 'bg-orange-100 text-orange-600',
   },

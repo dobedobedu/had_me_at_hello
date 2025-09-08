@@ -85,13 +85,13 @@ const VALUES_BY_GRADE: Record<string, Array<{
       title: 'Safe & Caring Community',
       description: 'Nurturing environment for young learners',
       icon: Shield,
-      metric: '100%',
-      metricLabel: 'Anti-Bullying Commitment',
+      metric: '14-18',
+      metricLabel: 'Students Per Class',
       details: [
-        'Full-time counselors available',
-        'Positive behavior support systems',
+        'Safe, caring community environment',
+        'Parents encouraged to be on campus',
         'Small, supportive class sizes',
-        'Social-emotional learning curriculum'
+        'Students often don\'t want to leave at day\'s end'
       ]
     },
     {
@@ -102,10 +102,10 @@ const VALUES_BY_GRADE: Record<string, Array<{
       metric: 'Transformative',
       metricLabel: 'Learning Experiences',
       details: [
-        'Space exploration classroom themes',
-        'Interactive science projects',
-        'Creative problem-solving',
-        'Real-world applications'
+        'Room-sized rocket ships and star tunnels',
+        'Classrooms transform into planets and environments',
+        'Astronaut simulations and space exploration',
+        'Handmade planets and educational environments'
       ]
     },
     {
@@ -131,40 +131,40 @@ const VALUES_BY_GRADE: Record<string, Array<{
       metricLabel: 'Academic Excellence',
       details: [
         'Individualized reading programs',
-        'Singapore Math curriculum',
+        'Project-based math learning',
         'Writing workshop approach',
         'Science and social studies integration'
       ]
     },
     {
-      id: 'special_events',
-      title: 'Enriching Traditions',
-      description: 'Memorable experiences and celebrations',
+      id: 'joyful_childhood',
+      title: 'Joyful Childhood Experience',
+      description: 'Creating lasting memories and traditions',
       icon: Sparkles,
       metric: 'Monthly',
       metricLabel: 'Special Events',
       details: [
-        'Halloween Hootenanny',
-        'Thanksgiving Feast',
-        'Academic field trips',
-        'Lower School chapel'
+        'Halloween Hootenanny celebration',
+        'Thanksgiving Feast tradition',
+        'Lessons and Carols service',
+        'Wonder Women and Super Men days'
       ]
     }
   ],
 
   'intermediate': [
     {
-      id: 'integrated_learning',
-      title: 'Integrated Curriculum',
-      description: 'Cross-disciplinary learning approach',
+      id: 'deep_understanding',
+      title: 'Deep Understanding & Connection',
+      description: 'Learning that connects and makes sense',
       icon: Brain,
       metric: 'Multi-Subject',
       metricLabel: 'Project Integration',
       details: [
-        'Study topics across all subjects',
-        'English poetry meets science',
-        'Art integrated with Spanish',
-        'Real-world connections'
+        'One topic studied across all classes',
+        'Poetry in English, watercolors in art',
+        'iPad collages in Spanish class',
+        'Animal anatomy in science - all connected!'
       ]
     },
     {
@@ -182,17 +182,17 @@ const VALUES_BY_GRADE: Record<string, Array<{
       ]
     },
     {
-      id: 'expert_faculty',
-      title: 'Expert Faculty',
-      description: 'Highly qualified, caring teachers',
+      id: 'trusted_guidance',
+      title: 'Trusted Adult Guidance',
+      description: 'Expert support during transition years',
       icon: Award,
       metric: '55%',
       metricLabel: 'Advanced Degrees',
       details: [
-        'Master\'s and doctorate holders',
-        'Specialized transition guidance',
-        'Individual attention',
-        'Passionate educators'
+        '55% of teachers have advanced degrees',
+        'Experts in concrete-to-abstract learning',
+        'Specialized in transition-age students',
+        'Bridge to Middle School success'
       ]
     },
     {
@@ -213,23 +213,23 @@ const VALUES_BY_GRADE: Record<string, Array<{
 
   'middle': [
     {
-      id: 'istem_innovation',
-      title: 'iSTEAM Innovation',
-      description: 'Cutting-edge technology and creativity',
+      id: 'innovation_creativity',
+      title: 'Innovation & Creative Expression',
+      description: 'Nurturing future-ready thinking',
       icon: Rocket,
       metric: 'Robotics+',
       metricLabel: 'Engineering Program',
       details: [
-        'Virtual world design',
-        'Robotics engineering',
-        'Original music composition',
-        'Interactive scientific discovery'
+        'Virtual world design in tech labs',
+        'Robotics engineering projects',
+        'Original music in sound studio',
+        'State-of-the-art STEAM Center access'
       ]
     },
     {
-      id: 'leadership_development',
-      title: 'Leadership & Life Skills',
-      description: 'Preparing future leaders',
+      id: 'life_skills_preparation',
+      title: 'Life Skills & Self-Advocacy',
+      description: 'Building confidence and independence',
       icon: Trophy,
       metric: 'Advisory',
       metricLabel: 'Program Daily',
@@ -241,17 +241,17 @@ const VALUES_BY_GRADE: Record<string, Array<{
       ]
     },
     {
-      id: 'global_exploration',
-      title: 'Quest Trips & Travel',
-      description: 'Learning beyond the classroom',
+      id: 'global_perspective',
+      title: 'Global Perspective & Adventure',
+      description: 'Expanding horizons through travel',
       icon: Map,
       metric: 'Annual',
       metricLabel: 'Quest Trips',
       details: [
-        'Yellowstone National Park',
-        'Grand Canyon exploration',
-        'Boston & DC trips',
-        'International summer programs'
+        'Interim Quest: Yellowstone, Grand Canyon',
+        'Washington DC & Boston experiences', 
+        'Costa Rica international travel',
+        'Belize and Puerto Rico adventures planned'
       ]
     },
     {
@@ -269,9 +269,9 @@ const VALUES_BY_GRADE: Record<string, Array<{
       ]
     },
     {
-      id: 'diverse_tracks',
-      title: 'Academic Choice',
-      description: 'Multiple pathways to success',
+      id: 'academic_choice',
+      title: 'Academic Freedom & Choice',
+      description: 'Following your passions and interests',
       icon: Palette,
       metric: '4 Tracks',
       metricLabel: 'Specialized Programs',
@@ -288,71 +288,90 @@ const VALUES_BY_GRADE: Record<string, Array<{
     {
       id: 'academic_excellence',
       title: 'Academic Excellence',
-      description: 'Rigorous college preparatory curriculum',
+      description: 'AP courses and integrated curriculum approach',
       icon: Award,
       metric: '25+',
       metricLabel: 'AP Courses Offered',
       details: [
+        '20+ Advanced Placement courses',
+        'Integrated curriculum approach',
         '100% college acceptance rate',
-        'Ivy League & top university placements',
-        'National Merit Scholars program',
-        'Personalized college counseling'
+        '52 National Merit finalists since 2005',
+        'Ranked #1 college prep in Manatee County'
       ]
     },
     {
-      id: 'athletics_excellence',
-      title: 'Championship Athletics',
-      description: 'Elite sports programs and facilities',
+      id: 'athletic_excellence',
+      title: 'Athletic Excellence & Character',
+      description: 'Building champions on and off the field',
       icon: Trophy,
       metric: '20+',
       metricLabel: 'Varsity Sports',
       details: [
-        '15 State Championships (last 5 years)',
+        '20+ State Championships',
         '30+ Division I college athletes',
-        'State-of-the-art facilities',
-        'Professional coaching staff'
+        'FHSAA Top 10 ranking',
+        'State-of-the-art facilities'
       ]
     },
     {
       id: 'global_perspective',
-      title: 'Global Perspectives',
-      description: 'International awareness and opportunities',
+      title: 'Global Perspective',
+      description: 'Diversity and international experiences',
       icon: Globe,
-      metric: '15+',
-      metricLabel: 'International Trips',
+      metric: '20+',
+      metricLabel: 'Nationalities',
       details: [
-        'Annual international IQ trips',
-        'Global exchange programs',
-        'Language immersion opportunities',
-        'Partnership with schools worldwide'
+        '20+ different nationalities represented',
+        'Interim Quest international trips',
+        'Sister schools: Tanzania, Japan, Argentina, Denmark, Honduras, Spain',
+        'Global citizenship development',
+        'International flags in Upper School Commons'
       ]
     },
     {
-      id: 'innovation_research',
-      title: 'Innovation & Research',
-      description: 'Advanced STEAM and research opportunities',
+      id: 'innovation_creativity',
+      title: 'Innovation & Creativity',
+      description: 'STEAM innovation and creative exploration',
       icon: Brain,
       metric: 'STEAM',
       metricLabel: 'Innovation Center',
       details: [
-        'Independent research projects',
-        'University partnerships',
-        'Advanced lab facilities',
-        'Internship opportunities'
+        '$13 million state-of-the-art STEAM Center',
+        'Marine Science Center',
+        'Computer science and robotics lab',
+        'Media production studio',
+        'Academic maker space'
       ]
     },
     {
-      id: 'leadership_service',
-      title: 'Leadership & Service',
-      description: 'Developing ethical leaders',
+      id: 'leadership_development',
+      title: 'Leadership Development',
+      description: 'Developing ethical student leaders',
+      icon: Users,
+      metric: 'Honor',
+      metricLabel: 'Code Foundation',
+      details: [
+        'Student government opportunities',
+        'Honor code commitment',
+        'Episcopal values integration',
+        'Advisory program guidance',
+        'Peer leadership roles'
+      ]
+    },
+    {
+      id: 'community_service',
+      title: 'Community & Service',
+      description: 'Building character through service',
       icon: Heart,
       metric: '40+',
       metricLabel: 'Service Hours Required',
       details: [
-        'Student government opportunities',
-        'Community service initiatives',
-        'Episcopal values and honor code',
-        'Leadership development programs'
+        'Mandatory community service',
+        'Local and international service trips',
+        'Small class community feel',
+        'Faculty-student mentorship',
+        'Mutual respect culture'
       ]
     }
   ],
