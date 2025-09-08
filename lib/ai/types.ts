@@ -69,6 +69,7 @@ export interface QuizResponse {
   familyValues: string[];
   timeline: string;
   childDescription: string;
+  threeWords?: string;
   selectedCharacteristics?: string[];
   additionalNotes?: string;
   voiceTranscript?: string;
