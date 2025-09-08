@@ -125,10 +125,10 @@ export default function HomePage() {
               className="col-span-7 sm:col-span-5 md:col-span-2 lg:col-span-2 border-b border-r border-dotted border-gray-300 p-3 md:p-6 flex flex-col items-center justify-center"
             >
               <div className="flex items-baseline">
-                <span className="text-4xl md:text-6xl font-schraft-medium text-[#003825]">9</span>
-                <span className="text-2xl md:text-3xl font-schraft-medium text-[#003825] ml-1">:1</span>
+                <span className="text-3xl md:text-5xl font-schraft-medium text-[#003825]">14</span>
+                <span className="text-2xl md:text-3xl font-schraft-medium text-[#003825] ml-1">-18</span>
               </div>
-              <p className="text-xs md:text-sm uppercase tracking-wider text-gray-600 mt-2 font-schraft">Student-Teacher Ratio*</p>
+              <p className="text-xs md:text-sm uppercase tracking-wider text-gray-600 mt-2 font-schraft">Students Per Class</p>
             </motion.div>
 
             {/* College Success - Spans full width on mobile */}
