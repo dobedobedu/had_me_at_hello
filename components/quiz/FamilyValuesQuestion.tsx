@@ -284,7 +284,7 @@ const VALUES_BY_GRADE: Record<string, Array<{
     }
   ],
 
-  'high': [
+  'upper': [
     {
       id: 'academic_excellence',
       title: 'Academic Excellence',
@@ -483,7 +483,7 @@ export default function FamilyValuesQuestion({ data, onNext, onBack }: FamilyVal
         return 'What matters most during these transition years?';
       case 'middle':
         return 'What priorities will guide your middle schooler?';
-      case 'high':
+      case 'upper':
         return 'What matters most for your high school student?';
       default:
         return 'What matters most to your family?';
