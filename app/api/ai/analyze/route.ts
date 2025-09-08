@@ -66,15 +66,15 @@ function extractTraits(quiz: QuizResponse): string[] {
   const traits: string[] = [];
   // from selectedCharacteristics if present
   traits.push(...sanitizeArray(quiz?.selectedCharacteristics || []));
-  // from childDescription: take up to 3 significant words
-  const desc = (quiz?.childDescription || '').toLowerCase();
+  // from childDescription: take up to 5 significant words (increased weight)
+  const desc = (quiz?.childDescription || quiz?.threeWords || '').toLowerCase();
   if (desc) {
     const tokens = desc.match(/[a-zA-Z][a-zA-Z\-]+/g) || [];
     const stop = new Set(['and','the','a','an','of','to','with','who','is','are','for','about','very','really']);
     const picked: string[] = [];
     for (const t of tokens) {
       if (!stop.has(t) && picked.indexOf(t) === -1) picked.push(t);
-      if (picked.length >= 3) break;
+      if (picked.length >= 5) break;
     }
     traits.push(...picked);
   }
@@ -103,7 +103,9 @@ function expandInterests(ints: string[]): string[] {
 }
 
 function matchDeterministic(quiz: QuizResponse, context: RAGContext): AnalysisResult {
-  const userInterests = expandInterests(sanitizeArray(quiz?.interests || []));
+  const userTraits = extractTraits(quiz); // HIGHEST PRIORITY: child description
+  const userInterests = expandInterests(sanitizeArray(quiz?.interests || [])); // MEDIUM PRIORITY
+  const userFamilyValues = sanitizeArray(quiz?.familyValues || []); // LOWEST PRIORITY
   const userGrade = quiz?.gradeLevel || 'middle';
 
   // ROUTED STUDENT VIDEO SELECTION (video-first, deterministic)
@@ -152,17 +154,38 @@ function matchDeterministic(quiz: QuizResponse, context: RAGContext): AnalysisRe
     const isLower = userGrade === 'lower' || userGrade === 'elementary' || userGrade === 'intermediate';
     const tryList = (ids: string[]) => ids.map(fById).filter(Boolean) as any[];
 
-    // Lower/Intermediate default to literacy mentor unless strong signal otherwise
-    if (isLower && !userInterests.some(i => ['athletics','sports'].includes(i))) {
-      return (fById('jennifer_batson') || fById('david_johnson') || fById('andrew_hasbrouck') || facultyArr[0]);
+    // 1. CHILD DESCRIPTION TRAITS (HIGHEST PRIORITY)
+    if (userTraits.some(t => ['creative','artistic','imaginative','expressive','visual','musical'].includes(t))) {
+      return (fById('jeannine_elisha') || facultyArr[0]);
+    }
+    if (userTraits.some(t => ['athletic','competitive','energetic','physical','strong','fast','sporty'].includes(t))) {
+      return (fById('tyler_cotton')?.videoUrl ? fById('tyler_cotton') : (fById('cole_hudson') || facultyArr[0]));
+    }
+    if (userTraits.some(t => ['smart','intelligent','curious','analytical','logical','scientific','mathematical'].includes(t))) {
+      return (fById('tyler_cotton') || facultyArr[0]);
+    }
+    if (userTraits.some(t => ['kind','caring','helpful','empathetic','compassionate','service'].includes(t))) {
+      return (fById('cori_rigney') || facultyArr[0]);
+    }
+    if (userTraits.some(t => ['leader','confident','outgoing','social','charismatic','bold'].includes(t))) {
+      return (fById('bernie_yanelli') || fById('patrick_whelan') || facultyArr[0]);
+    }
+    if (userTraits.some(t => ['reader','bookish','literary','writer','storyteller','verbal'].includes(t))) {
+      return (fById('david_johnson') || fById('jamie_moore') || facultyArr[0]);
     }
 
-    // Interest routing
+    // 2. INTERESTS (MEDIUM PRIORITY)
+    if (userInterests.some(i => ['arts','music','theater','drama','creative'].includes(i))) {
+      return (fById('jeannine_elisha') || facultyArr[0]);
+    }
+    if (userInterests.some(i => ['athletics','sports','tennis','football'].includes(i))) {
+      return (fById('tyler_cotton')?.videoUrl ? fById('tyler_cotton') : (fById('cole_hudson') || facultyArr[0]));
+    }
     if (userInterests.some(i => ['stem','science','technology','engineering','robotics','coding','programming','math'].includes(i))) {
       return (fById('tyler_cotton') || facultyArr[0]);
     }
-    if (userInterests.some(i => ['history','government','social_studies'].includes(i))) {
-      return (fById('patrick_whelan') || facultyArr[0]);
+    if (userInterests.some(i => ['service','community','faith','church','spiritual'].includes(i))) {
+      return (fById('cori_rigney') || facultyArr[0]);
     }
     if (userInterests.some(i => ['business','entrepreneurship','economics','leadership'].includes(i))) {
       return (fById('bernie_yanelli') || fById('patrick_whelan') || facultyArr[0]);
@@ -170,17 +193,27 @@ function matchDeterministic(quiz: QuizResponse, context: RAGContext): AnalysisRe
     if (userInterests.some(i => ['english','writing','literature'].includes(i))) {
       return (fById('david_johnson') || fById('jamie_moore') || facultyArr[0]);
     }
-    if (userInterests.some(i => ['arts','music','theater','drama','creative'].includes(i))) {
+
+    // 3. FAMILY VALUES (LOWEST PRIORITY)
+    if (userFamilyValues.some(v => ['creative_expression','arts_focus','individual_creativity'].includes(v))) {
       return (fById('jeannine_elisha') || facultyArr[0]);
     }
-    if (userInterests.some(i => ['athletics','sports','tennis','football'].includes(i))) {
-      // For athletics, prefer a video faculty if we have one; else Cole
+    if (userFamilyValues.some(v => ['athletic_excellence','team_sports','physical_development'].includes(v))) {
       return (fById('tyler_cotton')?.videoUrl ? fById('tyler_cotton') : (fById('cole_hudson') || facultyArr[0]));
     }
-    if (userInterests.some(i => ['service','community','faith','church','spiritual'].includes(i))) {
+    if (userFamilyValues.some(v => ['stem_innovation','technology_integration','academic_rigor'].includes(v))) {
+      return (fById('tyler_cotton') || facultyArr[0]);
+    }
+    if (userFamilyValues.some(v => ['character_development','service_learning','faith_based_education'].includes(v))) {
       return (fById('cori_rigney') || facultyArr[0]);
     }
-    // Fallback: pick a video faculty if possible
+
+    // 4. GRADE-BASED DEFAULTS
+    if (isLower && !userInterests.some(i => ['athletics','sports'].includes(i))) {
+      return (fById('jennifer_batson') || fById('david_johnson') || fById('andrew_hasbrouck') || facultyArr[0]);
+    }
+
+    // 5. FALLBACK
     const videoFaculty = facultyArr.filter((f: any) => typeof f.videoUrl === 'string' && f.videoUrl.includes('youtube'));
     return (videoFaculty[0] || facultyArr[0]);
   };
@@ -200,7 +233,7 @@ function matchDeterministic(quiz: QuizResponse, context: RAGContext): AnalysisRe
     matchedFaculty: finalFaculty,
     matchedFacts: [],
     keyInsights: keyInsightsFromInterests(userInterests),
-    recommendedPrograms: recommendFromInterests(userInterests),
+    recommendedPrograms: recommendFromTraitsInterestsValues(userTraits, userInterests, userFamilyValues),
     provider: 'local',
   };
 }
@@ -228,13 +261,53 @@ function keyInsightsFromInterests(interests: string[]): string[] {
   return [...base, 'Community Engagement'];
 }
 
-function recommendFromInterests(interests: string[]): string[] {
-  const programs = ['College Preparatory Program'];
-  if (interests.some((i) => ['arts', 'music', 'drama', 'creative'].includes(i))) programs.push('Fine Arts Program');
-  if (interests.some((i) => ['sports', 'athletics', 'competition'].includes(i))) programs.push('Athletics Program');
-  if (interests.some((i) => ['science', 'technology', 'stem', 'engineering'].includes(i))) programs.push('STEAM Program');
-  if (interests.some((i) => ['service', 'community', 'leadership'].includes(i))) programs.push('Leadership & Service');
-  return programs.slice(0, 3).length > 1 ? programs.slice(0, 3) : ['College Preparatory Program', 'Fine Arts', 'Athletics'];
+function recommendFromTraitsInterestsValues(traits: string[], interests: string[], familyValues: string[] = []): string[] {
+  const programs = new Set<string>();
+  
+  // 1. CHILD DESCRIPTION TRAITS (HIGHEST PRIORITY) - max 1 program
+  if (traits.some(t => ['creative','artistic','imaginative','expressive','visual','musical'].includes(t))) {
+    programs.add('Fine Arts Program');
+  } else if (traits.some(t => ['athletic','competitive','energetic','physical','strong','fast','sporty'].includes(t))) {
+    programs.add('Athletics Program');
+  } else if (traits.some(t => ['smart','intelligent','curious','analytical','logical','scientific','mathematical'].includes(t))) {
+    programs.add('STEAM Program');
+  } else if (traits.some(t => ['kind','caring','helpful','empathetic','compassionate','service'].includes(t))) {
+    programs.add('Leadership & Service');
+  } else if (traits.some(t => ['leader','confident','outgoing','social','charismatic','bold'].includes(t))) {
+    programs.add('Leadership & Service');
+  } else if (traits.some(t => ['reader','bookish','literary','writer','storyteller','verbal'].includes(t))) {
+    programs.add('Advanced Academics');
+  }
+  
+  // 2. INTERESTS (MEDIUM PRIORITY) - add 1 more if different
+  if (programs.size < 2) {
+    if (interests.some((i) => ['arts', 'music', 'drama', 'creative'].includes(i)) && !programs.has('Fine Arts Program')) {
+      programs.add('Fine Arts Program');
+    } else if (interests.some((i) => ['sports', 'athletics', 'competition'].includes(i)) && !programs.has('Athletics Program')) {
+      programs.add('Athletics Program');
+    } else if (interests.some((i) => ['science', 'technology', 'stem', 'engineering'].includes(i)) && !programs.has('STEAM Program')) {
+      programs.add('STEAM Program');
+    } else if (interests.some((i) => ['service', 'community', 'leadership'].includes(i)) && !programs.has('Leadership & Service')) {
+      programs.add('Leadership & Service');
+    }
+  }
+  
+  // 3. FAMILY VALUES (LOWEST PRIORITY) - only if we need a third
+  if (programs.size < 2) {
+    if (familyValues.some(v => ['creative_expression','arts_focus','individual_creativity'].includes(v)) && !programs.has('Fine Arts Program')) {
+      programs.add('Fine Arts Program');
+    } else if (familyValues.some(v => ['athletic_excellence','team_sports','physical_development'].includes(v)) && !programs.has('Athletics Program')) {
+      programs.add('Athletics Program');
+    } else if (familyValues.some(v => ['stem_innovation','technology_integration','academic_rigor'].includes(v)) && !programs.has('STEAM Program')) {
+      programs.add('STEAM Program');
+    } else if (familyValues.some(v => ['service_learning','character_development','leadership_development'].includes(v)) && !programs.has('Leadership & Service')) {
+      programs.add('Leadership & Service');
+    }
+  }
+  
+  // Always include College Prep as base, limit to 3 total
+  const result = ['College Preparatory Program', ...Array.from(programs)];
+  return result.slice(0, 3);
 }
 
 async function generatePersonalizedMessage(quiz: QuizResponse, deterministic: AnalysisResult): Promise<{ text: string; engine: string | null }> {
@@ -251,7 +324,8 @@ async function generatePersonalizedMessage(quiz: QuizResponse, deterministic: An
     'Keep the tone friendly, encouraging, and focused on long-term development and belonging.'
   ].join('\n');
 
-  const user = `Student grade: ${quiz.gradeLevel}\nInterests: ${(quiz.interests || []).join(', ')}\nMatched student story: ${deterministic.matchedStories?.[0]?.achievement || 'N/A'}\nMatched faculty: ${deterministic.matchedFaculty?.[0]?.firstName || 'N/A'} ${deterministic.matchedFaculty?.[0]?.lastName || ''} ${deterministic.matchedFaculty?.[0]?.title ? '(' + deterministic.matchedFaculty?.[0]?.title + ')' : ''}\nWrite a warm, specific encouragement that references these matches.`;
+  const userTraits = extractTraits(quiz);
+  const user = `Student grade: ${quiz.gradeLevel}\nChild description: ${userTraits.join(', ')}\nInterests: ${(quiz.interests || []).join(', ')}\nFamily Values: ${(quiz.familyValues || []).join(', ')}\nMatched student story: ${deterministic.matchedStories?.[0]?.achievement || 'N/A'}\nMatched faculty: ${deterministic.matchedFaculty?.[0]?.firstName || 'N/A'} ${deterministic.matchedFaculty?.[0]?.lastName || ''} ${deterministic.matchedFaculty?.[0]?.title ? '(' + deterministic.matchedFaculty?.[0]?.title + ')' : ''}\nWrite a warm, specific encouragement that references the child's traits, interests, and these personalized matches.`;
 
   const useResponsesAPI = /gpt-5/i.test(model);
   const endpoint = useResponsesAPI ? 'responses' : 'chat/completions';
