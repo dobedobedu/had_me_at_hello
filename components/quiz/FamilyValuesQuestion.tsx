@@ -341,7 +341,7 @@ const VALUES_BY_GRADE: Record<string, Array<{
         'Marine Science Center',
         'Computer science and robotics lab',
         'Media production studio',
-        'Innovation labs and maker spaces'
+        'The Gauntlet and The View student publications'
       ]
     },
     {
@@ -353,10 +353,10 @@ const VALUES_BY_GRADE: Record<string, Array<{
       metricLabel: 'Student Clubs',
       details: [
         '25+ student clubs and organizations',
-        'Leaders of tomorrow mindset',
-        'Critical thinking and global problem solving',
-        'Multiple perspectives and collaborative approach',
-        'Honor code and ethical foundation'
+        'Global Scholar program',
+        'Capstone Scholar distinction',
+        'Honor Council leadership',
+        'Cum Laude Society membership'
       ]
     },
     {
