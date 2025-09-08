@@ -293,7 +293,7 @@ const VALUES_BY_GRADE: Record<string, Array<{
       metric: '25+',
       metricLabel: 'AP Courses Offered',
       details: [
-        '20+ Advanced Placement courses',
+        '25+ Advanced Placement courses',
         'Integrated curriculum approach',
         '100% college acceptance rate',
         '52 National Merit finalists since 2005',
@@ -308,9 +308,9 @@ const VALUES_BY_GRADE: Record<string, Array<{
       metric: '20+',
       metricLabel: 'Varsity Sports',
       details: [
-        '20+ State Championships',
+        '20 State Championships',
+        '19 sport teams',
         '30+ Division I college athletes',
-        'FHSAA Top 10 ranking',
         'State-of-the-art facilities'
       ]
     },
@@ -326,7 +326,7 @@ const VALUES_BY_GRADE: Record<string, Array<{
         'Interim Quest international trips',
         'Sister schools: Tanzania, Japan, Argentina, Denmark, Honduras, Spain',
         'Global citizenship development',
-        'International flags in Upper School Commons'
+        'Cultural exchange programs'
       ]
     },
     {
@@ -341,22 +341,22 @@ const VALUES_BY_GRADE: Record<string, Array<{
         'Marine Science Center',
         'Computer science and robotics lab',
         'Media production studio',
-        'Academic maker space'
+        'Innovation labs and maker spaces'
       ]
     },
     {
-      id: 'leadership_development',
-      title: 'Leadership Development',
-      description: 'Developing ethical student leaders',
+      id: 'leadership',
+      title: 'Leadership',
+      description: 'Shaping tomorrow\'s changemakers',
       icon: Users,
-      metric: 'Honor',
-      metricLabel: 'Code Foundation',
+      metric: '25+',
+      metricLabel: 'Student Clubs',
       details: [
-        'Student government opportunities',
-        'Honor code commitment',
-        'Episcopal values integration',
-        'Advisory program guidance',
-        'Peer leadership roles'
+        '25+ student clubs and organizations',
+        'Leaders of tomorrow mindset',
+        'Critical thinking and global problem solving',
+        'Multiple perspectives and collaborative approach',
+        'Honor code and ethical foundation'
       ]
     },
     {
@@ -371,7 +371,7 @@ const VALUES_BY_GRADE: Record<string, Array<{
         'Local and international service trips',
         'Small class community feel',
         'Faculty-student mentorship',
-        'Mutual respect culture'
+        'Culture of kindness'
       ]
     }
   ],
