@@ -198,7 +198,7 @@ export default function ImprovedTourPassPage() {
               className="w-full py-4 bg-[#d4a017] text-white font-bold rounded-xl hover:bg-[#b8901f] transition-colors flex items-center justify-center shadow-lg"
             >
               <User className="w-5 h-5 mr-2" />
-              CHECK IN AT FRONT DESK
+              CHECK IN
             </button>
           </motion.div>
         )}
@@ -291,15 +291,51 @@ export default function ImprovedTourPassPage() {
           </div>
         </motion.div>
 
-        {/* Check-In Form */}
-        {showCheckIn && !isCheckedIn && (
-          <CheckInForm 
-            tourId={tourId}
-            studentName={tourData.studentName}
-            onCheckIn={handleCheckIn}
-          />
-        )}
       </div>
+
+      {/* Check-In Modal/Sheet */}
+      {showCheckIn && !isCheckedIn && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/50 z-50 flex items-end md:items-center justify-center"
+          onClick={() => setShowCheckIn(false)}
+        >
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            className="bg-white rounded-t-2xl md:rounded-2xl w-full md:max-w-md max-h-[80vh] overflow-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
+              <h2 className="text-lg font-semibold">Quick Check-In</h2>
+              <button
+                onClick={() => setShowCheckIn(false)}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            {/* Modal Body */}
+            <div className="p-6">
+              <CheckInForm 
+                tourId={tourId}
+                studentName={tourData.studentName}
+                onCheckIn={(data) => {
+                  handleCheckIn(data);
+                  setShowCheckIn(false);
+                }}
+              />
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
     </div>
   );
 }
