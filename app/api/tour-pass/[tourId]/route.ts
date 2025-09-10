@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from 'redis';
 
 // Fallback in-memory storage for development
@@ -11,7 +11,7 @@ async function getRedisClient() {
 }
 
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ tourId: string }> }
 ) {
   const { tourId } = await params;
@@ -50,7 +50,7 @@ export async function GET(
 }
 
 export async function POST(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ tourId: string }> }
 ) {
   const { tourId } = await params;
@@ -80,7 +80,7 @@ export async function POST(
 }
 
 export async function PATCH(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ tourId: string }> }
 ) {
   const { tourId } = await params;
