@@ -1,18 +1,10 @@
 import { NextResponse } from 'next/server';
 import { createClient } from 'redis';
 
-// Redis client for Upstash
-let redis: any = null;
-
-async function getRedisClient() {
-  if (!redis) {
-    redis = createClient({
-      url: process.env.REDIS_URL,
-    });
-    await redis.connect();
-  }
-  return redis;
-}
+// Redis client for Upstash - simple connection
+const redis = process.env.REDIS_URL 
+  ? await createClient({ url: process.env.REDIS_URL }).connect()
+  : null;
 
 // Fallback in-memory storage for development
 const tourPassStorage = new Map<string, any>();
@@ -27,9 +19,8 @@ export async function GET(
     let data = null;
     
     // Try Redis first (if configured)
-    if (process.env.REDIS_URL) {
-      const client = await getRedisClient();
-      const result = await client.get(`tour:${tourId}`);
+    if (redis) {
+      const result = await redis.get(`tour:${tourId}`);
       if (result) {
         data = JSON.parse(result);
       }
@@ -65,10 +56,9 @@ export async function POST(
     const data = await request.json();
     
     // Store in Redis (if configured) or fallback to memory
-    if (process.env.REDIS_URL) {
-      const client = await getRedisClient();
+    if (redis) {
       // Store with 30 days expiry (2592000 seconds)
-      await client.setEx(`tour:${tourId}`, 2592000, JSON.stringify(data));
+      await redis.setEx(`tour:${tourId}`, 2592000, JSON.stringify(data));
     } else {
       // Fallback to in-memory storage for development
       tourPassStorage.set(`tour:${tourId}`, data);
@@ -96,9 +86,8 @@ export async function PATCH(
     let existingData = null;
     
     // Get existing data from Redis or memory
-    if (process.env.REDIS_URL) {
-      const client = await getRedisClient();
-      const result = await client.get(`tour:${tourId}`);
+    if (redis) {
+      const result = await redis.get(`tour:${tourId}`);
       if (result) {
         existingData = JSON.parse(result);
       }
@@ -121,9 +110,8 @@ export async function PATCH(
     };
     
     // Save updated data
-    if (process.env.REDIS_URL) {
-      const client = await getRedisClient();
-      await client.setEx(`tour:${tourId}`, 2592000, JSON.stringify(updatedData));
+    if (redis) {
+      await redis.setEx(`tour:${tourId}`, 2592000, JSON.stringify(updatedData));
     } else {
       tourPassStorage.set(`tour:${tourId}`, updatedData);
     }
