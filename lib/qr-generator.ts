@@ -56,21 +56,51 @@ export async function generateQRCode(tourId: string): Promise<string> {
   }
 }
 
-export function saveTourPassData(tourId: string, data: TourPassData): void {
+export async function saveTourPassData(tourId: string, data: TourPassData): Promise<void> {
   try {
+    // Save to API (works across devices)
+    const response = await fetch(`/api/tour-pass/${tourId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to save tour pass');
+    }
+
+    // Also save to localStorage as backup
     const existingData = localStorage.getItem('tourPasses');
     const tourPasses = existingData ? JSON.parse(existingData) : {};
-    
     tourPasses[tourId] = data;
-    
     localStorage.setItem('tourPasses', JSON.stringify(tourPasses));
   } catch (error) {
     console.error('Error saving tour pass data:', error);
+    // Fallback to localStorage only if API fails
+    try {
+      const existingData = localStorage.getItem('tourPasses');
+      const tourPasses = existingData ? JSON.parse(existingData) : {};
+      tourPasses[tourId] = data;
+      localStorage.setItem('tourPasses', JSON.stringify(tourPasses));
+    } catch (localError) {
+      console.error('Error saving to localStorage:', localError);
+    }
   }
 }
 
-export function getTourPassData(tourId: string): TourPassData | null {
+export async function getTourPassData(tourId: string): Promise<TourPassData | null> {
   try {
+    // First try to get from API (works across devices)
+    const response = await fetch(`/api/tour-pass/${tourId}`);
+    
+    if (response.ok) {
+      const data = await response.json();
+      return data;
+    }
+    
+    // Fallback to localStorage if API fails
     const existingData = localStorage.getItem('tourPasses');
     if (!existingData) return null;
     
@@ -78,7 +108,17 @@ export function getTourPassData(tourId: string): TourPassData | null {
     return tourPasses[tourId] || null;
   } catch (error) {
     console.error('Error retrieving tour pass data:', error);
-    return null;
+    
+    // Last resort: try localStorage only
+    try {
+      const existingData = localStorage.getItem('tourPasses');
+      if (!existingData) return null;
+      const tourPasses = JSON.parse(existingData);
+      return tourPasses[tourId] || null;
+    } catch (localError) {
+      console.error('Error reading from localStorage:', localError);
+      return null;
+    }
   }
 }
 

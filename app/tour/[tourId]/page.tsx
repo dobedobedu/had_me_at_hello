@@ -27,31 +27,52 @@ export default function ImprovedTourPassPage() {
   const [showCheckIn, setShowCheckIn] = useState(false);
 
   useEffect(() => {
-    // Simulate fetching tour data - in production this would be an API call
     const fetchTourData = async () => {
       try {
-        // For now, get from localStorage but this should be server-side
-        const storedData = localStorage.getItem('tourPasses');
-        if (storedData) {
-          const allPasses = JSON.parse(storedData);
-          const fullData = allPasses[tourId];
+        // First try API (works across devices)
+        const response = await fetch(`/api/tour-pass/${tourId}`);
+        
+        if (response.ok) {
+          const fullData = await response.json();
           
-          if (fullData) {
-            // Simplify the data for quick display
-            const simplified: SimplifiedTourPass = {
-              tourId: fullData.tourId,
-              studentName: fullData.studentName,
-              gradeLevel: fullData.quizResults?.gradeLevel || 'Not specified',
-              interests: fullData.quizResults?.interests || [],
-              recommendedFaculty: fullData.quizResults?.matchedFaculty?.[0] 
-                ? `${fullData.quizResults.matchedFaculty[0].firstName} ${fullData.quizResults.matchedFaculty[0].lastName}`
-                : 'Available on arrival',
-              tourExperiences: fullData.selectedTours?.map((t: any) => t.title) || [],
-              timestamp: fullData.timestamp,
-              status: fullData.status || 'active',
-              checkInData: fullData.checkInData
-            };
-            setTourData(simplified);
+          // Simplify the data for quick display
+          const simplified: SimplifiedTourPass = {
+            tourId: fullData.tourId,
+            studentName: fullData.studentName,
+            gradeLevel: fullData.quizResults?.gradeLevel || 'Not specified',
+            interests: fullData.quizResults?.interests || [],
+            recommendedFaculty: fullData.quizResults?.matchedFaculty?.[0] 
+              ? `${fullData.quizResults.matchedFaculty[0].firstName} ${fullData.quizResults.matchedFaculty[0].lastName}`
+              : 'Available on arrival',
+            tourExperiences: fullData.selectedTours?.map((t: any) => t.title) || [],
+            timestamp: fullData.timestamp,
+            status: fullData.status || 'active',
+            checkInData: fullData.checkInData
+          };
+          setTourData(simplified);
+        } else {
+          // Fallback to localStorage if API fails
+          const storedData = localStorage.getItem('tourPasses');
+          if (storedData) {
+            const allPasses = JSON.parse(storedData);
+            const fullData = allPasses[tourId];
+            
+            if (fullData) {
+              const simplified: SimplifiedTourPass = {
+                tourId: fullData.tourId,
+                studentName: fullData.studentName,
+                gradeLevel: fullData.quizResults?.gradeLevel || 'Not specified',
+                interests: fullData.quizResults?.interests || [],
+                recommendedFaculty: fullData.quizResults?.matchedFaculty?.[0] 
+                  ? `${fullData.quizResults.matchedFaculty[0].firstName} ${fullData.quizResults.matchedFaculty[0].lastName}`
+                  : 'Available on arrival',
+                tourExperiences: fullData.selectedTours?.map((t: any) => t.title) || [],
+                timestamp: fullData.timestamp,
+                status: fullData.status || 'active',
+                checkInData: fullData.checkInData
+              };
+              setTourData(simplified);
+            }
           }
         }
       } catch (error) {
