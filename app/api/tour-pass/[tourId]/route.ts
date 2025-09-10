@@ -19,9 +19,9 @@ const tourPassStorage = new Map<string, any>();
 
 export async function GET(
   request: Request,
-  { params }: { params: { tourId: string } }
+  { params }: { params: Promise<{ tourId: string }> }
 ) {
-  const { tourId } = params;
+  const { tourId } = await params;
 
   try {
     let data = null;
@@ -57,9 +57,9 @@ export async function GET(
 
 export async function POST(
   request: Request,
-  { params }: { params: { tourId: string } }
+  { params }: { params: Promise<{ tourId: string }> }
 ) {
-  const { tourId } = params;
+  const { tourId } = await params;
   
   try {
     const data = await request.json();
@@ -86,9 +86,9 @@ export async function POST(
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { tourId: string } }
+  { params }: { params: Promise<{ tourId: string }> }
 ) {
-  const { tourId } = params;
+  const { tourId } = await params;
   
   try {
     const updates = await request.json();
