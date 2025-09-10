@@ -24,6 +24,7 @@ interface SimplifiedTourPass {
     motivation: string;
     timeline: string;
     parentValues: string[];
+    aboutKids?: string; // 3 words about kids
   };
 }
 
@@ -61,7 +62,8 @@ export default function ImprovedTourPassPage() {
               interests: fullData.quizResults.interests || [],
               motivation: fullData.quizResults.motivation || 'Just exploring',
               timeline: fullData.quizResults.timeline || 'Fall 2025',
-              parentValues: fullData.quizResults.parentValues || []
+              parentValues: fullData.quizResults.parentValues || [],
+              aboutKids: fullData.quizResults.aboutKids || ''
             } : undefined
           };
           setTourData(simplified);
@@ -90,7 +92,8 @@ export default function ImprovedTourPassPage() {
                   interests: fullData.quizResults.interests || [],
                   motivation: fullData.quizResults.motivation || 'Just exploring',
                   timeline: fullData.quizResults.timeline || 'Fall 2025',
-                  parentValues: fullData.quizResults.parentValues || []
+                  parentValues: fullData.quizResults.parentValues || [],
+                  aboutKids: fullData.quizResults.aboutKids || ''
                 } : undefined
               };
               setTourData(simplified);
@@ -203,16 +206,16 @@ export default function ImprovedTourPassPage() {
           </motion.div>
         )}
 
-        {/* Checked In Status */}
+        {/* Checked In Status - Compact */}
         {isCheckedIn && tourData.checkInData && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-green-50 border border-green-200 rounded-xl p-4 mb-4"
+            className="bg-green-50 border border-green-200 rounded-xl p-3 mb-3"
           >
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-green-600 font-semibold flex items-center">
-                <CheckCircle2 className="w-5 h-5 mr-1" />
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-green-600 font-semibold flex items-center text-xs">
+                <CheckCircle2 className="w-4 h-4 mr-1" />
                 CHECKED IN • {new Date(tourData.checkInData.timestamp).toLocaleTimeString('en-US', { 
                   hour: 'numeric', 
                   minute: '2-digit',
@@ -220,8 +223,8 @@ export default function ImprovedTourPassPage() {
                 })}
               </span>
             </div>
-            <div className="text-gray-900 font-semibold">{tourData.checkInData.fullName} • {tourData.checkInData.currentGrade}</div>
-            <div className="text-gray-600 text-sm">{tourData.checkInData.currentSchool}</div>
+            <div className="text-gray-900 font-semibold text-sm">{tourData.checkInData.fullName} • {tourData.checkInData.currentGrade}</div>
+            <div className="text-gray-600 text-xs">{tourData.checkInData.currentSchool}</div>
           </motion.div>
         )}
 
@@ -232,59 +235,66 @@ export default function ImprovedTourPassPage() {
           transition={{ delay: 0.1 }}
           className="bg-white rounded-xl shadow-sm overflow-hidden"
         >
-          {/* Quiz Snapshot Section */}
-          <div className="p-4 border-b">
-            <h3 className="text-xs font-bold text-gray-500 mb-3">QUIZ SNAPSHOT</h3>
-            <div className="space-y-2">
+          {/* Quiz Snapshot Section - Optimized spacing */}
+          <div className="p-3 border-b">
+            <h3 className="text-xs font-bold text-gray-500 mb-2">QUIZ SNAPSHOT</h3>
+            <div className="space-y-1.5">
               <div className="flex">
-                <span className="text-sm mr-2">1️⃣</span>
-                <span className="text-sm text-gray-600 flex-shrink-0 mr-2">Grade →</span>
-                <span className="text-sm font-semibold text-gray-900">{tourData.quizResponses?.gradeRange || tourData.gradeLevel}</span>
+                <span className="text-xs mr-1.5">1️⃣</span>
+                <span className="text-xs text-gray-600 flex-shrink-0 mr-1">Grade →</span>
+                <span className="text-xs font-semibold text-gray-900">{tourData.quizResponses?.gradeRange || tourData.gradeLevel}</span>
               </div>
               <div className="flex">
-                <span className="text-sm mr-2">2️⃣</span>
-                <span className="text-sm text-gray-600 flex-shrink-0 mr-2">Interests →</span>
-                <span className="text-sm font-semibold text-gray-900">{tourData.quizResponses?.interests.join(', ') || tourData.interests.join(', ')}</span>
+                <span className="text-xs mr-1.5">2️⃣</span>
+                <span className="text-xs text-gray-600 flex-shrink-0 mr-1">Interests →</span>
+                <span className="text-xs font-semibold text-gray-900 truncate">{tourData.quizResponses?.interests.join(', ') || tourData.interests.join(', ')}</span>
               </div>
               <div className="flex">
-                <span className="text-sm mr-2">3️⃣</span>
-                <span className="text-sm text-gray-600 flex-shrink-0 mr-2">Why Now? →</span>
-                <span className="text-sm font-semibold text-gray-900">{tourData.quizResponses?.motivation || 'Just exploring'}</span>
+                <span className="text-xs mr-1.5">3️⃣</span>
+                <span className="text-xs text-gray-600 flex-shrink-0 mr-1">Why Now? →</span>
+                <span className="text-xs font-semibold text-gray-900">{tourData.quizResponses?.motivation || 'Just exploring'}</span>
               </div>
               <div className="flex items-center">
-                <span className="text-sm mr-2">4️⃣</span>
-                <span className="text-sm text-gray-600 flex-shrink-0 mr-2">Timeline →</span>
-                <span className="text-sm font-semibold text-gray-900">{tourData.quizResponses?.timeline || 'Fall 2025'}</span>
-                <span className="text-yellow-500 ml-2">⭐</span>
+                <span className="text-xs mr-1.5">4️⃣</span>
+                <span className="text-xs text-gray-600 flex-shrink-0 mr-1">Timeline →</span>
+                <span className="text-xs font-semibold text-gray-900">{tourData.quizResponses?.timeline || 'Fall 2025'}</span>
+                <span className="text-yellow-500 ml-1 text-xs">⭐</span>
               </div>
               <div className="flex">
-                <span className="text-sm mr-2">5️⃣</span>
-                <span className="text-sm text-gray-600 flex-shrink-0 mr-2">Values →</span>
-                <span className="text-sm font-semibold text-gray-900">{tourData.quizResponses?.parentValues.join(', ') || 'Small Classes, Individual Attention'}</span>
+                <span className="text-xs mr-1.5">5️⃣</span>
+                <span className="text-xs text-gray-600 flex-shrink-0 mr-1">Values →</span>
+                <span className="text-xs font-semibold text-gray-900 truncate">{tourData.quizResponses?.parentValues.join(', ') || 'Small Classes, Individual Attention'}</span>
               </div>
+              {tourData.quizResponses?.aboutKids && (
+                <div className="flex">
+                  <span className="text-xs mr-1.5">6️⃣</span>
+                  <span className="text-xs text-gray-600 flex-shrink-0 mr-1">About Kids →</span>
+                  <span className="text-xs font-semibold text-gray-900">{tourData.quizResponses.aboutKids}</span>
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Matches Section */}
-          <div className="p-4 border-b bg-gray-50">
-            <h3 className="text-xs font-bold text-gray-500 mb-3">YOUR MATCHES</h3>
-            <div className="space-y-2">
+          {/* Matches Section - Compact */}
+          <div className="p-3 border-b bg-gray-50">
+            <h3 className="text-xs font-bold text-gray-500 mb-2">YOUR MATCHES</h3>
+            <div className="space-y-1">
               <div className="flex items-center">
-                <span className="text-sm mr-2">👨‍🏫</span>
-                <span className="text-sm font-semibold text-gray-900">{tourData.recommendedFaculty}</span>
+                <span className="text-xs mr-1.5">👨‍🏫</span>
+                <span className="text-xs font-semibold text-gray-900">{tourData.recommendedFaculty}</span>
               </div>
               {/* Add student/alumni matches if available */}
             </div>
           </div>
 
-          {/* Tour Route Section */}
-          <div className="p-4 bg-[#fffef5]">
-            <h3 className="text-xs font-bold text-gray-500 mb-3">TOUR ROUTE</h3>
-            <div className="space-y-1">
+          {/* Tour Route Section - Compact */}
+          <div className="p-3 bg-[#fffef5]">
+            <h3 className="text-xs font-bold text-gray-500 mb-2">TOUR ROUTE</h3>
+            <div className="space-y-0.5">
               {tourData.tourExperiences.map((exp, idx) => (
                 <div key={idx} className="flex items-center">
-                  <span className="text-sm mr-2">📍</span>
-                  <span className="text-sm text-gray-700">{exp}</span>
+                  <span className="text-xs mr-1.5">📍</span>
+                  <span className="text-xs text-gray-700">{exp}</span>
                 </div>
               ))}
             </div>
