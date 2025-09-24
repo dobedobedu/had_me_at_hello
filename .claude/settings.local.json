@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx mcp-shadcn:*)",
+      "Bash(npx:*)",
+      "Bash(git checkout:*)",
+      "WebFetch(domain:tweakcn.com)",
+      "WebSearch"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "shadcn"
+  ]
+}
