@@ -838,96 +838,149 @@ Full results: ${shareData.link}`);
                 disableDrag={false}
                 headerOffset={56}
                 cards={[
-                  // Alumni Story Card
-                  {
-                    id: 'alumni-story',
-                    type: 'alumni' as const,
-                    content: (
-                      <div className="rounded-2xl overflow-hidden shadow-sm bg-white">
-                        <div className="p-4">
-                          <h3 className="text-lg font-bold text-gray-900">{(() => {
-                            const id = results.matchedStories[0]?.id; 
-                            switch (id) {
-                              case 'creative_arts': return 'Meet Betsy';
-                              case 'athletics_excellence': return 'Meet the Falcons';
-                              case 'athletics_spotlight': return 'Explore Falcons Athletics';
-                              case 'lower_school_parents': return 'Meet Our Families';
-                              case 'academic_excellence': return 'Meet Our Academic Team';
-                              default: return 'Hear From Our Students';
-                            }
-                          })()}</h3>
-                          {(() => {
-                            const interests = (quizData?.interests || []).slice(0,3).join(', ');
-                            const three = (quizData?.childDescription || '').split(/[,\s]+/).filter(Boolean).slice(0,3).join(' ');
-                            const txt = interests ? `You mentioned: ${interests}` : (three ? `You said: ${three}` : '');
-                            return txt ? <p className="text-xs text-gray-600 mt-1">{txt}</p> : null;
-                          })()}
-                        </div>
-                        <div className="relative w-full aspect-video bg-black">
-                          {(results.matchedStories[0] as any)?.videoUrl && playingVideo === 'alumni-story' ? (
-                            <iframe
-                              className="w-full h-full"
-                              src={`https://www.youtube.com/embed/${((results.matchedStories[0] as any)?.videoUrl || '').split('v=')[1]?.split('&')[0] || ((results.matchedStories[0] as any)?.videoUrl || '').split('/').pop()}?autoplay=1&rel=0`}
-                              title={`${results.matchedStories[0].firstName} ${(results.matchedStories[0] as any).lastName || ''}`}
-                              frameBorder="0"
-                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                              allowFullScreen
-                            />
-                          ) : (
-                            <button className="absolute inset-0" onClick={() => setPlayingVideo('alumni-story')} aria-label="Play video">
-                              <img src={results.matchedStories[0]?.photoUrl || ''} alt="" className="w-full h-full object-cover" />
-                              <div className="absolute inset-0 flex items-center justify-center">
-                                <div className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-2xl">
-                                  <Play className="w-8 h-8 text-white ml-1" fill="currentColor" />
+                  // Current Student Card (1 max) - exclude alumni stories (those with classYear)
+                  ...(() => {
+                    const currentStudents = results.matchedStories?.filter(story => !(story as any).classYear) || [];
+                    const firstCurrentStudent = currentStudents[0];
+                    return firstCurrentStudent ? [{
+                      id: 'current-student',
+                      type: 'student' as const,
+                      content: (
+                        <div className="rounded-2xl overflow-hidden shadow-sm bg-white">
+                          <div className="p-4">
+                            <h3 className="text-lg font-bold text-gray-900">{(() => {
+                              const id = firstCurrentStudent?.id;
+                              switch (id) {
+                                case 'creative_arts': return 'Meet Betsy';
+                                case 'athletics_excellence': return 'Meet the Falcons';
+                                case 'athletics_spotlight': return 'Explore Falcons Athletics';
+                                case 'lower_school_parents': return 'Meet Our Families';
+                                case 'academic_excellence': return 'Meet Our Academic Team';
+                                case 'sophia_camden_community': return 'Meet Sophia & Camden';
+                                case 'mak_athletics': return 'Meet Mak';
+                                case 'leah_jaida_athletics_academics': return 'Meet Leah & Jaida';
+                                case 'keymani_athletics_academics': return 'Meet Keymani';
+                                case 'julie_journalism_social_media': return 'Meet Julie';
+                                case 'isabelle_athletics': return 'Meet Isabelle';
+                                case 'grace_pearson_clubs_academics': return 'Meet Grace & Pearson';
+                                case 'student_teacher_relationships': return 'Hear From Our Students';
+                                default: return `Meet ${firstCurrentStudent.firstName}`;
+                              }
+                            })()}</h3>
+                            {(() => {
+                              const interests = (quizData?.interests || []).slice(0,3).join(', ');
+                              const three = (quizData?.childDescription || '').split(/[,\s]+/).filter(Boolean).slice(0,3).join(' ');
+                              const txt = interests ? `You mentioned: ${interests}` : (three ? `You said: ${three}` : '');
+                              return txt ? <p className="text-xs text-gray-600 mt-1">{txt}</p> : null;
+                            })()}
+                          </div>
+                          <div className="relative w-full aspect-video bg-black">
+                            {(firstCurrentStudent as any)?.videoUrl && playingVideo === 'current-student' ? (
+                              <iframe
+                                className="w-full h-full"
+                                src={`https://www.youtube.com/embed/${((firstCurrentStudent as any)?.videoUrl || '').split('v=')[1]?.split('&')[0] || ((firstCurrentStudent as any)?.videoUrl || '').split('/').pop()}?autoplay=1&rel=0`}
+                                title={`${firstCurrentStudent.firstName} ${(firstCurrentStudent as any).lastName || ''}`}
+                                frameBorder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowFullScreen
+                              />
+                            ) : (
+                              <button className="absolute inset-0" onClick={() => setPlayingVideo('current-student')} aria-label="Play video">
+                                <img src={firstCurrentStudent?.photoUrl || ''} alt="" className="w-full h-full object-cover" />
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                  <div className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-2xl">
+                                    <Play className="w-8 h-8 text-white ml-1" fill="currentColor" />
+                                  </div>
                                 </div>
-                              </div>
-                            </button>
-                          )}
+                              </button>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    )
-                  },
-                  // Faculty Cards - map all matched faculty
-                  ...(results.matchedFaculty && results.matchedFaculty.length > 0 ? results.matchedFaculty.map((faculty, index) => ({
-                    id: `faculty-match-${index}`,
-                    type: 'faculty' as const,
-                    content: (
-                      <div className="rounded-2xl overflow-hidden shadow-sm bg-white">
-                        <div className="p-4">
-                          <h3 className="text-lg font-bold text-gray-900">Meet {faculty.firstName} {faculty.lastName}</h3>
-                          {(() => {
-                            const interests = (quizData?.interests || []).slice(0,3).join(', ');
-                            const three = (quizData?.childDescription || '').split(/[,\s]+/).filter(Boolean).slice(0,3).join(' ');
-                            const txt = interests ? `You mentioned: ${interests}` : (three ? `You said: ${three}` : '');
-                            return txt ? <p className="text-xs text-gray-600 mt-1">{txt}</p> : null;
-                          })()}
-                        </div>
-                        <div className="relative w-full aspect-video bg-black">
-                          {faculty?.videoUrl && playingVideo === `faculty-match-${index}` ? (
-                            <iframe
-                              className="w-full h-full"
-                              src={`https://www.youtube.com/embed/${(faculty.videoUrl || '').split('v=')[1]?.split('&')[0] || (faculty.videoUrl || '').split('/').pop()}?autoplay=1&rel=0`}
-                              title={`${faculty.firstName} ${faculty.lastName || ''}`}
-                              frameBorder="0"
-                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                              allowFullScreen
-                            />
-                          ) : faculty?.videoUrl ? (
-                            <button className="absolute inset-0" onClick={() => setPlayingVideo(`faculty-match-${index}`)} aria-label="Play video">
-                              <img src={faculty.photoUrl || ''} alt="" className="w-full h-full object-cover" />
-                              <div className="absolute inset-0 flex items-center justify-center">
-                                <div className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-2xl">
-                                  <Play className="w-8 h-8 text-white ml-1" fill="currentColor" />
+                      )
+                    }] : [];
+                  })(),
+                  // Faculty Card (1 max)
+                  ...(() => {
+                    const firstFaculty = results.matchedFaculty?.[0];
+                    return firstFaculty ? [{
+                      id: 'faculty-match',
+                      type: 'faculty' as const,
+                      content: (
+                        <div className="rounded-2xl overflow-hidden shadow-sm bg-white">
+                          <div className="p-4">
+                            <h3 className="text-lg font-bold text-gray-900">Meet {firstFaculty.formalTitle || 'Mr./Ms.'} {firstFaculty.lastName}</h3>
+                            {(() => {
+                              const interests = (quizData?.interests || []).slice(0,3).join(', ');
+                              const three = (quizData?.childDescription || '').split(/[,\s]+/).filter(Boolean).slice(0,3).join(' ');
+                              const txt = interests ? `You mentioned: ${interests}` : (three ? `You said: ${three}` : '');
+                              return txt ? <p className="text-xs text-gray-600 mt-1">{txt}</p> : null;
+                            })()}
+                          </div>
+                          <div className="relative w-full aspect-video bg-black">
+                            {firstFaculty?.videoUrl && playingVideo === 'faculty-match' ? (
+                              <iframe
+                                className="w-full h-full"
+                                src={`https://www.youtube.com/embed/${(firstFaculty.videoUrl || '').split('v=')[1]?.split('&')[0] || (firstFaculty.videoUrl || '').split('/').pop()}?autoplay=1&rel=0`}
+                                title={`${firstFaculty.formalTitle || 'Mr./Ms.'} ${firstFaculty.lastName || ''}`}
+                                frameBorder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowFullScreen
+                              />
+                            ) : firstFaculty?.videoUrl ? (
+                              <button className="absolute inset-0" onClick={() => setPlayingVideo('faculty-match')} aria-label="Play video">
+                                <img src={firstFaculty.photoUrl || ''} alt="" className="w-full h-full object-cover" />
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                  <div className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-2xl">
+                                    <Play className="w-8 h-8 text-white ml-1" fill="currentColor" />
+                                  </div>
                                 </div>
-                              </div>
-                            </button>
-                          ) : (
-                            <img src={faculty.photoUrl || ''} alt="" className="w-full h-full object-cover" />
-                          )}
+                              </button>
+                            ) : (
+                              <img src={firstFaculty.photoUrl || ''} alt="" className="w-full h-full object-cover" />
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    )
-                  })) : [])
+                      )
+                    }] : [];
+                  })(),
+                  // Alumni Card (1 max) - only alumni stories (those with classYear)
+                  ...(() => {
+                    const alumni = results.matchedStories?.filter(story => (story as any).classYear) || [];
+                    const firstAlumni = alumni[0];
+                    return firstAlumni ? [{
+                      id: 'alumni-story',
+                      type: 'alumni' as const,
+                      content: (
+                        <div className="rounded-2xl overflow-hidden shadow-sm bg-white">
+                          <div className="p-4">
+                            <h3 className="text-lg font-bold text-gray-900">Meet {firstAlumni.firstName} {(firstAlumni as any).lastName || ''}</h3>
+                            <p className="text-xs text-gray-600 mt-1">Class of {(firstAlumni as any).classYear} • {(firstAlumni as any).currentRole || 'Alumni'}</p>
+                          </div>
+                          <div className="relative w-full aspect-video bg-black">
+                            {(firstAlumni as any)?.videoUrl && playingVideo === 'alumni-story' ? (
+                              <iframe
+                                className="w-full h-full"
+                                src={`https://www.youtube.com/embed/${((firstAlumni as any)?.videoUrl || '').split('v=')[1]?.split('&')[0] || ((firstAlumni as any)?.videoUrl || '').split('/').pop()}?autoplay=1&rel=0`}
+                                title={`${firstAlumni.firstName} ${(firstAlumni as any).lastName || ''}`}
+                                frameBorder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowFullScreen
+                              />
+                            ) : (
+                              <button className="absolute inset-0" onClick={() => setPlayingVideo('alumni-story')} aria-label="Play video">
+                                <img src={firstAlumni?.photoUrl || ''} alt="" className="w-full h-full object-cover" />
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                  <div className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-2xl">
+                                    <Play className="w-8 h-8 text-white ml-1" fill="currentColor" />
+                                  </div>
+                                </div>
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      )
+                    }] : [];
+                  })()
                 ]}
               />
             </motion.div>

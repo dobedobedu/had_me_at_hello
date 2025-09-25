@@ -4,6 +4,13 @@ import alumniData from '@/knowledge/alumni-story.json';
 import facultyData from '@/knowledge/faculty-story.json';
 import currentStudentData from '@/knowledge/current-student-stories.json';
 import factsData from '@/knowledge/facts.json';
+import {
+  buildMatchingProfile,
+  computeCompositeScore,
+  selectMatchesWithMetadata,
+  summarizeMatches,
+} from '@/lib/ai/deterministic-matcher';
+import { sanitizeArray, extractTraits, expandInterests, baseMessage } from '@/lib/ai/matcher-utils';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -17,9 +24,28 @@ export async function POST(request: Request) {
 
     const body = await request.json();
     const quiz: QuizResponse = body?.quiz;
+    const forceHybrid = body?.useHybrid; // Explicit override
+    const forceLegacy = body?.useLegacy; // Explicit override
+
     if (!quiz) {
       return NextResponse.json({ error: 'Missing quiz' }, { status: 400 });
     }
+
+    // A/B Testing: Determine which system to use
+    const { ABTestingService } = await import('../../../../lib/ai/ab-testing');
+    const abTesting = ABTestingService.getInstance();
+
+    let useHybrid: boolean;
+    if (forceHybrid !== undefined) {
+      useHybrid = forceHybrid;
+    } else if (forceLegacy) {
+      useHybrid = false;
+    } else {
+      useHybrid = abTesting.shouldUseHybrid(quiz);
+    }
+
+    const assignmentInfo = abTesting.getAssignmentInfo(quiz);
+    console.log('🧪 A/B Test Assignment:', assignmentInfo);
 
     // Build RAG context on the server
     const context: RAGContext = {
@@ -28,18 +54,48 @@ export async function POST(request: Request) {
       facts: (factsData as any).facts,
     } as any;
 
-    // 1) Deterministic matching (reliable + fast)
+    // A/B Testing: Choose between hybrid and legacy matching
+    if (useHybrid) {
+      console.log('🚀 Using hybrid semantic+LLM matching');
+      try {
+        const { HybridMatchingService } = await import('../../../../lib/ai/hybrid-matcher');
+        const hybridService = HybridMatchingService.getInstance();
+
+        const semanticConfig = abTesting.getSemanticConfig();
+        const result = await hybridService.match(quiz, context, {
+          useSemanticSearch: true,
+          useLLMSelection: true,
+          semanticOptions: semanticConfig
+        });
+
+        console.log('✅ Hybrid matching completed:', {
+          provider: result.provider,
+          matchScore: result.matchScore,
+          performanceMs: result.performanceMetrics?.totalMs
+        });
+
+        return NextResponse.json(result);
+
+      } catch (hybridError) {
+        console.warn('⚠️ Hybrid matching failed, falling back to legacy:', hybridError);
+        // Fall through to legacy matching
+      }
+    }
+
+    // Legacy matching system (fallback)
+    console.log('🔄 Using legacy deterministic matching');
     const deterministic = matchDeterministic(quiz, context);
 
-    // 2) Ask LLM only for the personalized message (no JSON required)
-    const { text: llmText, engine } = await generatePersonalizedMessage(quiz, deterministic)
+    // Get personalized message and dynamic score using the matched results
+    const { text: llmText, score: llmScore, engine } = await generatePersonalizedMessageAndScore(quiz, deterministic)
       .catch((e) => {
-        console.error('generatePersonalizedMessage failed, using deterministic text', e);
-        return { text: deterministic.personalizedMessage, engine: null as string | null };
+        console.error('generatePersonalizedMessageAndScore failed, using deterministic values', e);
+        return { text: deterministic.personalizedMessage, score: deterministic.matchScore, engine: null as string | null };
       });
 
     const result: AnalysisResult = {
       ...deterministic,
+      matchScore: llmScore || deterministic.matchScore,
       personalizedMessage: llmText || deterministic.personalizedMessage,
       provider: engine ? 'openrouter' : 'local',
     };
@@ -53,204 +109,42 @@ export async function POST(request: Request) {
 
 // --- Matching helpers (deterministic) ---
 
-function sanitizeArray(arr: any[]): string[] {
-  if (!Array.isArray(arr)) return [];
-  return arr.filter((x) => typeof x === 'string' && x.trim().length > 0).map((s) => s.toLowerCase());
-}
-
-function hasValidVideo(url?: string): boolean {
-  return !!(url && (url.includes('youtube.com') || url.includes('youtu.be')));
-}
-
-function extractTraits(quiz: QuizResponse): string[] {
-  const traits: string[] = [];
-  // from selectedCharacteristics if present
-  traits.push(...sanitizeArray(quiz?.selectedCharacteristics || []));
-  // from childDescription: take up to 5 significant words (increased weight)
-  const desc = (quiz?.childDescription || quiz?.threeWords || '').toLowerCase();
-  if (desc) {
-    const tokens = desc.match(/[a-zA-Z][a-zA-Z\-]+/g) || [];
-    const stop = new Set(['and','the','a','an','of','to','with','who','is','are','for','about','very','really']);
-    const picked: string[] = [];
-    for (const t of tokens) {
-      if (!stop.has(t) && picked.indexOf(t) === -1) picked.push(t);
-      if (picked.length >= 5) break;
-    }
-    traits.push(...picked);
-  }
-  return traits;
-}
-
-function expandInterests(ints: string[]): string[] {
-  // Map to broader categories and synonyms
-  const map: Record<string, string[]> = {
-    athletics: ['sports','tennis','soccer','basketball','football','swimming','track','golf','volleyball','competition','team','fitness','athletic'],
-    stem: ['science','technology','engineering','math','robotics','coding','programming','computer','steam','physics','chemistry','biology'],
-    creativity: ['arts','art','visual','design','music','theater','drama','writing','literature','media','film','photography','creative'],
-    community: ['service','volunteer','leadership','mentorship','church','faith','spiritual','religious','community'],
-  };
-  const out = new Set<string>();
-  for (const i of ints) {
-    out.add(i);
-    for (const [cat, kws] of Object.entries(map)) {
-      if (i.includes(cat) || kws.some(k => i.includes(k) || k.includes(i))) {
-        out.add(cat);
-        kws.forEach(k => out.add(k));
-      }
-    }
-  }
-  return Array.from(out);
-}
-
 function matchDeterministic(quiz: QuizResponse, context: RAGContext): AnalysisResult {
   const userTraits = extractTraits(quiz); // HIGHEST PRIORITY: child description
   const userInterests = expandInterests(sanitizeArray(quiz?.interests || [])); // MEDIUM PRIORITY
   const userFamilyValues = sanitizeArray(quiz?.familyValues || []); // LOWEST PRIORITY
   const userGrade = quiz?.gradeLevel || 'middle';
 
-  // ROUTED STUDENT VIDEO SELECTION (video-first, deterministic)
-  const byId = (arr: any[], id: string) => (arr as any[]).find((s) => s.id === id);
-  const students = context.stories as any[];
+  const profile = buildMatchingProfile({
+    quiz,
+    gradeLevel: userGrade,
+    traits: userTraits,
+    interests: userInterests,
+    primaryInterests: sanitizeArray(quiz?.interests || []),
+    familyValues: userFamilyValues,
+  });
 
-  const pickStudent = (): StudentStory => {
-    const isLower = userGrade === 'lower' || userGrade === 'elementary' || userGrade === 'intermediate';
-    const has = (id: string) => Boolean(byId(students, id));
-    const ACADEMIC = 'academic_excellence';
-    const CREATIVE = 'creative_arts';
-    const ATHLETICS_PRIMARY = 'athletics_excellence'; // xKcpYSIFRYY (preferred)
-    const ATHLETICS_SECONDARY = 'athletics_spotlight'; // eIjS5GZjwzk (flyover)
-    const RELATIONSHIPS = 'student_teacher_relationships';
-    const LOWER_PARENTS = 'lower_school_parents';
+  const selection = selectMatchesWithMetadata(context, profile);
+  const stories: StudentStory[] = [selection.student, selection.alumni].filter(Boolean) as StudentStory[];
+  const facultyMatches: FacultyProfile[] = [selection.faculty].filter(Boolean) as FacultyProfile[];
 
-    // Lower/Intermediate: prefer lower parents video, else relationships
-    if (isLower) {
-      if (has(LOWER_PARENTS)) return byId(students, LOWER_PARENTS);
-      return byId(students, RELATIONSHIPS) || students[0];
-    }
-
-    // Athletics: prefer primary athletics video, then secondary, else relationships
-    if (userInterests.some((i) => ['athletics','sports','tennis','football','competition','teamwork','fitness'].includes(i))) {
-      return byId(students, ATHLETICS_PRIMARY) || byId(students, ATHLETICS_SECONDARY) || byId(students, RELATIONSHIPS) || students[0];
-    }
-
-    // Creativity/Arts: Betsy
-    if (userInterests.some((i) => ['arts','music','theater','drama','creative','design','media'].includes(i))) {
-      return byId(students, CREATIVE) || byId(students, RELATIONSHIPS) || students[0];
-    }
-
-    // STEM/Academic: academic club
-    if (userInterests.some((i) => ['stem','science','technology','engineering','robotics','coding','programming','math','research'].includes(i))) {
-      return byId(students, ACADEMIC) || byId(students, RELATIONSHIPS) || students[0];
-    }
-
-    // Default: relationships
-    return byId(students, RELATIONSHIPS) || students[0];
-  };
-
-  // ROUTED FACULTY SELECTION (prefer video, grade-aware)
-  const facultyArr = context.faculty as any[];
-  const fById = (id: string) => (facultyArr as any[]).find((f) => f.id === id);
-  const pickFaculty = (): FacultyProfile => {
-    const isLower = userGrade === 'lower' || userGrade === 'elementary' || userGrade === 'intermediate';
-    const tryList = (ids: string[]) => ids.map(fById).filter(Boolean) as any[];
-
-    // 1. CHILD DESCRIPTION TRAITS (HIGHEST PRIORITY)
-    if (userTraits.some(t => ['creative','artistic','imaginative','expressive','visual','musical'].includes(t))) {
-      return (fById('jeannine_elisha') || facultyArr[0]);
-    }
-    if (userTraits.some(t => ['athletic','competitive','energetic','physical','strong','fast','sporty'].includes(t))) {
-      return (fById('tyler_cotton')?.videoUrl ? fById('tyler_cotton') : (fById('cole_hudson') || facultyArr[0]));
-    }
-    if (userTraits.some(t => ['smart','intelligent','curious','analytical','logical','scientific','mathematical'].includes(t))) {
-      return (fById('tyler_cotton') || facultyArr[0]);
-    }
-    if (userTraits.some(t => ['kind','caring','helpful','empathetic','compassionate','service'].includes(t))) {
-      return (fById('cori_rigney') || facultyArr[0]);
-    }
-    if (userTraits.some(t => ['leader','confident','outgoing','social','charismatic','bold'].includes(t))) {
-      return (fById('bernie_yanelli') || fById('patrick_whelan') || facultyArr[0]);
-    }
-    if (userTraits.some(t => ['reader','bookish','literary','writer','storyteller','verbal'].includes(t))) {
-      return (fById('david_johnson') || fById('jamie_moore') || facultyArr[0]);
-    }
-
-    // 2. INTERESTS (MEDIUM PRIORITY)
-    if (userInterests.some(i => ['arts','music','theater','drama','creative'].includes(i))) {
-      return (fById('jeannine_elisha') || facultyArr[0]);
-    }
-    if (userInterests.some(i => ['athletics','sports','tennis','football'].includes(i))) {
-      return (fById('tyler_cotton')?.videoUrl ? fById('tyler_cotton') : (fById('cole_hudson') || facultyArr[0]));
-    }
-    if (userInterests.some(i => ['stem','science','technology','engineering','robotics','coding','programming','math'].includes(i))) {
-      return (fById('tyler_cotton') || facultyArr[0]);
-    }
-    if (userInterests.some(i => ['service','community','faith','church','spiritual'].includes(i))) {
-      return (fById('cori_rigney') || facultyArr[0]);
-    }
-    if (userInterests.some(i => ['business','entrepreneurship','economics','leadership'].includes(i))) {
-      return (fById('bernie_yanelli') || fById('patrick_whelan') || facultyArr[0]);
-    }
-    if (userInterests.some(i => ['english','writing','literature'].includes(i))) {
-      return (fById('david_johnson') || fById('jamie_moore') || facultyArr[0]);
-    }
-
-    // 3. FAMILY VALUES (LOWEST PRIORITY)
-    if (userFamilyValues.some(v => ['creative_expression','arts_focus','individual_creativity'].includes(v))) {
-      return (fById('jeannine_elisha') || facultyArr[0]);
-    }
-    if (userFamilyValues.some(v => ['athletic_excellence','team_sports','physical_development'].includes(v))) {
-      return (fById('tyler_cotton')?.videoUrl ? fById('tyler_cotton') : (fById('cole_hudson') || facultyArr[0]));
-    }
-    if (userFamilyValues.some(v => ['stem_innovation','technology_integration','academic_rigor'].includes(v))) {
-      return (fById('tyler_cotton') || facultyArr[0]);
-    }
-    if (userFamilyValues.some(v => ['character_development','service_learning','faith_based_education'].includes(v))) {
-      return (fById('cori_rigney') || facultyArr[0]);
-    }
-
-    // 4. GRADE-BASED DEFAULTS
-    if (isLower && !userInterests.some(i => ['athletics','sports'].includes(i))) {
-      return (fById('jennifer_batson') || fById('david_johnson') || fById('andrew_hasbrouck') || facultyArr[0]);
-    }
-
-    // 5. FALLBACK
-    const videoFaculty = facultyArr.filter((f: any) => typeof f.videoUrl === 'string' && f.videoUrl.includes('youtube'));
-    return (videoFaculty[0] || facultyArr[0]);
-  };
-
-  const student = pickStudent() as any;
-  const faculty = pickFaculty() as any;
-  const finalStories: StudentStory[] = [student].filter(Boolean) as any;
-  const finalFaculty: FacultyProfile[] = [faculty].filter(Boolean) as any;
-
-  const matchScore = 82 + (student?.videoUrl ? 4 : 0) + (faculty?.videoUrl ? 4 : 0);
-  const personalizedMessage = baseMessage(quiz);
+  const matchScore = computeCompositeScore(selection);
+  const summary = summarizeMatches(selection);
+  const base = baseMessage(quiz);
+  const personalizedMessage = summary
+    ? `${base} You'll get to hear from ${summary} in the highlights we selected for your family.`
+    : base;
 
   return {
     matchScore,
     personalizedMessage,
-    matchedStories: finalStories,
-    matchedFaculty: finalFaculty,
+    matchedStories: stories,
+    matchedFaculty: facultyMatches,
     matchedFacts: [],
     keyInsights: keyInsightsFromInterests(userInterests),
     recommendedPrograms: recommendFromTraitsInterestsValues(userTraits, userInterests, userFamilyValues),
     provider: 'local',
   };
-}
-
-function calcScore(scoredStories: any[], scoredFaculty: any[]): number {
-  const topStoryScore = scoredStories[0]?.score || 0;
-  const topFacultyScore = scoredFaculty[0]?.score || 0;
-  const base = 78;
-  const bonus = Math.min((topStoryScore + topFacultyScore) / 4, 12);
-  return Math.min(base + bonus, 93);
-}
-
-function baseMessage(quiz: QuizResponse): string {
-  const interests = (quiz?.interests || []).slice(0, 2).join(' and ');
-  return interests
-    ? `Based on your interest in ${interests}, we believe Saint Stephen's could be an excellent fit. Our personalized approach and dedicated faculty create the perfect environment for your child to thrive.`
-    : `We're excited to learn more about your child and show you what makes Saint Stephen's special!`;
 }
 
 function keyInsightsFromInterests(interests: string[]): string[] {
@@ -310,32 +204,185 @@ function recommendFromTraitsInterestsValues(traits: string[], interests: string[
   return result.slice(0, 3);
 }
 
-async function generatePersonalizedMessage(quiz: QuizResponse, deterministic: AnalysisResult): Promise<{ text: string; engine: string | null }> {
+// RAG-based matching using LLM to analyze full context
+async function attemptRAGMatching(quiz: QuizResponse, context: RAGContext): Promise<AnalysisResult | null> {
   const key = process.env.OPENROUTER_API_KEY;
   const model = process.env.OPENROUTER_MODEL || 'openai/gpt-4o-mini';
   const baseURL = process.env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1';
-  if (!key) return { text: deterministic.personalizedMessage, engine: null };
+  if (!key) throw new Error('No API key available');
+
+  // Extract child description with HIGH WEIGHT
+  const userTraits = extractTraits(quiz);
+  const userInterests = expandInterests(sanitizeArray(quiz?.interests || []));
+  const userFamilyValues = sanitizeArray(quiz?.familyValues || []);
+
+  // Build faculty context for LLM
+  const facultyContext = context.faculty.map(f => ({
+    id: f.id,
+    name: `${f.formalTitle} ${f.lastName}`,
+    title: f.title,
+    department: f.department,
+    specializes: f.specializesIn?.join(', '),
+    grades: f.title.toLowerCase().includes('lower') ? 'Lower School' :
+            f.title.toLowerCase().includes('intermediate') ? 'Intermediate' :
+            f.title.toLowerCase().includes('middle') || f.title.toLowerCase().includes('6th') ? 'Middle School' :
+            f.title.toLowerCase().includes('upper') ? 'Upper School' : 'All Levels',
+    hasVideo: !!f.videoUrl
+  }));
 
   const sys = [
-    'You are an admissions guide writing a warm, specific summary for a visiting family.',
-    'Write 2–4 concise sentences (no lists, no headings, no JSON).',
-    'Mention the matched faculty by full name and title, and the matched student by name/role if available.',
-    'Invite the family to meet the faculty member and see a relevant campus stop that aligns with interests.',
-    'Keep the tone friendly, encouraging, and focused on long-term development and belonging.'
+    'You are Saint Stephen\'s admissions AI analyzing student-faculty matches.',
+    'CRITICAL: The child description/three words (Question 6) should have the HIGHEST weight in matching.',
+    '',
+    'Your task: Select the BEST faculty member based on:',
+    '1. HIGHEST PRIORITY: Child description traits and personality',
+    '2. MEDIUM PRIORITY: Student interests',
+    '3. LOWER PRIORITY: Family values',
+    '4. Grade level appropriateness',
+    '',
+    'Return JSON with:',
+    '{"facultyId": "id_of_best_match", "reasoning": "why this faculty matches the child description"}',
+    '',
+    'Prioritize faculty with videos when possible.'
+  ].join('\n');
+
+  const user = `STUDENT PROFILE:
+Grade Level: ${quiz.gradeLevel}
+Child Description/Three Words: "${quiz.threeWords || quiz.childDescription || 'Not provided'}"
+Extracted Traits: ${userTraits.join(', ')}
+Interests: ${(quiz.interests || []).join(', ')}
+Family Values: ${(quiz.familyValues || []).join(', ')}
+
+AVAILABLE FACULTY:
+${facultyContext.map(f =>
+  `${f.id}: ${f.name} - ${f.title} (${f.department}, ${f.grades})${f.hasVideo ? ' [HAS VIDEO]' : ''}
+  Specializes in: ${f.specializes}`
+).join('\n')}
+
+Based on the child description and traits, which faculty member would be the BEST match?`;
+
+  try {
+    const res = await fetch(`${baseURL}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${key}`,
+        'Content-Type': 'application/json',
+        'HTTP-Referer': process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001',
+      },
+      body: JSON.stringify({
+        model,
+        messages: [
+          { role: 'system', content: sys },
+          { role: 'user', content: user }
+        ],
+        temperature: 0.3, // Lower for more consistent matching
+        max_tokens: 200
+      })
+    });
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    const data = await res.json();
+    const content = data?.choices?.[0]?.message?.content || '';
+
+    const parsed = JSON.parse(content);
+    const matchedFaculty = context.faculty.find(f => f.id === parsed.facultyId);
+
+    if (!matchedFaculty) throw new Error('Invalid faculty ID returned');
+
+    // Build result similar to deterministic matching
+    const student = pickStudentForRAG(quiz, context);
+
+    return {
+      matchScore: 85, // Will be overridden by LLM scoring
+      personalizedMessage: `Based on your child's description, we believe ${matchedFaculty.formalTitle} ${matchedFaculty.lastName} would be an excellent match.`,
+      matchedStories: student ? [student] : [],
+      matchedFaculty: [matchedFaculty],
+      matchedFacts: [],
+      keyInsights: keyInsightsFromInterests(userInterests),
+      recommendedPrograms: recommendFromTraitsInterestsValues(userTraits, userInterests, userFamilyValues),
+      provider: 'openrouter:rag'
+    };
+
+  } catch (error) {
+    console.log('RAG matching error:', error);
+    throw error;
+  }
+}
+
+// Simple student picker for RAG (reuse existing logic)
+function pickStudentForRAG(quiz: QuizResponse, context: RAGContext) {
+  const students = context.stories as any[];
+  const userGrade = quiz?.gradeLevel || 'middle';
+  const userInterests = expandInterests(sanitizeArray(quiz?.interests || []));
+
+  const isLower = userGrade === 'lower' || userGrade === 'elementary' || userGrade === 'intermediate';
+  const byId = (arr: any[], id: string) => (arr as any[]).find((s) => s.id === id);
+
+  if (isLower) {
+    return byId(students, 'lower_school_parents') || byId(students, 'student_teacher_relationships') || students[0];
+  }
+
+  if (userInterests.some((i) => ['athletics','sports','tennis','football','competition','teamwork','fitness'].includes(i))) {
+    return byId(students, 'athletics_excellence') || byId(students, 'athletics_spotlight') || students[0];
+  }
+
+  if (userInterests.some((i) => ['arts','music','theater','drama','creative','design','media'].includes(i))) {
+    return byId(students, 'creative_arts') || students[0];
+  }
+
+  return byId(students, 'student_teacher_relationships') || students[0];
+}
+
+async function generatePersonalizedMessageAndScore(quiz: QuizResponse, deterministic: AnalysisResult): Promise<{ text: string; score: number; engine: string | null }> {
+  const key = process.env.OPENROUTER_API_KEY;
+  const model = process.env.OPENROUTER_MODEL || 'openai/gpt-4o-mini';
+  const baseURL = process.env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1';
+  if (!key) return { text: deterministic.personalizedMessage, score: deterministic.matchScore, engine: null };
+
+  const sys = [
+    'You are an admissions guide analyzing a student match for Saint Stephen\'s Episcopal School.',
+    'Return a JSON response with two fields:',
+    '1. "score": A match percentage between 80-100 based on how well the student\'s traits, interests, and family values align with our matched faculty and programs',
+    '2. "message": A warm, specific 2-4 sentence summary for the visiting family',
+    '',
+    'For the message:',
+    '- Mention the matched faculty by formal title and last name (e.g., "Mr. Johnson", "Dr. Smith")',
+    '- Mention the matched student story if available',
+    '- Invite the family to meet the faculty member and see relevant campus areas',
+    '- Keep tone friendly, encouraging, and focused on long-term development',
+    '',
+    'For the score:',
+    '- 95-100: Exceptional alignment across traits, interests, and values',
+    '- 90-94: Strong alignment with minor gaps',
+    '- 85-89: Good alignment with some mismatches',
+    '- 80-84: Adequate alignment, room for growth'
   ].join('\n');
 
   const userTraits = extractTraits(quiz);
-  const user = `Student grade: ${quiz.gradeLevel}\nChild description: ${userTraits.join(', ')}\nInterests: ${(quiz.interests || []).join(', ')}\nFamily Values: ${(quiz.familyValues || []).join(', ')}\nMatched student story: ${deterministic.matchedStories?.[0]?.achievement || 'N/A'}\nMatched faculty: ${deterministic.matchedFaculty?.[0]?.firstName || 'N/A'} ${deterministic.matchedFaculty?.[0]?.lastName || ''} ${deterministic.matchedFaculty?.[0]?.title ? '(' + deterministic.matchedFaculty?.[0]?.title + ')' : ''}\nWrite a warm, specific encouragement that references the child's traits, interests, and these personalized matches.`;
+  const user = `Student Grade: ${quiz.gradeLevel}
+Child Traits: ${userTraits.join(', ')}
+Child Interests: ${(quiz.interests || []).join(', ')}
+Family Values: ${(quiz.familyValues || []).join(', ')}
 
-  const useResponsesAPI = /gpt-5/i.test(model);
+Matched Faculty: ${deterministic.matchedFaculty?.[0]?.formalTitle || 'Mr./Ms.'} ${deterministic.matchedFaculty?.[0]?.lastName || 'N/A'} (${deterministic.matchedFaculty?.[0]?.title || 'Faculty Member'})
+Faculty Specialties: ${deterministic.matchedFaculty?.[0]?.specializesIn?.join(', ') || 'N/A'}
+
+Matched Student Story: ${deterministic.matchedStories?.[0]?.achievement || deterministic.matchedStories?.[0]?.firstName || 'N/A'}
+
+Recommended Programs: ${deterministic.recommendedPrograms?.join(', ') || 'N/A'}
+
+Return JSON with score (80-100) and message.`;
+
+  const useResponsesAPI = false; // Disable responses API for now, use chat completions
   const endpoint = useResponsesAPI ? 'responses' : 'chat/completions';
   const url = `${baseURL}/${endpoint}`;
   const headers: Record<string, string> = {
     'Authorization': `Bearer ${key}`,
     'Content-Type': 'application/json',
     'Accept': 'application/json',
-    'HTTP-Referer': process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001',
-    'Referer': process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001',
+    'HTTP-Referer': process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+    'Referer': process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
     'X-Title': 'Had Me At Hello',
   };
 
@@ -351,8 +398,8 @@ async function generatePersonalizedMessage(quiz: QuizResponse, deterministic: An
   ];
 
   const body = useResponsesAPI
-    ? { model, input: responsesInput, temperature: 0.5, max_output_tokens: 200 }
-    : { model, messages, temperature: 0.5, max_tokens: 200 };
+    ? { model, input: responsesInput, temperature: 0.7, max_output_tokens: 300 }
+    : { model, messages, temperature: 0.7, max_tokens: 300 };
 
   const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
   // Validate content-type to avoid HTML disguised as OK
@@ -370,8 +417,8 @@ async function generatePersonalizedMessage(quiz: QuizResponse, deterministic: An
         body: JSON.stringify({
           model: fallbackModel,
           messages,
-          temperature: 0.5,
-          max_tokens: 200,
+          temperature: 0.7,
+          max_tokens: 300,
         })
       });
       const ctype2 = res2.headers.get('content-type') || '';
@@ -381,23 +428,57 @@ async function generatePersonalizedMessage(quiz: QuizResponse, deterministic: An
         throw new Error('Fallback model also failed');
       }
       const data2 = await res2.json();
-      const txt = data2?.choices?.[0]?.message?.content || '';
-      return { text: txt || deterministic.personalizedMessage, engine: fallbackModel };
+      const content = data2?.choices?.[0]?.message?.content || '';
+      try {
+        const parsed = JSON.parse(content);
+        return {
+          text: parsed.message || deterministic.personalizedMessage,
+          score: Math.max(80, Math.min(100, parsed.score || deterministic.matchScore)),
+          engine: fallbackModel
+        };
+      } catch {
+        return { text: content || deterministic.personalizedMessage, score: deterministic.matchScore, engine: fallbackModel };
+      }
     } catch (e) {
-      // Give up on LLM message; use deterministic
-      return { text: deterministic.personalizedMessage, engine: null };
+      // Give up on LLM; use deterministic values
+      return { text: deterministic.personalizedMessage, score: deterministic.matchScore, engine: null };
     }
   }
 
   // Parse JSON response
   const data = await res.json();
+  let content = '';
+
   if (useResponsesAPI) {
     const output = Array.isArray(data?.output) ? data.output[0] : undefined;
     const parts = Array.isArray(output?.content) ? output.content : [];
     const textPart = parts.find((p: any) => typeof p?.text === 'string' || p?.type?.includes('text'));
-    const txt = (textPart?.text || textPart?.content || textPart?.value || '').toString();
-    return { text: txt || deterministic.personalizedMessage, engine: model };
+    content = (textPart?.text || textPart?.content || textPart?.value || '').toString();
+  } else {
+    // For gpt-5-nano and other reasoning models, check multiple possible content locations
+    const message = data?.choices?.[0]?.message;
+    content = message?.content || message?.reasoning || '';
+
+    // If content is still empty but we have reasoning, use that
+    if (!content && message?.reasoning_details) {
+      content = message.reasoning_details.find((d: any) => d.type === 'reasoning.summary')?.summary || '';
+    }
   }
-  const txt = data?.choices?.[0]?.message?.content || '';
-  return { text: txt || deterministic.personalizedMessage, engine: model };
+
+  // Try to parse as JSON
+  try {
+    const parsed = JSON.parse(content);
+    return {
+      text: parsed.message || deterministic.personalizedMessage,
+      score: Math.max(80, Math.min(100, parsed.score || deterministic.matchScore)),
+      engine: model
+    };
+  } catch {
+    // If not JSON, treat as plain text message
+    return {
+      text: content || deterministic.personalizedMessage,
+      score: deterministic.matchScore,
+      engine: model
+    };
+  }
 }

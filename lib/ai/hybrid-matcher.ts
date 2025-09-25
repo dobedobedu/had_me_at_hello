@@ -1,0 +1,373 @@
+import { QuizResponse, AnalysisResult, StudentStory, FacultyProfile } from './types';
+import { SemanticSearchService, SemanticResults } from './semantic-search';
+import { createLLMSelectionEngine, LLMSelectionResult } from './llm-selection-engine';
+import { buildMatchingProfile } from './deterministic-matcher';
+import { extractTraits, expandInterests } from './matcher-utils';
+import { AnalyticsLogger } from './analytics-logger';
+
+interface HybridMatchResult extends AnalysisResult {
+  semanticResults?: SemanticResults;
+  llmSelection?: LLMSelectionResult;
+  fallbackUsed?: boolean;
+  performanceMetrics?: {
+    semanticSearchMs: number;
+    llmSelectionMs: number;
+    totalMs: number;
+  };
+}
+
+interface HybridMatchOptions {
+  useSemanticSearch?: boolean;
+  useLLMSelection?: boolean;
+  semanticOptions?: {
+    studentsCount?: number;
+    facultyCount?: number;
+    alumniCount?: number;
+    threshold?: number;
+  };
+}
+
+class HybridMatchingService {
+  private static instance: HybridMatchingService;
+  private semanticService: SemanticSearchService;
+  private llmEngine: ReturnType<typeof createLLMSelectionEngine>;
+  private analytics: AnalyticsLogger;
+
+  private constructor() {
+    this.semanticService = SemanticSearchService.getInstance();
+    this.llmEngine = createLLMSelectionEngine();
+    this.analytics = AnalyticsLogger.getInstance();
+  }
+
+  static getInstance(): HybridMatchingService {
+    if (!HybridMatchingService.instance) {
+      HybridMatchingService.instance = new HybridMatchingService();
+    }
+    return HybridMatchingService.instance;
+  }
+
+  /**
+   * Main hybrid matching method
+   */
+  async match(
+    quiz: QuizResponse,
+    context: any,
+    options: HybridMatchOptions = {}
+  ): Promise<HybridMatchResult> {
+    const sessionId = this.analytics.generateSessionId();
+    const startTime = Date.now();
+    const {
+      useSemanticSearch = true,
+      useLLMSelection = true,
+      semanticOptions = {}
+    } = options;
+
+    console.log(`🔍 Starting hybrid matching [${sessionId}]...`);
+    console.log('📋 Quiz profile:', {
+      childDescription: quiz.threeWords || quiz.childDescription,
+      interests: quiz.interests,
+      gradeLevel: quiz.gradeLevel,
+      timeline: quiz.timeline
+    });
+
+    let result: HybridMatchResult;
+    let semanticResults: SemanticResults | undefined;
+    let llmSelection: LLMSelectionResult | undefined;
+
+    try {
+      if (useSemanticSearch && useLLMSelection) {
+        const matchResult = await this.semanticLLMMatch(quiz, context, semanticOptions);
+        result = matchResult;
+        semanticResults = matchResult.semanticResults;
+        llmSelection = matchResult.llmSelection;
+      } else if (useSemanticSearch) {
+        const matchResult = await this.semanticDeterministicMatch(quiz, context, semanticOptions);
+        result = matchResult;
+        semanticResults = matchResult.semanticResults;
+      } else {
+        result = await this.deterministicMatch(quiz, context);
+      }
+
+    } catch (error) {
+      console.warn(`⚠️ Hybrid matching failed [${sessionId}], falling back to deterministic:`, error);
+      result = await this.deterministicFallback(quiz, context, {
+        fallbackUsed: true,
+        errorEncountered: true
+      });
+    }
+
+    // Log analytics
+    const analytics = this.analytics.buildAnalytics(
+      sessionId,
+      quiz,
+      semanticResults,
+      llmSelection,
+      result,
+      result.performanceMetrics
+    );
+    this.analytics.logMatching(analytics);
+
+    return result;
+  }
+
+  /**
+   * Semantic search + LLM selection (full hybrid)
+   */
+  private async semanticLLMMatch(
+    quiz: QuizResponse,
+    context: any,
+    semanticOptions: any
+  ): Promise<HybridMatchResult> {
+    const totalStartTime = Date.now();
+
+    // Step 1: Semantic search
+    console.log('🔍 Performing semantic search...');
+    const semanticStartTime = Date.now();
+    const semanticResults = await this.semanticService.searchSemantic(quiz, semanticOptions);
+    const semanticSearchMs = Date.now() - semanticStartTime;
+
+    console.log('📊 Semantic search results:', {
+      students: semanticResults.students.length,
+      faculty: semanticResults.faculty.length,
+      alumni: semanticResults.alumni.length,
+      processingMs: semanticSearchMs
+    });
+
+    // Step 2: LLM selection
+    console.log('🧠 Performing LLM selection...');
+    const llmStartTime = Date.now();
+    const llmSelection = await this.llmEngine.selectOptimalMatches(quiz, semanticResults);
+    const llmSelectionMs = Date.now() - llmStartTime;
+
+    console.log('🎯 LLM selections:', {
+      student: llmSelection.selectedStudent,
+      faculty: llmSelection.selectedFaculty,
+      alumni: llmSelection.selectedAlumni,
+      score: llmSelection.matchScore,
+      processingMs: llmSelectionMs
+    });
+
+    // Step 3: Build final result
+    const result = await this.buildHybridResult(quiz, semanticResults, llmSelection);
+    const totalMs = Date.now() - totalStartTime;
+
+    return {
+      ...result,
+      semanticResults,
+      llmSelection,
+      performanceMetrics: {
+        semanticSearchMs,
+        llmSelectionMs,
+        totalMs
+      },
+      provider: 'hybrid:semantic+llm'
+    };
+  }
+
+  /**
+   * Semantic search + deterministic selection
+   */
+  private async semanticDeterministicMatch(
+    quiz: QuizResponse,
+    context: any,
+    semanticOptions: any
+  ): Promise<HybridMatchResult> {
+    const startTime = Date.now();
+
+    // Semantic search
+    const semanticResults = await this.semanticService.searchSemantic(quiz, semanticOptions);
+
+    // Apply deterministic scoring to semantic candidates
+    const profile = buildMatchingProfile({
+      quiz,
+      gradeLevel: quiz.gradeLevel || 'middle',
+      traits: extractTraits(quiz),
+      interests: expandInterests(quiz.interests || []),
+      primaryInterests: quiz.interests || [],
+      familyValues: quiz.familyValues || []
+    });
+
+    // Score and select best from semantic candidates
+    const selectedStudent = semanticResults.students[0]?.metadata || null;
+    const selectedFaculty = semanticResults.faculty[0]?.metadata || null;
+    const selectedAlumni = semanticResults.alumni[0]?.metadata || null;
+
+    const totalMs = Date.now() - startTime;
+
+    return {
+      matchScore: 88, // Base score for semantic matching
+      personalizedMessage: this.generateBasicMessage(quiz, selectedStudent, selectedFaculty),
+      matchedStories: [selectedStudent, selectedAlumni].filter(Boolean),
+      matchedFaculty: [selectedFaculty].filter(Boolean),
+      keyInsights: this.generateKeyInsights(quiz),
+      recommendedPrograms: this.recommendPrograms(quiz),
+      semanticResults,
+      performanceMetrics: {
+        semanticSearchMs: semanticResults.processingTimeMs,
+        llmSelectionMs: 0,
+        totalMs
+      },
+      provider: 'hybrid:semantic+deterministic'
+    };
+  }
+
+  /**
+   * Pure deterministic matching (fallback)
+   */
+  private async deterministicMatch(quiz: QuizResponse, context: any): Promise<HybridMatchResult> {
+    // Use local implementation to avoid circular imports
+    return this.localDeterministicMatch(quiz, context);
+  }
+
+  /**
+   * Local deterministic matching implementation
+   */
+  private async localDeterministicMatch(quiz: QuizResponse, context: any): Promise<HybridMatchResult> {
+    const userTraits = extractTraits(quiz);
+    const userInterests = expandInterests(quiz?.interests || []);
+    const userFamilyValues = quiz?.familyValues || [];
+
+    const profile = buildMatchingProfile({
+      quiz,
+      gradeLevel: quiz?.gradeLevel || 'middle',
+      traits: userTraits,
+      interests: userInterests,
+      primaryInterests: quiz?.interests || [],
+      familyValues: userFamilyValues,
+    });
+
+    // Simple selection from context
+    const stories = context.stories || [];
+    const faculty = context.faculty || [];
+
+    // Get first suitable matches (simplified for fallback)
+    const currentStudents = stories.filter((s: any) => !s.classYear);
+    const alumni = stories.filter((s: any) => s.classYear);
+
+    return {
+      matchScore: 85,
+      personalizedMessage: this.generateBasicMessage(quiz, currentStudents[0], faculty[0]),
+      matchedStories: [currentStudents[0], alumni[0]].filter(Boolean),
+      matchedFaculty: [faculty[0]].filter(Boolean),
+      keyInsights: this.generateKeyInsights(quiz),
+      recommendedPrograms: this.recommendPrograms(quiz),
+      provider: 'deterministic:local'
+    };
+  }
+
+  /**
+   * Build final result from semantic + LLM selection
+   */
+  private async buildHybridResult(
+    quiz: QuizResponse,
+    semanticResults: SemanticResults,
+    llmSelection: LLMSelectionResult
+  ): Promise<Omit<HybridMatchResult, 'semanticResults' | 'llmSelection' | 'performanceMetrics' | 'provider'>> {
+    // Find selected items from semantic results
+    const selectedStudent = semanticResults.students.find(s => s.id === llmSelection.selectedStudent)?.metadata;
+    const selectedFaculty = semanticResults.faculty.find(f => f.id === llmSelection.selectedFaculty)?.metadata;
+    const selectedAlumni = llmSelection.selectedAlumni
+      ? semanticResults.alumni.find(a => a.id === llmSelection.selectedAlumni)?.metadata
+      : null;
+
+    return {
+      matchScore: llmSelection.matchScore,
+      personalizedMessage: llmSelection.personalizedMessage,
+      matchedStories: [selectedStudent, selectedAlumni].filter(Boolean) as StudentStory[],
+      matchedFaculty: [selectedFaculty].filter(Boolean) as FacultyProfile[],
+      keyInsights: this.generateKeyInsights(quiz),
+      recommendedPrograms: this.recommendPrograms(quiz),
+      processingTime: llmSelection.processingTimeMs
+    };
+  }
+
+  /**
+   * Deterministic fallback with error context
+   */
+  private async deterministicFallback(
+    quiz: QuizResponse,
+    context: any,
+    metadata: any = {}
+  ): Promise<HybridMatchResult> {
+    const fallbackResult = await this.deterministicMatch(quiz, context);
+    return {
+      ...fallbackResult,
+      ...metadata,
+      provider: 'deterministic:fallback'
+    };
+  }
+
+  /**
+   * Generate basic personalized message
+   */
+  private generateBasicMessage(quiz: QuizResponse, student: any, faculty: any): string {
+    const childDesc = quiz.threeWords || quiz.childDescription || 'your child';
+    const studentName = student?.firstName || 'our students';
+    const facultyName = faculty ? `${faculty.formalTitle || 'Mr./Ms.'} ${faculty.lastName || faculty.firstName}` : 'our faculty';
+
+    return `Based on "${childDesc}", we think ${studentName} and ${facultyName} would be wonderful connections for your family to explore at Saint Stephen's. We'd love to arrange a visit where you can meet them and see our campus firsthand.`;
+  }
+
+  /**
+   * Generate key insights based on quiz
+   */
+  private generateKeyInsights(quiz: QuizResponse): string[] {
+    const base = ['Academic Excellence', 'Character Development', 'Individual Attention'];
+    const interests = quiz.interests || [];
+
+    if (interests.some(i => ['arts', 'creativity', 'music', 'theater'].includes(i))) {
+      base.push('Creative Expression');
+    }
+    if (interests.some(i => ['athletics', 'sports', 'competition'].includes(i))) {
+      base.push('Athletic Development');
+    }
+    if (interests.some(i => ['science', 'technology', 'stem', 'engineering'].includes(i))) {
+      base.push('STEM Innovation');
+    }
+    if (interests.some(i => ['community', 'service', 'leadership'].includes(i))) {
+      base.push('Leadership & Service');
+    }
+
+    return base.slice(0, 4); // Limit to 4 insights
+  }
+
+  /**
+   * Recommend programs based on quiz
+   */
+  private recommendPrograms(quiz: QuizResponse): string[] {
+    const programs = new Set(['College Preparatory Program']);
+    const interests = quiz.interests || [];
+    const traits = extractTraits(quiz);
+
+    if (interests.some(i => ['athletics', 'sports'].includes(i)) ||
+        traits.some(t => ['athletic', 'competitive'].includes(t))) {
+      programs.add('Athletics Program');
+    }
+    if (interests.some(i => ['arts', 'creativity', 'music', 'theater'].includes(i)) ||
+        traits.some(t => ['creative', 'artistic'].includes(t))) {
+      programs.add('Fine Arts Program');
+    }
+    if (interests.some(i => ['science', 'technology', 'stem'].includes(i)) ||
+        traits.some(t => ['analytical', 'curious', 'smart'].includes(t))) {
+      programs.add('STEAM Program');
+    }
+    if (interests.some(i => ['community', 'service', 'leadership'].includes(i)) ||
+        traits.some(t => ['kind', 'helpful', 'leader'].includes(t))) {
+      programs.add('Leadership & Service');
+    }
+
+    return Array.from(programs).slice(0, 3);
+  }
+
+  /**
+   * Get service statistics for debugging
+   */
+  async getStats() {
+    return {
+      semantic: this.semanticService.getCacheStats(),
+      timestamp: Date.now()
+    };
+  }
+}
+
+export { HybridMatchingService, type HybridMatchResult, type HybridMatchOptions };

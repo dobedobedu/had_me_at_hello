@@ -86,7 +86,7 @@ const VALUES_BY_GRADE: Record<string, Array<{
       description: 'Nurturing environment for young learners',
       icon: Shield,
       metric: '14-18',
-      metricLabel: 'Students Per Class',
+      metricLabel: 'Average Class Size',
       details: [
         'Safe, caring community environment',
         'Parents encouraged to be on campus',

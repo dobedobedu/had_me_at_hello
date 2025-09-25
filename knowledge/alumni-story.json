@@ -171,6 +171,41 @@
       "achievement": "Running Back at Cincinnati Bengals",
       "quote": "My leadership skills, work ethic, my whole mindset started at SSES.",
       "gradeLevel": "high"
+    },
+    {
+      "id": "dr_hamilton_graduate",
+      "firstName": "Dr. Hamilton",
+      "lastName": "Hamilton",
+      "classYear": "Unknown",
+      "currentRole": "Medical Doctor",
+      "photoUrl": "https://img.youtube.com/vi/LoDBAZi8saM/maxresdefault.jpg",
+      "videoUrl": "https://www.youtube.com/watch?v=LoDBAZi8saM",
+      "interests": [
+        "medicine",
+        "healthcare",
+        "science",
+        "academics",
+        "STEM",
+        "college_prep",
+        "research"
+      ],
+      "storyTldr": "Saint Stephen's graduate who became a medical doctor",
+      "achievement": "Successful medical doctor serving the community",
+      "quote": "Saint Stephen's provided the academic foundation and character development that prepared me for medical school and beyond",
+      "gradeLevel": "high",
+      "interestKeywords": [
+        "pre-med preparation",
+        "critical thinking foundation",
+        "medical school readiness",
+        "residency discipline"
+      ],
+      "personaDescriptors": [
+        "mission-driven physician",
+        "disciplined scholar"
+      ],
+      "outcomeHighlights": [
+        "Credits SSES with the discipline and curiosity that carried through medical training"
+      ]
     }
   ]
 }

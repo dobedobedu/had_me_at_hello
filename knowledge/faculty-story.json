@@ -5,6 +5,7 @@
       "firstName": "Peter",
       "lastName": "Kraft",
       "title": "Head of School",
+      "formalTitle": "Mr.",
       "photoUrl": "https://www.saintstephens.org/images/directory/pkraft.jpg",
       "specializesIn": ["leadership", "education", "administration", "strategy"],
       "whyStudentsLoveThem": "Leads with vision and strategic thinking",
@@ -17,19 +18,35 @@
       "id": "jeannine_elisha",
       "firstName": "Jeannine",
       "lastName": "Elisha",
-      "title": "Drama Teacher",
-      "photoUrl": "https://img.youtube.com/vi/UivFBuKEJnM/maxresdefault.jpg",
-      "videoUrl": "https://youtu.be/UivFBuKEJnM",
-      "specializesIn": ["theater", "drama", "performance", "arts"],
-      "whyStudentsLoveThem": "Builds confidence and craft on stage through supportive direction",
+      "title": "Arts Teacher (All Levels)",
+      "formalTitle": "Ms.",
+      "photoUrl": "https://img.youtube.com/vi/N4xQWxJGblA/maxresdefault.jpg",
+      "videoUrl": "https://youtu.be/N4xQWxJGblA",
+      "specializesIn": ["theater", "drama", "performance", "arts", "all_levels", "creative_expression"],
+      "whyStudentsLoveThem": "Builds confidence and craft on stage through supportive direction at every level",
       "department": "Arts",
-      "yearsAtSSES": 7
+      "yearsAtSSES": 7,
+      "gradeBands": ["lower", "intermediate", "middle", "upper"],
+      "interestKeywords": [
+        "school theater productions",
+        "vocal performance coaching",
+        "visual and performing arts integration",
+        "confidence-building workshops"
+      ],
+      "personaDescriptors": [
+        "supportive director",
+        "confidence builder"
+      ],
+      "outcomeHighlights": [
+        "Students headline mainstage performances across all divisions"
+      ]
     },
     {
       "id": "anna_conn",
       "firstName": "Anna",
       "lastName": "Conn",
       "title": "Upper School Director",
+      "formalTitle": "Mrs.",
       "photoUrl": "https://www.saintstephens.org/images/directory/aconn.jpg",
       "specializesIn": ["college_prep", "academic_excellence", "student_leadership"],
       "whyStudentsLoveThem": "Knows every student by name and helps them reach their potential",
@@ -42,6 +59,7 @@
       "firstName": "Joel",
       "lastName": "Erby",
       "title": "Middle School Director",
+      "formalTitle": "Mr.",
       "photoUrl": "https://www.saintstephens.org/images/directory/jerby.jpg",
       "specializesIn": ["adolescent_development", "social_emotional", "leadership"],
       "whyStudentsLoveThem": "Makes middle school a time of growth, not just survival",
@@ -54,6 +72,7 @@
       "firstName": "Andrew",
       "lastName": "Hasbrouck",
       "title": "Director of Lower and Intermediate Schools",
+      "formalTitle": "Mr.",
       "photoUrl": "https://www.saintstephens.org/images/directory/ahasbrouck.jpg",
       "specializesIn": ["early_childhood", "literacy", "creative_learning"],
       "whyStudentsLoveThem": "Nurtures young learners with warmth and high expectations",
@@ -66,18 +85,34 @@
       "firstName": "Cole",
       "lastName": "Hudson",
       "title": "Athletic Director",
+      "formalTitle": "Mr.",
       "photoUrl": "https://www.saintstephens.org/images/directory/chudson.jpg",
       "specializesIn": ["athletics", "character_building", "competition", "leadership"],
       "whyStudentsLoveThem": "Builds champions on and off the field",
       "department": "Athletics",
       "yearsAtSSES": 3,
-      "isAdministrator": true
+      "isAdministrator": true,
+      "gradeBands": ["middle", "upper"],
+      "interestKeywords": [
+        "falcon athletics culture",
+        "no-cut middle school teams",
+        "state championship preparation",
+        "multi-sport development"
+      ],
+      "personaDescriptors": [
+        "competitive mentor",
+        "team culture architect"
+      ],
+      "outcomeHighlights": [
+        "Guides Falcons to state titles while reinforcing scholar-athlete balance"
+      ]
     },
     {
       "id": "jamie_moore",
       "firstName": "Jamie",
       "lastName": "Moore",
       "title": "Upper School Assistant Director, Chair of English Department",
+      "formalTitle": "Mr.",
       "photoUrl": "https://www.saintstephens.org/images/directory/jmoore.jpg",
       "specializesIn": ["english", "literature", "writing", "leadership"],
       "whyStudentsLoveThem": "Leads the English department with passion and expertise",
@@ -90,6 +125,7 @@
       "firstName": "Cori",
       "lastName": "Rigney",
       "title": "Chaplain",
+      "formalTitle": "Rev.",
       "photoUrl": "https://www.saintstephens.org/images/directory/crigney.jpg",
       "specializesIn": ["spiritual_life", "character_development", "community", "service"],
       "whyStudentsLoveThem": "Nurtures the spiritual and ethical development of our community",
@@ -102,6 +138,7 @@
       "firstName": "Danielle",
       "lastName": "Perkins",
       "title": "Director of Student Support & Wellness",
+      "formalTitle": "Ms.",
       "photoUrl": "https://www.saintstephens.org/images/directory/dperkins.jpg",
       "specializesIn": ["student_wellness", "support_services", "mental_health", "counseling"],
       "whyStudentsLoveThem": "Ensures every student feels supported and valued",
@@ -114,6 +151,7 @@
       "firstName": "Christina",
       "lastName": "Pommer",
       "title": "Director of Curriculum and Research",
+      "formalTitle": "Ms.",
       "photoUrl": "https://www.saintstephens.org/images/directory/cpommer.jpg",
       "specializesIn": ["curriculum_development", "research", "academic_innovation", "pedagogy"],
       "whyStudentsLoveThem": "Ensures our curriculum stays cutting-edge and research-based",
@@ -126,6 +164,7 @@
       "firstName": "Trisha",
       "lastName": "Hasbrouck",
       "title": "Director of College Counseling",
+      "formalTitle": "Mrs.",
       "photoUrl": "https://www.saintstephens.org/images/directory/thasbrouck.jpg",
       "specializesIn": ["college_admissions", "scholarships", "career_planning", "mentorship"],
       "whyStudentsLoveThem": "100% college acceptance rate speaks for itself",
@@ -137,71 +176,134 @@
       "id": "tyler_cotton",
       "firstName": "Tyler",
       "lastName": "Cotton",
-      "title": "STEAM, Math & Engineering Teacher",
+      "title": "Upper School Math & Engineering Teacher",
+      "formalTitle": "Mr.",
       "photoUrl": "https://img.youtube.com/vi/qydHeyOCVUo/maxresdefault.jpg",
       "videoUrl": "https://www.youtube.com/watch?v=qydHeyOCVUo",
-      "specializesIn": ["STEAM", "mathematics", "engineering", "problem_solving"],
+      "specializesIn": ["mathematics", "engineering", "problem_solving", "upper_school", "STEAM"],
       "whyStudentsLoveThem": "Makes math come alive with real-world applications and enthusiasm",
-      "department": "Science & Mathematics",
-      "yearsAtSSES": 7
+      "department": "Mathematics",
+      "yearsAtSSES": 7,
+      "gradeBands": ["upper"],
+      "interestKeywords": [
+        "engineering design studio",
+        "robotics team mentoring",
+        "ap calculus projects",
+        "3d printing lab",
+        "real-world math applications"
+      ],
+      "personaDescriptors": [
+        "hands-on mentor",
+        "innovative problem solver"
+      ],
+      "outcomeHighlights": [
+        "Students qualify for regional STEM and robotics competitions"
+      ]
     },
     {
       "id": "patrick_whelan",
       "firstName": "Patrick",
       "lastName": "Whelan",
-      "title": "History Teacher - Teacher of the Year",
+      "title": "Upper School Social Studies Teacher - Teacher of the Year",
+      "formalTitle": "Mr.",
       "photoUrl": "https://img.youtube.com/vi/v0O8tugOOLQ/maxresdefault.jpg",
       "videoUrl": "https://youtu.be/v0O8tugOOLQ",
-      "specializesIn": ["history", "government", "social_studies", "critical_thinking"],
-      "whyStudentsLoveThem": "Teacher of the Year who brings history to life through engaging discussions",
+      "specializesIn": ["history", "government", "social_studies", "critical_thinking", "upper_school"],
+      "whyStudentsLoveThem": "PRIORITY: Teacher of the Year who brings history to life through engaging discussions",
       "department": "Social Studies",
       "yearsAtSSES": 10,
-      "awards": ["Teacher of the Year"]
+      "awards": ["Teacher of the Year"],
+      "gradeBands": ["upper"],
+      "interestKeywords": [
+        "advanced placement history seminars",
+        "mock trial coaching",
+        "civic leadership projects",
+        "debate and discourse"
+      ],
+      "personaDescriptors": [
+        "story-driven historian",
+        "engaging discussion leader"
+      ],
+      "outcomeHighlights": [
+        "Recognized as Florida Teacher of the Year for inspiring civic scholarship"
+      ]
     },
     {
       "id": "david_johnson",
       "firstName": "David",
       "lastName": "Johnson",
-      "title": "English Teacher",
+      "title": "Upper School English Teacher",
+      "formalTitle": "Mr.",
       "photoUrl": "https://img.youtube.com/vi/M4uIGP9yZqQ/maxresdefault.jpg",
       "videoUrl": "https://www.youtube.com/watch?v=M4uIGP9yZqQ",
-      "specializesIn": ["literature", "writing", "creative_expression", "communication"],
+      "specializesIn": ["literature", "writing", "creative_expression", "communication", "upper_school"],
       "whyStudentsLoveThem": "Inspires students to find their voice through creative writing",
       "department": "English",
-      "yearsAtSSES": 12
+      "yearsAtSSES": 12,
+      "gradeBands": ["upper"],
+      "interestKeywords": [
+        "creative writing workshops",
+        "literary magazine coaching",
+        "spoken word performances",
+        "ap literature analysis"
+      ],
+      "personaDescriptors": [
+        "storycraft mentor",
+        "voice cultivator"
+      ],
+      "outcomeHighlights": [
+        "Students earn recognition in regional writing competitions"
+      ]
     },
     {
       "id": "jennifer_batson",
       "firstName": "Jennifer",
       "lastName": "Batson",
-      "title": "Reading & Foundational Skills Teacher",
-      "photoUrl": "https://img.youtube.com/vi/TTvbZyWYd2U/maxresdefault.jpg",
-      "videoUrl": "https://www.youtube.com/watch?v=TTvbZyWYd2U",
-      "specializesIn": ["reading", "foundational_skills", "literacy", "comprehension"],
+      "title": "Middle School Reading Teacher",
+      "formalTitle": "Mrs.",
+      "photoUrl": "https://img.youtube.com/vi/iOQ2DeXZDgM/maxresdefault.jpg",
+      "videoUrl": "https://youtu.be/iOQ2DeXZDgM",
+      "specializesIn": ["reading", "foundational_skills", "literacy", "comprehension", "middle_school"],
       "whyStudentsLoveThem": "Helps every student unlock the joy of reading at their own pace",
       "department": "English",
-      "yearsAtSSES": 15
+      "yearsAtSSES": 15,
+      "gradeBands": ["middle"],
+      "interestKeywords": [
+        "small group literacy workshops",
+        "individualized reading plans",
+        "middle school book clubs",
+        "writing and comprehension support"
+      ],
+      "personaDescriptors": [
+        "patient encourager",
+        "literacy coach"
+      ],
+      "outcomeHighlights": [
+        "Guides middle schoolers to rapid growth in reading confidence"
+      ]
     },
     {
       "id": "bernie_yanelli",
       "firstName": "Bernie",
       "lastName": "Yanelli",
-      "title": "Economics & Entrepreneurship Teacher",
-      "photoUrl": "https://img.youtube.com/vi/0_tBfPeDy2k/maxresdefault.jpg",
-      "videoUrl": "https://www.youtube.com/watch?v=0_tBfPeDy2k",
-      "specializesIn": ["economics", "entrepreneurship", "business", "innovation"],
+      "title": "Upper School History & Economics Teacher",
+      "formalTitle": "Mr.",
+      "photoUrl": "https://img.youtube.com/vi/F8BBpOKqnG4/maxresdefault.jpg",
+      "videoUrl": "https://youtu.be/F8BBpOKqnG4",
+      "specializesIn": ["history", "economics", "entrepreneurship", "business", "upper_school"],
       "whyStudentsLoveThem": "Inspires future entrepreneurs and business leaders through real-world economics",
-      "department": "Business",
+      "department": "Social Studies",
       "yearsAtSSES": 20
     },
     {
       "id": "chris_valcarcel",
       "firstName": "Chris",
       "lastName": "Valcarcel",
-      "title": "Intermediate School Social Studies Teacher",
-      "photoUrl": "https://www.saintstephens.org/images/directory/cvalcarcel.jpg",
-      "videoUrl": "",
-      "specializesIn": ["geography", "cultures", "global_awareness", "interactive_learning"],
+      "title": "6th Grade World Culture Teacher",
+      "formalTitle": "Mr.",
+      "photoUrl": "https://img.youtube.com/vi/rSPnNLLf7PY/maxresdefault.jpg",
+      "videoUrl": "https://youtu.be/rSPnNLLf7PY",
+      "specializesIn": ["world_culture", "geography", "cultures", "global_awareness", "interactive_learning", "sixth_grade"],
       "whyStudentsLoveThem": "Makes learning about the world an adventure through interactive projects",
       "department": "Social Studies",
       "yearsAtSSES": 6
@@ -210,13 +312,93 @@
       "id": "andrew_angelo",
       "firstName": "Andrew",
       "lastName": "Angelo",
-      "title": "Faculty Member",
+      "title": "Middle School Science Teacher",
+      "formalTitle": "Mr.",
       "photoUrl": "https://img.youtube.com/vi/8dla2PGFWpI/maxresdefault.jpg",
       "videoUrl": "https://www.youtube.com/watch?v=8dla2PGFWpI",
-      "specializesIn": ["education", "mentorship", "student_development"],
-      "whyStudentsLoveThem": "Dedicated to helping every student reach their full potential",
-      "department": "Faculty",
+      "specializesIn": ["science", "middle_school", "hands_on_learning", "inquiry_based"],
+      "whyStudentsLoveThem": "Makes science exciting through hands-on experiments and discovery",
+      "department": "Science",
+      "yearsAtSSES": 5,
+      "gradeBands": ["middle"],
+      "interestKeywords": [
+        "hands-on science labs",
+        "marine science explorations",
+        "innovation challenges",
+        "stem field investigations"
+      ],
+      "personaDescriptors": [
+        "curiosity spark",
+        "exploratory scientist"
+      ],
+      "outcomeHighlights": [
+        "Recipient of the Congressional Education Award for STEM teaching"
+      ]
+    },
+    {
+      "id": "mandy_herren",
+      "firstName": "Mandy",
+      "lastName": "Herren",
+      "title": "Lower & Intermediate School Science Teacher",
+      "formalTitle": "Mrs.",
+      "photoUrl": "https://img.youtube.com/vi/H5ldJA1gjYk/maxresdefault.jpg",
+      "videoUrl": "https://youtu.be/H5ldJA1gjYk",
+      "specializesIn": ["science", "lower_school", "intermediate_school", "hands_on_learning", "young_learners"],
+      "whyStudentsLoveThem": "Makes science magical for young minds through engaging experiments",
+      "department": "Science",
       "yearsAtSSES": 5
+    },
+    {
+      "id": "rachel_ward",
+      "firstName": "Rachel",
+      "lastName": "Ward",
+      "title": "Upper School Chemistry Teacher",
+      "formalTitle": "Dr.",
+      "photoUrl": "https://img.youtube.com/vi/0fIZGzSZBww/maxresdefault.jpg",
+      "videoUrl": "https://youtu.be/0fIZGzSZBww",
+      "specializesIn": ["chemistry", "upper_school", "advanced_science", "laboratory_research"],
+      "whyStudentsLoveThem": "Brings chemistry to life with expertise and passion for discovery",
+      "department": "Science",
+      "yearsAtSSES": 3
+    },
+    {
+      "id": "tanya_creneti",
+      "firstName": "Tanya",
+      "lastName": "Creneti",
+      "title": "6th Grade English Teacher",
+      "formalTitle": "Mrs.",
+      "photoUrl": "https://img.youtube.com/vi/HEnrS_qr9fA/maxresdefault.jpg",
+      "videoUrl": "https://youtu.be/HEnrS_qr9fA",
+      "specializesIn": ["english", "sixth_grade", "literature", "writing", "middle_school_transition"],
+      "whyStudentsLoveThem": "Guides students through their first year of middle school English with warmth and expertise",
+      "department": "English",
+      "yearsAtSSES": 4
+    },
+    {
+      "id": "julianne_hambrick",
+      "firstName": "Julianne",
+      "lastName": "Hambrick",
+      "title": "Music Teacher (All Levels)",
+      "formalTitle": "Mrs.",
+      "photoUrl": "https://img.youtube.com/vi/8ttEOGX95IM/maxresdefault.jpg",
+      "videoUrl": "https://youtu.be/8ttEOGX95IM",
+      "specializesIn": ["music", "all_levels", "performance", "music_theory", "creative_expression"],
+      "whyStudentsLoveThem": "Inspires musical creativity and confidence in students of all ages",
+      "department": "Arts",
+      "yearsAtSSES": 6
+    },
+    {
+      "id": "jennifer_hambrick_spanish",
+      "firstName": "Jennifer",
+      "lastName": "Hambrick",
+      "title": "Intermediate School Spanish Teacher",
+      "formalTitle": "Mrs.",
+      "photoUrl": "https://img.youtube.com/vi/cqSy_mZWQ1E/maxresdefault.jpg",
+      "videoUrl": "https://youtu.be/cqSy_mZWQ1E",
+      "specializesIn": ["spanish", "intermediate_school", "language_immersion", "cultural_awareness"],
+      "whyStudentsLoveThem": "Makes learning Spanish fun and engaging through interactive cultural experiences",
+      "department": "World Languages",
+      "yearsAtSSES": 7
     }
   ],
   "departments": {
