@@ -21,7 +21,8 @@
       "Bash(npm run:*)",
       "Bash(git push:*)",
       "Bash(redis-cli:*)",
-      "Bash(printf:*)"
+      "Bash(printf:*)",
+      "Bash(git commit:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

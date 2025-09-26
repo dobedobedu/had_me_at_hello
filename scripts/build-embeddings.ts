@@ -265,6 +265,8 @@ async function generateEmbeddingsBatch(texts: string[], batchSize = 10): Promise
 async function main() {
   console.log('🚀 Building embeddings cache...');
 
+  const redisService = RedisService.getInstance();
+
   try {
     // 1. Normalize the corpus
     const items = normalizeCorpus();
@@ -327,9 +329,8 @@ async function main() {
 
     // 7. Also cache to Redis for faster runtime access
     try {
-      const redis = RedisService.getInstance();
       const cacheKey = RedisService.getEmbeddingsCacheKey();
-      await redis.setJson(cacheKey, cache, 86400); // 24 hours
+      await redisService.setJson(cacheKey, cache, 86400); // 24 hours
       console.log(`🔗 Also cached embeddings to Redis for faster access`);
     } catch (redisError) {
       console.warn('⚠️ Failed to cache to Redis (continuing anyway):', redisError);
@@ -338,6 +339,12 @@ async function main() {
   } catch (error) {
     console.error('❌ Failed to build embeddings:', error);
     process.exit(1);
+  } finally {
+    try {
+      await redisService.disconnect();
+    } catch (disconnectError) {
+      console.warn('⚠️ Failed to disconnect Redis client after build:', disconnectError);
+    }
   }
 }
 
