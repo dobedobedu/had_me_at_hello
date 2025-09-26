@@ -593,7 +593,7 @@ Full results: ${shareData.link}`);
       // Always include meeting the matched faculty
       {
         id: 'meet-faculty',
-        title: `Meet ${results.matchedFaculty?.[0]?.firstName || 'Your Mentor'}`,
+        title: `Meet ${results.matchedFaculty?.[0] ? (results.matchedFaculty[0].formalTitle + ' ' + results.matchedFaculty[0].lastName) : 'Your Mentor'}`,
         description: `${results.matchedFaculty?.[0]?.title || 'Faculty Member'} - Your personalized connection`,
         priority: 1,
         categories: ['all']
@@ -1104,9 +1104,6 @@ Full results: ${shareData.link}`);
               })}
             </div>
             
-            <div className="mt-4 text-center text-sm text-gray-600">
-              {selectedTourItems.length}/5 selected
-            </div>
 
           </motion.div>
 

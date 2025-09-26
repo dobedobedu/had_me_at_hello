@@ -1,5 +1,6 @@
 import { QuizResponse, AnalysisResult } from './types';
 import { SemanticResults, SemanticCandidate } from './semantic-search';
+import { generateText } from 'ai';
 
 interface LLMSelectionResult {
   selectedStudent?: string;
@@ -20,17 +21,29 @@ interface LLMSelectionEngine {
 }
 
 class GrokSelectionEngine implements LLMSelectionEngine {
-  private apiKey: string;
+  private aiGatewayKey: string;
+  private openRouterKey: string;
   private baseURL: string;
   private model: string;
+  private useVercelGateway: boolean;
 
   constructor() {
-    this.apiKey = process.env.OPENROUTER_API_KEY || '';
+    this.aiGatewayKey = process.env.AI_GATEWAY_API_KEY || '';
+    this.openRouterKey = process.env.OPENROUTER_API_KEY || '';
     this.baseURL = process.env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1';
-    this.model = process.env.OPENROUTER_MODEL || 'x-ai/grok-4-fast:free';
+    this.model = process.env.CHAT_MODEL || process.env.OPENROUTER_MODEL || 'xai/grok-4-fast-non-reasoning';
 
-    if (!this.apiKey) {
-      throw new Error('OPENROUTER_API_KEY is required for LLM selection');
+    // Use Vercel AI Gateway if available, otherwise fallback to OpenRouter
+    this.useVercelGateway = !!(this.aiGatewayKey && this.aiGatewayKey !== 'your_ai_gateway_api_key_here');
+
+    if (!this.useVercelGateway && !this.openRouterKey) {
+      throw new Error('Either AI_GATEWAY_API_KEY or OPENROUTER_API_KEY is required for LLM selection');
+    }
+
+    if (this.useVercelGateway) {
+      console.log('🚀 Using Vercel AI Gateway for LLM selection (Grok → GPT-4o-mini → OpenRouter fallback chain)');
+    } else {
+      console.log('🔄 Using OpenRouter fallback for LLM selection');
     }
   }
 
@@ -57,7 +70,10 @@ class GrokSelectionEngine implements LLMSelectionEngine {
       '- Must select exactly 1 current student (required)',
       '- Must select exactly 1 faculty member (required)',
       '- May select 1 alumni if there\'s a compelling match (optional)',
-      '- Prioritize candidates with video content when possible',
+      '- STRONGLY PRIORITIZE VIDEO CONTENT: When fit quality is equal, always choose candidates with "Video: Available ✓"',
+      '- Video testimonials create powerful emotional connections that drive enrollment decisions',
+      '- Current student videos are most compelling - they show authentic peer experiences',
+      '- Faculty videos demonstrate teaching style and personality beyond text descriptions',
       '- Consider family timeline and urgency',
       '',
       'OUTPUT FORMAT:',
@@ -150,48 +166,127 @@ class GrokSelectionEngine implements LLMSelectionEngine {
         : 'No alumni candidates found',
       '',
       'TASK:',
-      'As Saint Stephen\'s admissions director, analyze this family profile and select the 3 videos that will:',
+      'As Saint Stephen\'s admissions director, analyze this family profile and select the optimal matches that will:',
       '1. Best match the child\'s personality and interests',
       '2. Create the most compelling admissions narrative',
       '3. Maximize enrollment likelihood for this specific family',
+      '4. PRIORITIZE VIDEO CONTENT: Choose video-enabled candidates when personality/interest fit is comparable',
       '',
-      'Focus heavily on the child description - this is the most important factor.',
-      'Return your selections in the specified JSON format.'
+      'DECISION FRAMEWORK:',
+      '• If multiple candidates fit equally well → CHOOSE THE ONE WITH VIDEO',
+      '• Video testimonials show authentic student/faculty experiences',
+      '• Parents connecting with video stories leads to campus visits and enrollment',
+      '• Focus heavily on the child description - this is the most important factor',
+      '',
+      'Return your selections in the specified JSON format with reasoning that mentions video prioritization when applicable.'
     ].join('\n');
   }
 
   /**
-   * Call Grok API for LLM selection
+   * Call LLM API for selection using Vercel AI SDK (with automatic OpenAI and OpenRouter fallbacks)
    */
-  private async callGrokAPI(systemPrompt: string, userPrompt: string): Promise<any> {
+  private async callLLMAPI(systemPrompt: string, userPrompt: string): Promise<any> {
+    // Try Vercel AI Gateway first if configured (using AI SDK)
+    if (this.useVercelGateway) {
+      try {
+        const result = await generateText({
+          model: this.model,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userPrompt }
+          ],
+          temperature: 0.3,
+          maxOutputTokens: 800,
+        });
+
+        if (!result.text) {
+          throw new Error('No content received from Vercel AI Gateway');
+        }
+
+        return JSON.parse(result.text);
+      } catch (error) {
+        console.warn('⚠️ Vercel AI Gateway (Grok) failed, trying GPT-4o-mini via AI Gateway:', error);
+
+        // Try GPT-4o-mini via AI Gateway as fallback
+        try {
+          return await this.callAIGatewayFallback(systemPrompt, userPrompt);
+        } catch (gptError) {
+          console.warn('⚠️ GPT-4o-mini via AI Gateway failed, falling back to OpenRouter:', gptError);
+        }
+
+        // Final fallback to OpenRouter
+        if (!this.openRouterKey) {
+          throw new Error('All LLM providers failed and no additional fallbacks available');
+        }
+      }
+    }
+
+    // Use OpenRouter as final fallback
+    return await this.callOpenRouterAPI(systemPrompt, userPrompt);
+  }
+
+  /**
+   * Call GPT-4o-mini via AI Gateway (fallback)
+   */
+  private async callAIGatewayFallback(systemPrompt: string, userPrompt: string): Promise<any> {
+    console.log('🧠 Using GPT-4o-mini via AI Gateway fallback...');
+
+    const result = await generateText({
+      model: 'openai/gpt-4o-mini',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt }
+      ],
+      temperature: 0.3,
+      maxOutputTokens: 800,
+    });
+
+    if (!result.text) {
+      throw new Error('No content received from GPT-4o-mini via AI Gateway');
+    }
+
+    return JSON.parse(result.text);
+  }
+
+  /**
+   * Call OpenRouter API (final fallback using raw fetch)
+   */
+  private async callOpenRouterAPI(systemPrompt: string, userPrompt: string): Promise<any> {
+    // Use OpenRouter model format for direct calls
+    const openRouterModel = this.model.startsWith('xai/')
+      ? this.model.replace('xai/', 'x-ai/') + ':free'
+      : process.env.OPENROUTER_MODEL || 'x-ai/grok-4-fast:free';
+
+    console.log('🔄 Using OpenRouter fallback with model:', openRouterModel);
+
     const response = await fetch(`${this.baseURL}/chat/completions`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${this.apiKey}`,
+        'Authorization': `Bearer ${this.openRouterKey}`,
         'Content-Type': 'application/json',
         'HTTP-Referer': process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
       },
       body: JSON.stringify({
-        model: this.model,
+        model: openRouterModel,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
         ],
-        temperature: 0.3, // Lower temperature for more consistent decisions
+        temperature: 0.3,
         max_tokens: 800,
       })
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(`Grok API error: ${response.status} ${response.statusText} - ${errorText}`);
+      throw new Error(`OpenRouter API error: ${response.status} ${response.statusText} - ${errorText}`);
     }
 
     const data = await response.json();
     const content = data?.choices?.[0]?.message?.content;
 
     if (!content) {
-      throw new Error('No content received from Grok API');
+      throw new Error('No content received from OpenRouter API');
     }
 
     return JSON.parse(content);
@@ -210,8 +305,8 @@ class GrokSelectionEngine implements LLMSelectionEngine {
       const systemPrompt = this.buildSystemPrompt();
       const userPrompt = this.buildUserPrompt(quiz, semanticResults);
 
-      console.log('🧠 Calling Grok for LLM-powered selection...');
-      const llmResponse = await this.callGrokAPI(systemPrompt, userPrompt);
+      console.log('🧠 Calling LLM for AI-powered selection...');
+      const llmResponse = await this.callLLMAPI(systemPrompt, userPrompt);
 
       // Validate LLM response
       if (!llmResponse.selectedStudent || !llmResponse.selectedFaculty) {

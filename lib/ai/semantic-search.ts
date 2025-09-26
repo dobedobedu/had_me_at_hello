@@ -1,6 +1,7 @@
-import fs from 'fs';
-import path from 'path';
+import * as fs from 'fs';
+import * as path from 'path';
 import { QuizResponse } from './types';
+import { embed } from 'ai';
 
 interface NormalizedItem {
   id: string;
@@ -95,11 +96,107 @@ class SemanticSearchService {
 
   /**
    * Generate embedding for user profile
-   * For now, use the same mock method as the cache. In production, this would call the API.
+   * Uses Vercel AI Gateway if available, falls back to direct OpenAI, then mock embeddings
    */
   async generateProfileEmbedding(profileText: string): Promise<number[]> {
-    // TODO: Replace with actual API call to OpenRouter
-    // For now, use the same deterministic method as our mock cache
+    if (!this.cache) throw new Error('Embeddings cache not loaded');
+
+    // Check if we should use real embeddings or mock embeddings based on cache model
+    const isUsingMockEmbeddings = this.cache.model.includes('mock');
+
+    if (isUsingMockEmbeddings) {
+      console.log('🔧 Using mock embeddings for development (cache model: ' + this.cache.model + ')');
+      return this.generateMockEmbedding(profileText);
+    }
+
+    // Try Vercel AI Gateway first
+    const AI_GATEWAY_API_KEY = process.env.AI_GATEWAY_API_KEY;
+    if (AI_GATEWAY_API_KEY && AI_GATEWAY_API_KEY !== 'your_ai_gateway_api_key_here') {
+      try {
+        return await this.generateVercelEmbedding(profileText, AI_GATEWAY_API_KEY);
+      } catch (error) {
+        console.warn('⚠️ Vercel AI Gateway failed, trying direct OpenAI:', error);
+      }
+    }
+
+    // Fallback to direct OpenAI API
+    const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+    if (OPENAI_API_KEY) {
+      return this.generateOpenAIEmbedding(profileText, OPENAI_API_KEY);
+    }
+
+    // Final fallback to mock embeddings
+    console.warn('⚠️ No embedding API available, falling back to mock embeddings');
+    return this.generateMockEmbedding(profileText);
+  }
+
+  /**
+   * Generate embedding using Vercel AI SDK
+   */
+  private async generateVercelEmbedding(profileText: string, apiKey: string): Promise<number[]> {
+    const embeddingModel = process.env.EMBEDDING_MODEL || 'openai/text-embedding-3-small';
+
+    try {
+      const result = await embed({
+        model: embeddingModel,
+        value: profileText,
+      });
+
+      return result.embedding;
+    } catch (error) {
+      console.error('Failed to generate Vercel AI SDK embedding:', error);
+      throw error; // Re-throw to allow fallback
+    }
+  }
+
+  /**
+   * Generate embedding using OpenAI API
+   */
+  private async generateOpenAIEmbedding(profileText: string, apiKey: string): Promise<number[]> {
+    try {
+      const response = await fetch('https://api.openai.com/v1/embeddings', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'text-embedding-3-small',
+          input: profileText
+        })
+      });
+
+      const responseText = await response.text();
+
+      if (!response.ok) {
+        console.error('OpenAI API error:', {
+          status: response.status,
+          statusText: response.statusText,
+          response: responseText.substring(0, 500)
+        });
+        throw new Error(`OpenAI API error: ${response.status} ${response.statusText}`);
+      }
+
+      try {
+        const data = JSON.parse(responseText);
+        return data.data[0].embedding;
+      } catch (parseError) {
+        console.error('Failed to parse OpenAI response:', {
+          parseError,
+          responseText: responseText.substring(0, 500)
+        });
+        throw new Error('Invalid JSON response from OpenAI API');
+      }
+    } catch (error) {
+      console.error('Failed to generate OpenAI embedding:', error);
+      throw new Error('Could not generate OpenAI embedding for profile');
+    }
+  }
+
+  /**
+   * Generate deterministic mock embedding using the same method as build-embeddings.ts
+   */
+  private async generateMockEmbedding(profileText: string): Promise<number[]> {
     const crypto = await import('crypto');
     const hash = crypto.createHash('md5').update(profileText).digest('hex');
     const dimensions = 1536;

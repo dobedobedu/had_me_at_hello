@@ -1,4 +1,4 @@
-import { OpenRouterClient } from '../lib/ai/openrouter-client';
+import { OpenRouterClient } from './utils/openrouter-client';
 import { QuizResponse, RAGContext } from '../lib/ai/types';
 import storiesData from '../knowledge/current-student-stories.json';
 import facultyData from '../knowledge/faculty-story.json';

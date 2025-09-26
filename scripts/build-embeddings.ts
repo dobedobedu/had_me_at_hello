@@ -4,6 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import { config } from 'dotenv';
+import { embed, embedMany } from 'ai';
 
 // Load environment variables
 config({ path: path.join(__dirname, '../.env.local') });
@@ -31,14 +32,23 @@ interface EmbeddingCache {
   contentHash: string;
 }
 
-// OpenRouter embedding configuration
-const EMBEDDING_MODEL = 'openai/text-embedding-ada-002';  // Use more reliable model
-const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
-const OPENROUTER_BASE_URL = process.env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1';
+// Embedding API configuration
+const AI_GATEWAY_API_KEY = process.env.AI_GATEWAY_API_KEY;
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+const EMBEDDING_MODEL = process.env.EMBEDDING_MODEL || 'openai/text-embedding-3-small';
+const MOCK_MODEL = 'mock-deterministic-v2';
 
-if (!OPENROUTER_API_KEY) {
-  console.error('OPENROUTER_API_KEY environment variable is required');
-  process.exit(1);
+// Determine which embedding method to use (priority: Vercel > OpenAI > Mock)
+const useVercelEmbeddings = AI_GATEWAY_API_KEY && AI_GATEWAY_API_KEY !== 'your_ai_gateway_api_key_here';
+const useOpenAIEmbeddings = !useVercelEmbeddings && !!OPENAI_API_KEY;
+const useRealEmbeddings = useVercelEmbeddings || useOpenAIEmbeddings;
+
+if (useVercelEmbeddings) {
+  console.log(`🚀 Using Vercel AI Gateway for embeddings (model: ${EMBEDDING_MODEL})`);
+} else if (useOpenAIEmbeddings) {
+  console.log(`🔑 Using OpenAI API for embeddings (model: ${EMBEDDING_MODEL})`);
+} else {
+  console.log(`🔧 Using mock embeddings for development (model: ${MOCK_MODEL})`);
 }
 
 function normalizeCorpus(): NormalizedItem[] {
@@ -48,6 +58,9 @@ function normalizeCorpus(): NormalizedItem[] {
   for (const story of currentStudentData.stories) {
     if (!story.gradeLevel && !(story as any).gradeBands) continue; // Skip invalid entries
 
+    const videoContext = (story as any).videoUrl ?
+      'authentic video testimonial available compelling visual story student voice' : '';
+
     const textForEmbedding = [
       `Student: ${story.firstName}`,
       `Story: ${story.achievement}`,
@@ -55,6 +68,7 @@ function normalizeCorpus(): NormalizedItem[] {
       story.storyTldr ? `Summary: ${story.storyTldr}` : '',
       (story as any).personaDescriptors ? `Personality: ${(story as any).personaDescriptors.join(', ')}` : '',
       (story as any).interestKeywords ? `Keywords: ${(story as any).interestKeywords.join(', ')}` : '',
+      videoContext,
       story.gradeLevel ? `Grade: ${story.gradeLevel}` : '',
       (story as any).gradeBands ? `Grades: ${(story as any).gradeBands.join('/')}` : '',
       story.parentQuote ? `Parent: "${story.parentQuote}"` : '',
@@ -73,6 +87,9 @@ function normalizeCorpus(): NormalizedItem[] {
 
   // Process alumni
   for (const story of alumniData.stories) {
+    const videoContext = (story as any).videoUrl ?
+      'authentic video testimonial available compelling alumni story graduate perspective' : '';
+
     const textForEmbedding = [
       `Alumni: ${story.firstName} ${(story as any).lastName || ''}`,
       (story as any).classYear ? `Class of ${(story as any).classYear}` : '',
@@ -81,6 +98,7 @@ function normalizeCorpus(): NormalizedItem[] {
       `Interests: ${story.interests.join(', ')}`,
       story.storyTldr ? `Summary: ${story.storyTldr}` : '',
       (story as any).quote ? `Quote: "${(story as any).quote}"` : '',
+      videoContext,
       story.gradeLevel ? `Grade: ${story.gradeLevel}` : ''
     ].filter(Boolean).join('. ');
 
@@ -96,6 +114,9 @@ function normalizeCorpus(): NormalizedItem[] {
 
   // Process faculty
   for (const faculty of facultyData.faculty) {
+    const videoContext = faculty.videoUrl ?
+      'authentic video testimonial available compelling teacher story faculty perspective teaching philosophy' : '';
+
     const textForEmbedding = [
       `Faculty: ${faculty.formalTitle || ''} ${faculty.firstName} ${faculty.lastName || ''}`,
       `Title: ${faculty.title}`,
@@ -105,6 +126,7 @@ function normalizeCorpus(): NormalizedItem[] {
       (faculty as any).gradeBands ? `Grades: ${(faculty as any).gradeBands.join('/')}` : '',
       (faculty as any).interestKeywords ? `Keywords: ${(faculty as any).interestKeywords.join(', ')}` : '',
       (faculty as any).personaDescriptors ? `Personality: ${(faculty as any).personaDescriptors.join(', ')}` : '',
+      videoContext,
       faculty.yearsAtSSES ? `Experience: ${faculty.yearsAtSSES} years` : '',
       faculty.awards ? `Awards: ${faculty.awards.join(', ')}` : ''
     ].filter(Boolean).join('. ');
@@ -134,15 +156,33 @@ function calculateContentHash(items: NormalizedItem[]): string {
 }
 
 async function generateEmbedding(text: string): Promise<number[]> {
-  const response = await fetch(`${OPENROUTER_BASE_URL}/embeddings`, {
+  if (useVercelEmbeddings) {
+    return generateVercelEmbedding(text);
+  } else if (useOpenAIEmbeddings) {
+    return generateOpenAIEmbedding(text);
+  } else {
+    return generateMockEmbedding(text);
+  }
+}
+
+async function generateVercelEmbedding(text: string): Promise<number[]> {
+  const result = await embed({
+    model: EMBEDDING_MODEL,
+    value: text,
+  });
+
+  return result.embedding;
+}
+
+async function generateOpenAIEmbedding(text: string): Promise<number[]> {
+  const response = await fetch('https://api.openai.com/v1/embeddings', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+      'Authorization': `Bearer ${OPENAI_API_KEY}`,
       'Content-Type': 'application/json',
-      'HTTP-Referer': process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
     },
     body: JSON.stringify({
-      model: EMBEDDING_MODEL,
+      model: EMBEDDING_MODEL.replace('openai/', ''), // Remove provider prefix for direct OpenAI
       input: text
     })
   });
@@ -150,8 +190,8 @@ async function generateEmbedding(text: string): Promise<number[]> {
   const responseText = await response.text();
 
   if (!response.ok) {
-    console.error('API Response:', responseText);
-    throw new Error(`Embedding API error: ${response.status} ${response.statusText}`);
+    console.error('OpenAI API Response:', responseText);
+    throw new Error(`OpenAI API error: ${response.status} ${response.statusText}`);
   }
 
   try {
@@ -159,11 +199,42 @@ async function generateEmbedding(text: string): Promise<number[]> {
     return data.data[0].embedding;
   } catch (error) {
     console.error('Failed to parse JSON response:', responseText.substring(0, 500));
-    throw new Error('Invalid JSON response from embedding API');
+    throw new Error('Invalid JSON response from OpenAI API');
   }
 }
 
+function generateMockEmbedding(text: string): Promise<number[]> {
+  // Use the same deterministic method as the semantic-search service
+  const hash = crypto.createHash('md5').update(text).digest('hex');
+  const dimensions = 1536;
+  const vector: number[] = [];
+
+  for (let i = 0; i < dimensions; i++) {
+    const charCode = hash.charCodeAt(i % hash.length);
+    vector.push((charCode - 128) / 128);
+  }
+
+  return Promise.resolve(vector);
+}
+
 async function generateEmbeddingsBatch(texts: string[], batchSize = 10): Promise<number[][]> {
+  if (useVercelEmbeddings) {
+    // Use AI SDK's embedMany for efficient batch processing
+    console.log('📦 Using AI SDK batch embedding...');
+    try {
+      const result = await embedMany({
+        model: EMBEDDING_MODEL,
+        values: texts,
+      });
+
+      return result.embeddings;
+    } catch (error) {
+      console.error('AI SDK batch embedding failed, falling back to individual calls:', error);
+      // Fall through to individual processing
+    }
+  }
+
+  // Fallback to individual calls for OpenAI direct or mock embeddings
   const vectors: number[][] = [];
 
   for (let i = 0; i < texts.length; i += batchSize) {
@@ -177,7 +248,9 @@ async function generateEmbeddingsBatch(texts: string[], batchSize = 10): Promise
         vectors.push(vector);
 
         // Small delay to be respectful to API
-        await new Promise(resolve => setTimeout(resolve, 100));
+        if (!useVercelEmbeddings) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
       } catch (error) {
         console.error(`Failed to embed text: ${text.substring(0, 50)}...`);
         throw error;
@@ -206,11 +279,13 @@ async function main() {
       try {
         existingCache = JSON.parse(fs.readFileSync(cacheFile, 'utf8'));
 
-        if (existingCache.contentHash === contentHash && existingCache.model === EMBEDDING_MODEL) {
+        const expectedModel = useRealEmbeddings ? EMBEDDING_MODEL : MOCK_MODEL;
+        if (existingCache.contentHash === contentHash && existingCache.model === expectedModel) {
           console.log('✅ Embeddings cache is up to date, skipping generation');
           return;
         } else {
-          console.log('📝 Content changed, regenerating embeddings...');
+          console.log('📝 Content or model changed, regenerating embeddings...');
+          console.log(`   Previous: ${existingCache.model}, Current: ${expectedModel}`);
         }
       } catch (error) {
         console.log('⚠️ Existing cache is invalid, regenerating...');
@@ -231,7 +306,7 @@ async function main() {
     const cache: EmbeddingCache = {
       items,
       vectors,
-      model: EMBEDDING_MODEL,
+      model: useRealEmbeddings ? EMBEDDING_MODEL : MOCK_MODEL,
       timestamp: Date.now(),
       contentHash
     };

@@ -15,8 +15,8 @@ class ABTestingService {
 
   private constructor() {
     this.config = {
-      enabled: true,
-      hybridPercentage: 50, // 50% hybrid, 50% legacy
+      enabled: false, // Disable A/B testing - always use hybrid
+      hybridPercentage: 100, // Force hybrid for testing Vercel AI Gateway
       semanticThreshold: 0.2,
       studentCandidates: 5,
       facultyCandidates: 4,
@@ -35,7 +35,7 @@ class ABTestingService {
    * Determine if request should use hybrid system
    */
   shouldUseHybrid(quiz: QuizResponse): boolean {
-    if (!this.config.enabled) return false;
+    if (!this.config.enabled) return true; // Always use hybrid when A/B testing is disabled
 
     // Use session-consistent hashing based on quiz content
     const hashInput = [

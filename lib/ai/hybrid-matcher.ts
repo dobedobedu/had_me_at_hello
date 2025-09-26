@@ -177,7 +177,7 @@ class HybridMatchingService {
     // Semantic search
     const semanticResults = await this.semanticService.searchSemantic(quiz, semanticOptions);
 
-    // Apply deterministic scoring to semantic candidates
+    // Build profile for deterministic scoring
     const profile = buildMatchingProfile({
       quiz,
       gradeLevel: quiz.gradeLevel || 'middle',
@@ -187,18 +187,80 @@ class HybridMatchingService {
       familyValues: quiz.familyValues || []
     });
 
-    // Score and select best from semantic candidates
-    const selectedStudent = semanticResults.students[0]?.metadata || null;
-    const selectedFaculty = semanticResults.faculty[0]?.metadata || null;
-    const selectedAlumni = semanticResults.alumni[0]?.metadata || null;
+    // If semantic search returned no results, fall back to full deterministic matching
+    if (semanticResults.students.length === 0 && semanticResults.faculty.length === 0 && semanticResults.alumni.length === 0) {
+      console.warn('🔍 Semantic search returned no candidates, falling back to full deterministic matching');
+      const { selectMatchesWithMetadata, computeCompositeScore } = await import('./deterministic-matcher');
+      const selection = selectMatchesWithMetadata(context, profile);
+      const matchScore = computeCompositeScore(selection);
+
+      return {
+        matchScore,
+        personalizedMessage: this.generateBasicMessage(quiz, selection.student, selection.faculty),
+        matchedStories: [selection.student, selection.alumni].filter(Boolean) as StudentStory[],
+        matchedFaculty: [selection.faculty].filter(Boolean) as FacultyProfile[],
+        keyInsights: this.generateKeyInsights(quiz),
+        recommendedPrograms: this.recommendPrograms(quiz),
+        semanticResults,
+        performanceMetrics: {
+          semanticSearchMs: semanticResults.processingTimeMs,
+          llmSelectionMs: 0,
+          totalMs: Date.now() - startTime
+        },
+        provider: 'hybrid:semantic+deterministic:fallback' as const
+      };
+    }
+
+    // Apply deterministic scoring to semantic candidates
+    const { debugScoreStory, debugScoreFaculty } = await import('./deterministic-matcher');
+
+    // Score and select best student from semantic candidates
+    let bestStudent = null;
+    let bestStudentScore = 0;
+    for (const candidate of semanticResults.students) {
+      const score = debugScoreStory(candidate.metadata, profile);
+      if (score > bestStudentScore) {
+        bestStudent = candidate.metadata;
+        bestStudentScore = score;
+      }
+    }
+
+    // Score and select best faculty from semantic candidates
+    let bestFaculty = null;
+    let bestFacultyScore = 0;
+    for (const candidate of semanticResults.faculty) {
+      const score = debugScoreFaculty(candidate.metadata, profile);
+      if (score > bestFacultyScore) {
+        bestFaculty = candidate.metadata;
+        bestFacultyScore = score;
+      }
+    }
+
+    // Score and select best alumni from semantic candidates
+    let bestAlumni = null;
+    let bestAlumniScore = 0;
+    for (const candidate of semanticResults.alumni) {
+      const score = debugScoreStory(candidate.metadata, profile);
+      if (score > bestAlumniScore) {
+        bestAlumni = candidate.metadata;
+        bestAlumniScore = score;
+      }
+    }
+
+    // Calculate composite score based on deterministic scores
+    const base = 82;
+    const studentBonus = bestStudent ? Math.min(bestStudentScore / 4, 10) : 0;
+    const facultyBonus = bestFaculty ? Math.min(bestFacultyScore / 4, 10) : 0;
+    const alumniBonus = bestAlumni ? Math.min(bestAlumniScore / 5, 6) : 0;
+    const matchScore = Math.max(Math.round(Math.min(base + studentBonus + facultyBonus + alumniBonus, 96)), 78);
 
     const totalMs = Date.now() - startTime;
 
     return {
-      matchScore: 88, // Base score for semantic matching
-      personalizedMessage: this.generateBasicMessage(quiz, selectedStudent, selectedFaculty),
-      matchedStories: [selectedStudent, selectedAlumni].filter(Boolean),
-      matchedFaculty: [selectedFaculty].filter(Boolean),
+      matchScore,
+      personalizedMessage: this.generateBasicMessage(quiz, bestStudent, bestFaculty),
+      matchedStories: [bestStudent, bestAlumni].filter(Boolean) as StudentStory[],
+      matchedFaculty: [bestFaculty].filter(Boolean) as FacultyProfile[],
       keyInsights: this.generateKeyInsights(quiz),
       recommendedPrograms: this.recommendPrograms(quiz),
       semanticResults,
@@ -207,7 +269,7 @@ class HybridMatchingService {
         llmSelectionMs: 0,
         totalMs
       },
-      provider: 'hybrid:semantic+deterministic'
+      provider: 'hybrid:semantic+deterministic' as const
     };
   }
 
@@ -236,22 +298,19 @@ class HybridMatchingService {
       familyValues: userFamilyValues,
     });
 
-    // Simple selection from context
-    const stories = context.stories || [];
-    const faculty = context.faculty || [];
-
-    // Get first suitable matches (simplified for fallback)
-    const currentStudents = stories.filter((s: any) => !s.classYear);
-    const alumni = stories.filter((s: any) => s.classYear);
+    // Use the proper deterministic scoring logic
+    const { selectMatchesWithMetadata, computeCompositeScore } = await import('./deterministic-matcher');
+    const selection = selectMatchesWithMetadata(context, profile);
+    const matchScore = computeCompositeScore(selection);
 
     return {
-      matchScore: 85,
-      personalizedMessage: this.generateBasicMessage(quiz, currentStudents[0], faculty[0]),
-      matchedStories: [currentStudents[0], alumni[0]].filter(Boolean),
-      matchedFaculty: [faculty[0]].filter(Boolean),
+      matchScore,
+      personalizedMessage: this.generateBasicMessage(quiz, selection.student, selection.faculty),
+      matchedStories: [selection.student, selection.alumni].filter(Boolean) as StudentStory[],
+      matchedFaculty: [selection.faculty].filter(Boolean) as FacultyProfile[],
       keyInsights: this.generateKeyInsights(quiz),
       recommendedPrograms: this.recommendPrograms(quiz),
-      provider: 'deterministic:local'
+      provider: 'hybrid:deterministic' as const
     };
   }
 
