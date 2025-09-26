@@ -29,6 +29,10 @@ class RedisService {
       this.client.on('connect', () => {
         console.log('🔗 Redis connected successfully');
       });
+
+      this.client.on('ready', () => {
+        console.log('✅ Redis ready for operations');
+      });
     }
 
     if (!this.client.isOpen) {

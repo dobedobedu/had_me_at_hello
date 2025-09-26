@@ -129,11 +129,19 @@ class HybridMatchingService {
       timeline: quiz.timeline
     });
 
-    // Try cache first
-    const cachedResult = await this.getCachedResult(quiz);
-    if (cachedResult) {
-      console.log(`✅ Returning cached result (${Date.now() - startTime}ms)`);
-      return cachedResult;
+    // Try cache first with a small timeout to avoid race conditions
+    try {
+      const cachedResult = await Promise.race([
+        this.getCachedResult(quiz),
+        new Promise<null>((resolve) => setTimeout(() => resolve(null), 200)) // 200ms timeout
+      ]);
+
+      if (cachedResult) {
+        console.log(`💾 Cache HIT - returning cached result (${Date.now() - startTime}ms)`);
+        return cachedResult;
+      }
+    } catch (error) {
+      console.warn('⚠️ Cache check failed, proceeding with fresh analysis:', error);
     }
 
     let result: HybridMatchResult;

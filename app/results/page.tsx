@@ -34,9 +34,12 @@ export default function ResultsPage() {
   const [generatingTourPass, setGeneratingTourPass] = useState(false);
 
   useEffect(() => {
+    // Prevent duplicate analysis calls
+    if (results || !loading) return;
+
     const analyzeQuizData = async () => {
       let parsedQuizData: QuizResponse | null = null;
-      
+
       try {
         const quizDataStr = sessionStorage.getItem('quizData');
         if (!quizDataStr) {
