@@ -22,29 +22,17 @@ interface LLMSelectionEngine {
 
 class GrokSelectionEngine implements LLMSelectionEngine {
   private aiGatewayKey: string;
-  private openRouterKey: string;
-  private baseURL: string;
   private model: string;
-  private useVercelGateway: boolean;
 
   constructor() {
     this.aiGatewayKey = process.env.AI_GATEWAY_API_KEY || '';
-    this.openRouterKey = process.env.OPENROUTER_API_KEY || '';
-    this.baseURL = process.env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1';
-    this.model = process.env.CHAT_MODEL || process.env.OPENROUTER_MODEL || 'xai/grok-4-fast-non-reasoning';
+    this.model = process.env.CHAT_MODEL || 'xai/grok-4-fast-non-reasoning';
 
-    // Use Vercel AI Gateway if available, otherwise fallback to OpenRouter
-    this.useVercelGateway = !!(this.aiGatewayKey && this.aiGatewayKey !== 'your_ai_gateway_api_key_here');
-
-    if (!this.useVercelGateway && !this.openRouterKey) {
-      throw new Error('Either AI_GATEWAY_API_KEY or OPENROUTER_API_KEY is required for LLM selection');
+    if (!this.aiGatewayKey || this.aiGatewayKey === 'your_ai_gateway_api_key_here') {
+      throw new Error('AI_GATEWAY_API_KEY is required for LLM selection');
     }
 
-    if (this.useVercelGateway) {
-      console.log('🚀 Using Vercel AI Gateway for LLM selection (Grok → GPT-4o-mini → OpenRouter fallback chain)');
-    } else {
-      console.log('🔄 Using OpenRouter fallback for LLM selection');
-    }
+    console.log('🚀 Using Vercel AI Gateway for LLM selection');
   }
 
   /**
@@ -183,46 +171,31 @@ class GrokSelectionEngine implements LLMSelectionEngine {
   }
 
   /**
-   * Call LLM API for selection using Vercel AI SDK (with automatic OpenAI and OpenRouter fallbacks)
+   * Call LLM API for selection using Vercel AI SDK
    */
   private async callLLMAPI(systemPrompt: string, userPrompt: string): Promise<any> {
-    // Try Vercel AI Gateway first if configured (using AI SDK)
-    if (this.useVercelGateway) {
-      try {
-        const result = await generateText({
-          model: this.model,
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: userPrompt }
-          ],
-          temperature: 0.3,
-          maxOutputTokens: 800,
-        });
+    try {
+      const result = await generateText({
+        model: this.model,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
+        ],
+        temperature: 0.3,
+        maxOutputTokens: 800,
+      });
 
-        if (!result.text) {
-          throw new Error('No content received from Vercel AI Gateway');
-        }
-
-        return JSON.parse(result.text);
-      } catch (error) {
-        console.warn('⚠️ Vercel AI Gateway (Grok) failed, trying GPT-4o-mini via AI Gateway:', error);
-
-        // Try GPT-4o-mini via AI Gateway as fallback
-        try {
-          return await this.callAIGatewayFallback(systemPrompt, userPrompt);
-        } catch (gptError) {
-          console.warn('⚠️ GPT-4o-mini via AI Gateway failed, falling back to OpenRouter:', gptError);
-        }
-
-        // Final fallback to OpenRouter
-        if (!this.openRouterKey) {
-          throw new Error('All LLM providers failed and no additional fallbacks available');
-        }
+      if (!result.text) {
+        throw new Error('No content received from Vercel AI Gateway');
       }
-    }
 
-    // Use OpenRouter as final fallback
-    return await this.callOpenRouterAPI(systemPrompt, userPrompt);
+      return JSON.parse(result.text);
+    } catch (error) {
+      console.warn('⚠️ Vercel AI Gateway (Grok) failed, trying GPT-4o-mini via AI Gateway:', error);
+
+      // Try GPT-4o-mini via AI Gateway as fallback
+      return await this.callAIGatewayFallback(systemPrompt, userPrompt);
+    }
   }
 
   /**
@@ -248,49 +221,6 @@ class GrokSelectionEngine implements LLMSelectionEngine {
     return JSON.parse(result.text);
   }
 
-  /**
-   * Call OpenRouter API (final fallback using raw fetch)
-   */
-  private async callOpenRouterAPI(systemPrompt: string, userPrompt: string): Promise<any> {
-    // Use OpenRouter model format for direct calls
-    const openRouterModel = this.model.startsWith('xai/')
-      ? this.model.replace('xai/', 'x-ai/') + ':free'
-      : process.env.OPENROUTER_MODEL || 'x-ai/grok-4-fast:free';
-
-    console.log('🔄 Using OpenRouter fallback with model:', openRouterModel);
-
-    const response = await fetch(`${this.baseURL}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${this.openRouterKey}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
-      },
-      body: JSON.stringify({
-        model: openRouterModel,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
-        ],
-        temperature: 0.3,
-        max_tokens: 800,
-      })
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`OpenRouter API error: ${response.status} ${response.statusText} - ${errorText}`);
-    }
-
-    const data = await response.json();
-    const content = data?.choices?.[0]?.message?.content;
-
-    if (!content) {
-      throw new Error('No content received from OpenRouter API');
-    }
-
-    return JSON.parse(content);
-  }
 
   /**
    * Main selection method
