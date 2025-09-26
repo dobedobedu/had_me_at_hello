@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { QuizResponse } from './types';
 import { embed } from 'ai';
+import RedisService from '../redis';
 
 interface NormalizedItem {
   id: string;
@@ -37,8 +38,11 @@ class SemanticSearchService {
   private static instance: SemanticSearchService;
   private cache: EmbeddingCache | null = null;
   private cacheLoadPromise: Promise<void> | null = null;
+  private redis: RedisService;
 
-  private constructor() {}
+  private constructor() {
+    this.redis = RedisService.getInstance();
+  }
 
   static getInstance(): SemanticSearchService {
     if (!SemanticSearchService.instance) {
@@ -57,6 +61,17 @@ class SemanticSearchService {
 
   private async doLoadCache(): Promise<void> {
     try {
+      // Try Redis first
+      const cacheKey = RedisService.getEmbeddingsCacheKey();
+      const redisCache = await this.redis.getJson<EmbeddingCache>(cacheKey);
+
+      if (redisCache) {
+        console.log(`📚 Loaded embeddings from Redis: ${redisCache.items.length} items, model: ${redisCache.model}`);
+        this.cache = redisCache;
+        return;
+      }
+
+      // Fallback to file system
       const cacheFile = path.join(process.cwd(), 'knowledge/.cache/embeddings.json');
 
       if (!fs.existsSync(cacheFile)) {
@@ -66,7 +81,13 @@ class SemanticSearchService {
       const cacheData = fs.readFileSync(cacheFile, 'utf8');
       this.cache = JSON.parse(cacheData);
 
-      console.log(`📚 Loaded embeddings cache: ${this.cache!.items.length} items, model: ${this.cache!.model}`);
+      console.log(`📚 Loaded embeddings from file: ${this.cache!.items.length} items, model: ${this.cache!.model}`);
+
+      // Cache to Redis for next time (fire and forget, 24 hours)
+      this.redis.setJson(cacheKey, this.cache, 86400).catch(error =>
+        console.warn('⚠️ Failed to cache embeddings to Redis:', error)
+      );
+
     } catch (error) {
       console.error('❌ Failed to load embeddings cache:', error);
       throw error;

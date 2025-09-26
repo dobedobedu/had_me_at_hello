@@ -4,6 +4,8 @@ import { createLLMSelectionEngine, LLMSelectionResult } from './llm-selection-en
 import { buildMatchingProfile } from './deterministic-matcher';
 import { extractTraits, expandInterests } from './matcher-utils';
 import { AnalyticsLogger } from './analytics-logger';
+import RedisService from '../redis';
+import crypto from 'crypto';
 
 interface HybridMatchResult extends AnalysisResult {
   semanticResults?: SemanticResults;
@@ -32,11 +34,13 @@ class HybridMatchingService {
   private semanticService: SemanticSearchService;
   private llmEngine: ReturnType<typeof createLLMSelectionEngine>;
   private analytics: AnalyticsLogger;
+  private redis: RedisService;
 
   private constructor() {
     this.semanticService = SemanticSearchService.getInstance();
     this.llmEngine = createLLMSelectionEngine();
     this.analytics = AnalyticsLogger.getInstance();
+    this.redis = RedisService.getInstance();
   }
 
   static getInstance(): HybridMatchingService {
@@ -47,7 +51,62 @@ class HybridMatchingService {
   }
 
   /**
-   * Main hybrid matching method
+   * Generate cache key for quiz matching
+   */
+  private generateCacheKey(quiz: QuizResponse): string {
+    const keyData = {
+      description: quiz.threeWords || quiz.childDescription || '',
+      interests: (quiz.interests || []).sort(),
+      grade: quiz.gradeLevel || '',
+      timeline: quiz.timeline || '',
+      values: (quiz.familyValues || []).sort()
+    };
+
+    const hash = crypto.createHash('sha256')
+      .update(JSON.stringify(keyData))
+      .digest('hex')
+      .substring(0, 16);
+
+    return RedisService.getMatchCacheKey(hash);
+  }
+
+  /**
+   * Try to get cached result
+   */
+  private async getCachedResult(quiz: QuizResponse): Promise<HybridMatchResult | null> {
+    const cacheKey = this.generateCacheKey(quiz);
+
+    try {
+      const cached = await this.redis.getJson<HybridMatchResult>(cacheKey);
+      if (cached) {
+        console.log(`💾 Cache HIT for key: ${cacheKey}`);
+        // Add cache indicator
+        return { ...cached, provider: (cached.provider + ':cached') as any };
+      }
+    } catch (error) {
+      console.warn('⚠️ Cache get failed:', error);
+    }
+
+    return null;
+  }
+
+  /**
+   * Cache the result
+   */
+  private async cacheResult(quiz: QuizResponse, result: HybridMatchResult): Promise<void> {
+    const cacheKey = this.generateCacheKey(quiz);
+
+    try {
+      // Cache for 1 hour (3600 seconds)
+      await this.redis.setJson(cacheKey, result, 3600);
+      console.log(`💾 Cached result for key: ${cacheKey}`);
+    } catch (error) {
+      console.warn('⚠️ Cache set failed:', error);
+    }
+  }
+
+  /**
+   * Main hybrid matching method with caching
    */
   async match(
     quiz: QuizResponse,
@@ -69,6 +128,13 @@ class HybridMatchingService {
       gradeLevel: quiz.gradeLevel,
       timeline: quiz.timeline
     });
+
+    // Try cache first
+    const cachedResult = await this.getCachedResult(quiz);
+    if (cachedResult) {
+      console.log(`✅ Returning cached result (${Date.now() - startTime}ms)`);
+      return cachedResult;
+    }
 
     let result: HybridMatchResult;
     let semanticResults: SemanticResults | undefined;
@@ -106,6 +172,11 @@ class HybridMatchingService {
       result.performanceMetrics
     );
     this.analytics.logMatching(analytics);
+
+    // Cache the result (fire and forget)
+    this.cacheResult(quiz, result).catch(error =>
+      console.warn('⚠️ Failed to cache result:', error)
+    );
 
     return result;
   }

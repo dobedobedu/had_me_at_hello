@@ -5,6 +5,7 @@ import path from 'path';
 import crypto from 'crypto';
 import { config } from 'dotenv';
 import { embed, embedMany } from 'ai';
+import RedisService from '../lib/redis';
 
 // Load environment variables
 config({ path: path.join(__dirname, '../.env.local') });
@@ -316,6 +317,16 @@ async function main() {
 
     console.log(`💾 Saved embeddings cache to ${cacheFile}`);
     console.log(`📊 Cache stats: ${items.length} items, ${vectors[0]?.length || 0} dimensions, ${Math.round(fs.statSync(cacheFile).size / 1024)}KB`);
+
+    // 7. Also cache to Redis for faster runtime access
+    try {
+      const redis = RedisService.getInstance();
+      const cacheKey = RedisService.getEmbeddingsCacheKey();
+      await redis.setJson(cacheKey, cache, 86400); // 24 hours
+      console.log(`🔗 Also cached embeddings to Redis for faster access`);
+    } catch (redisError) {
+      console.warn('⚠️ Failed to cache to Redis (continuing anyway):', redisError);
+    }
 
   } catch (error) {
     console.error('❌ Failed to build embeddings:', error);
