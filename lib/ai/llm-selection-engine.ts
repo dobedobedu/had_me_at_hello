@@ -175,7 +175,12 @@ class GrokSelectionEngine implements LLMSelectionEngine {
    */
   private async callLLMAPI(systemPrompt: string, userPrompt: string): Promise<any> {
     try {
-      const result = await generateText({
+      // Add timeout wrapper for Grok calls
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Grok request timeout after 30s')), 30000);
+      });
+
+      const generatePromise = generateText({
         model: this.model,
         messages: [
           { role: 'system', content: systemPrompt },
@@ -184,6 +189,8 @@ class GrokSelectionEngine implements LLMSelectionEngine {
         temperature: 0.3,
         maxOutputTokens: 800,
       });
+
+      const result = await Promise.race([generatePromise, timeoutPromise]) as any;
 
       if (!result.text) {
         throw new Error('No content received from Vercel AI Gateway');
@@ -218,7 +225,15 @@ class GrokSelectionEngine implements LLMSelectionEngine {
       throw new Error('No content received from GPT-4o-mini via AI Gateway');
     }
 
-    return JSON.parse(result.text);
+    // Clean up the response - remove markdown code blocks if present
+    let cleanText = result.text.trim();
+    if (cleanText.startsWith('```json')) {
+      cleanText = cleanText.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+    } else if (cleanText.startsWith('```')) {
+      cleanText = cleanText.replace(/^```\s*/, '').replace(/\s*```$/, '');
+    }
+
+    return JSON.parse(cleanText);
   }
 
 
