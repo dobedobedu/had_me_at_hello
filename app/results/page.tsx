@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Share2, Calendar, Check, Home, Mail, Copy, CheckCircle, ChevronDown, Play, Send, QrCode, Download, X } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { AIService } from '@/lib/ai/ai-service';
 import { QuizResponse, AnalysisResult } from '@/lib/ai/types';
@@ -32,10 +33,19 @@ export default function ResultsPage() {
   const [tourPassData, setTourPassData] = useState<TourPassData | null>(null);
   const [qrCode, setQrCode] = useState<string | null>(null);
   const [generatingTourPass, setGeneratingTourPass] = useState(false);
+  const [imageLoadingStates, setImageLoadingStates] = useState({
+    student: true,
+    faculty: true,
+    alumni: true
+  });
 
   useEffect(() => {
     // Prevent duplicate analysis calls
-    if (results || !loading) return;
+    if (results) return;
+    if (!loading) return;
+
+    // Immediately set loading to false to prevent React Strict Mode duplicates
+    setLoading(false);
 
     const analyzeQuizData = async () => {
       let parsedQuizData: QuizResponse | null = null;
@@ -889,7 +899,24 @@ Full results: ${shareData.link}`);
                               />
                             ) : (firstCurrentStudent as any)?.videoUrl ? (
                               <button className="absolute inset-0" onClick={() => setPlayingVideo('current-student')} aria-label="Play video">
-                                <img src={firstCurrentStudent?.photoUrl || ''} alt="" className="w-full h-full object-cover" />
+                                <>
+                                  <Image
+                                    src={firstCurrentStudent?.photoUrl || ''}
+                                    alt={`${firstCurrentStudent?.firstName || 'Student'} photo`}
+                                    fill
+                                    className="object-cover"
+                                    priority
+                                    sizes="(max-width: 768px) 100vw, 400px"
+                                    placeholder="blur"
+                                    blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyejN5QzBWjQfzj9fiGttF+87aDEi2YQBm6Iqs3E7HRwJLNSLvlX9vfvEAqWnUEgBZK87Fy1pDOwrNKFiYxZRxGjgCEW/q3M5OqB4WOEQiZbAg3b4IjqB2HrJDzlqxvKWCo8SfLfASLMEw2LctfJlojfFSBOQUVKYgWHBpNcgdKO+vPCL9Zkg4ry98fFgPT0Y3fKK3CW0o+VHNyRzOx5CJwgWLf7e9iqkfwAThNNSLFJ5vHfHlTWuC0TFKuN3F3bSlGK8F5F5rYNmQ7cTB0EyKQxh7xzfJF8NP7nBwBQr8B4j/2Q=="
+                                    onLoad={() => setImageLoadingStates(prev => ({...prev, student: false}))}
+                                  />
+                                  {imageLoadingStates.student && (
+                                    <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center">
+                                      <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                                    </div>
+                                  )}
+                                </>
                                 <div className="absolute inset-0 flex items-center justify-center">
                                   <div className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-2xl">
                                     <Play className="w-8 h-8 text-white ml-1" fill="currentColor" />
@@ -897,7 +924,15 @@ Full results: ${shareData.link}`);
                                 </div>
                               </button>
                             ) : (
-                              <img src={firstCurrentStudent?.photoUrl || ''} alt="" className="w-full h-full object-cover" />
+                              <Image
+                                src={firstCurrentStudent?.photoUrl || ''}
+                                alt={`${firstCurrentStudent?.firstName || 'Student'} photo`}
+                                fill
+                                className="object-cover"
+                                sizes="(max-width: 768px) 100vw, 400px"
+                                placeholder="blur"
+                                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyejN5QzBWjQfzj9fiGttF+87aDEi2YQBm6Iqs3E7HRwJLNSLvlX9vfvEAqWnUEgBZK87Fy1pDOwrNKFiYxZRxGjgCEW/q3M5OqB4WOEQiZbAg3b4IjqB2HrJDzlqxvKWCo8SfLfASLMEw2LctfJlojfFSBOQUVKYgWHBpNcgdKO+vPCL9Zkg4ry98fFgPT0Y3fKK3CW0o+VHNyRzOx5CJwgWLf7e9iqkfwAThNNSLFJ5vHfHlTWuC0TFKuN3F3bSlGK8F5F5rYNmQ7cTB0EyKQxh7xzfJF8NP7nBwBQr8B4j/2Q=="
+                              />
                             )}
                           </div>
                         </div>
@@ -933,7 +968,13 @@ Full results: ${shareData.link}`);
                               />
                             ) : firstFaculty?.videoUrl ? (
                               <button className="absolute inset-0" onClick={() => setPlayingVideo('faculty-match')} aria-label="Play video">
-                                <img src={firstFaculty.photoUrl || ''} alt="" className="w-full h-full object-cover" />
+                                <Image
+                                  src={firstFaculty.photoUrl || ''}
+                                  alt={`${firstFaculty.formalTitle} ${firstFaculty.lastName} photo`}
+                                  fill
+                                  className="object-cover"
+                                  sizes="(max-width: 768px) 100vw, 400px"
+                                />
                                 <div className="absolute inset-0 flex items-center justify-center">
                                   <div className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-2xl">
                                     <Play className="w-8 h-8 text-white ml-1" fill="currentColor" />
@@ -941,7 +982,13 @@ Full results: ${shareData.link}`);
                                 </div>
                               </button>
                             ) : (
-                              <img src={firstFaculty.photoUrl || ''} alt="" className="w-full h-full object-cover" />
+                              <Image
+                                src={firstFaculty.photoUrl || ''}
+                                alt={`${firstFaculty.formalTitle} ${firstFaculty.lastName} photo`}
+                                fill
+                                className="object-cover"
+                                sizes="(max-width: 768px) 100vw, 400px"
+                              />
                             )}
                           </div>
                         </div>
@@ -973,7 +1020,13 @@ Full results: ${shareData.link}`);
                               />
                             ) : (firstAlumni as any)?.videoUrl ? (
                               <button className="absolute inset-0" onClick={() => setPlayingVideo('alumni-story')} aria-label="Play video">
-                                <img src={firstAlumni?.photoUrl || ''} alt="" className="w-full h-full object-cover" />
+                                <Image
+                                  src={firstAlumni?.photoUrl || ''}
+                                  alt={`${firstAlumni?.firstName} ${firstAlumni?.lastName} photo`}
+                                  fill
+                                  className="object-cover"
+                                  sizes="(max-width: 768px) 100vw, 400px"
+                                />
                                 <div className="absolute inset-0 flex items-center justify-center">
                                   <div className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-2xl">
                                     <Play className="w-8 h-8 text-white ml-1" fill="currentColor" />
@@ -981,7 +1034,13 @@ Full results: ${shareData.link}`);
                                 </div>
                               </button>
                             ) : (
-                              <img src={firstAlumni?.photoUrl || ''} alt="" className="w-full h-full object-cover" />
+                              <Image
+                                src={firstAlumni?.photoUrl || ''}
+                                alt={`${firstAlumni?.firstName} ${firstAlumni?.lastName} photo`}
+                                fill
+                                className="object-cover"
+                                sizes="(max-width: 768px) 100vw, 400px"
+                              />
                             )}
                           </div>
                         </div>

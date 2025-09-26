@@ -7,6 +7,9 @@ import { AnalyticsLogger } from './analytics-logger';
 import RedisService from '../redis';
 import crypto from 'crypto';
 
+// Global request deduplication cache (survives across HTTP requests)
+const globalPendingRequests = new Map<string, Promise<HybridMatchResult>>();
+
 interface HybridMatchResult extends AnalysisResult {
   semanticResults?: SemanticResults;
   llmSelection?: LLMSelectionResult;
@@ -106,13 +109,21 @@ class HybridMatchingService {
   }
 
   /**
-   * Main hybrid matching method with caching
+   * Main hybrid matching method with caching and request deduplication
    */
   async match(
     quiz: QuizResponse,
     context: any,
     options: HybridMatchOptions = {}
   ): Promise<HybridMatchResult> {
+    const cacheKey = this.generateCacheKey(quiz);
+
+    // Check if there's already a pending request for this exact quiz (global deduplication)
+    if (globalPendingRequests.has(cacheKey)) {
+      console.log(`🔄 Deduplicating request - waiting for pending analysis with key: ${cacheKey}`);
+      return await globalPendingRequests.get(cacheKey)!;
+    }
+
     const sessionId = this.analytics.generateSessionId();
     const startTime = Date.now();
     const {
@@ -129,13 +140,9 @@ class HybridMatchingService {
       timeline: quiz.timeline
     });
 
-    // Try cache first with a small timeout to avoid race conditions
+    // Try cache first
     try {
-      const cachedResult = await Promise.race([
-        this.getCachedResult(quiz),
-        new Promise<null>((resolve) => setTimeout(() => resolve(null), 200)) // 200ms timeout
-      ]);
-
+      const cachedResult = await this.getCachedResult(quiz);
       if (cachedResult) {
         console.log(`💾 Cache HIT - returning cached result (${Date.now() - startTime}ms)`);
         return cachedResult;
@@ -143,6 +150,35 @@ class HybridMatchingService {
     } catch (error) {
       console.warn('⚠️ Cache check failed, proceeding with fresh analysis:', error);
     }
+
+    // Create the processing promise and store it for global deduplication
+    const processingPromise = this.performMatching(quiz, context, options, sessionId, startTime);
+    globalPendingRequests.set(cacheKey, processingPromise);
+
+    try {
+      const result = await processingPromise;
+      return result;
+    } finally {
+      // Clean up the pending request from global cache
+      globalPendingRequests.delete(cacheKey);
+    }
+  }
+
+  /**
+   * Perform the actual matching logic (extracted for deduplication)
+   */
+  private async performMatching(
+    quiz: QuizResponse,
+    context: any,
+    options: HybridMatchOptions,
+    sessionId: string,
+    startTime: number
+  ): Promise<HybridMatchResult> {
+    const {
+      useSemanticSearch = true,
+      useLLMSelection = true,
+      semanticOptions = {}
+    } = options;
 
     let result: HybridMatchResult;
     let semanticResults: SemanticResults | undefined;
