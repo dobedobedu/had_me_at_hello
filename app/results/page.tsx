@@ -884,7 +884,7 @@ Full results: ${shareData.link}`);
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                                 allowFullScreen
                               />
-                            ) : (
+                            ) : (firstCurrentStudent as any)?.videoUrl ? (
                               <button className="absolute inset-0" onClick={() => setPlayingVideo('current-student')} aria-label="Play video">
                                 <img src={firstCurrentStudent?.photoUrl || ''} alt="" className="w-full h-full object-cover" />
                                 <div className="absolute inset-0 flex items-center justify-center">
@@ -893,6 +893,8 @@ Full results: ${shareData.link}`);
                                   </div>
                                 </div>
                               </button>
+                            ) : (
+                              <img src={firstCurrentStudent?.photoUrl || ''} alt="" className="w-full h-full object-cover" />
                             )}
                           </div>
                         </div>
@@ -966,7 +968,7 @@ Full results: ${shareData.link}`);
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                                 allowFullScreen
                               />
-                            ) : (
+                            ) : (firstAlumni as any)?.videoUrl ? (
                               <button className="absolute inset-0" onClick={() => setPlayingVideo('alumni-story')} aria-label="Play video">
                                 <img src={firstAlumni?.photoUrl || ''} alt="" className="w-full h-full object-cover" />
                                 <div className="absolute inset-0 flex items-center justify-center">
@@ -975,6 +977,8 @@ Full results: ${shareData.link}`);
                                   </div>
                                 </div>
                               </button>
+                            ) : (
+                              <img src={firstAlumni?.photoUrl || ''} alt="" className="w-full h-full object-cover" />
                             )}
                           </div>
                         </div>
