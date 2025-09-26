@@ -49,6 +49,14 @@ export default function ResultsPage() {
     // Mark that we've started analysis to prevent duplicates
     hasRequestedAnalysis.current = true;
 
+    // Set a reasonable timeout to prevent infinite loading
+    const loadingTimeout = setTimeout(() => {
+      if (!results) {
+        console.warn('Analysis taking too long, showing fallback results');
+        setLoading(false);
+      }
+    }, 15000); // 15 second timeout
+
     const analyzeQuizData = async () => {
       let parsedQuizData: QuizResponse | null = null;
 
@@ -385,10 +393,14 @@ export default function ResultsPage() {
         } as any);
       } finally {
         setLoading(false);
+        clearTimeout(loadingTimeout);
       }
     };
 
     analyzeQuizData();
+
+    // Cleanup timeout on unmount
+    return () => clearTimeout(loadingTimeout);
   }, [router]);
 
   const handleCopyEmailTemplate = async () => {
@@ -780,25 +792,19 @@ Full results: ${shareData.link}`);
 
   if (loading) {
     return (
-      <div className="min-h-screen w-full bg-gradient-to-br from-green-900 to-emerald-950">
-        <WarpBackground
-          perspective={100}
-          beamsPerSide={8}
-          beamSize={6}
-          beamDuration={2}
-          gridColor="rgb(34 197 94 / 0.4)"
-          className="flex items-center justify-center min-h-screen"
-        >
-          <div className="text-center z-10">
-            <h1 className="text-6xl font-bold text-green-100 mb-6 tracking-tight">
-              Falcons Journey Starts Now
-            </h1>
-            <p className="text-xl text-green-200 mb-8">
-              Soaring at warp speed...
-            </p>
-            <div className="w-16 h-16 border-4 border-green-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          </div>
-        </WarpBackground>
+      <div className="min-h-screen w-full bg-gradient-to-br from-green-900 to-emerald-950 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-4xl md:text-6xl font-bold text-green-100 mb-6 tracking-tight">
+            Finding Your Perfect Match
+          </h1>
+          <p className="text-lg md:text-xl text-green-200 mb-8">
+            Analyzing your responses...
+          </p>
+          <div className="w-16 h-16 border-4 border-green-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-sm text-green-300 mt-4">
+            This usually takes just a few seconds
+          </p>
+        </div>
       </div>
     );
   }
