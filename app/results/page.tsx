@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Share2, Calendar, Check, Home, Mail, Copy, CheckCircle, ChevronDown, Play, Send, QrCode, Download, X } from 'lucide-react';
 import Link from 'next/link';
@@ -38,14 +38,14 @@ export default function ResultsPage() {
     faculty: true,
     alumni: true
   });
+  const hasRequestedAnalysis = useRef(false);
 
   useEffect(() => {
-    // Prevent duplicate analysis calls
-    if (results) return;
-    if (!loading) return;
+    // Prevent duplicate analysis calls using ref
+    if (results || hasRequestedAnalysis.current) return;
 
-    // Immediately set loading to false to prevent React Strict Mode duplicates
-    setLoading(false);
+    // Mark that we've started analysis to prevent duplicates
+    hasRequestedAnalysis.current = true;
 
     const analyzeQuizData = async () => {
       let parsedQuizData: QuizResponse | null = null;
