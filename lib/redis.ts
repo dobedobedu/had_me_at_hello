@@ -126,6 +126,10 @@ class RedisService {
   static getSessionKey(sessionId: string): string {
     return `session:${sessionId}`;
   }
+
+  static getProfileEmbeddingCacheKey(profileHash: string): string {
+    return `profile_embedding:${profileHash}`;
+  }
 }
 
 export default RedisService;

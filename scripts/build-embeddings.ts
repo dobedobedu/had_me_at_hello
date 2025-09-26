@@ -274,6 +274,13 @@ async function main() {
 
     // 3. Check if cache is up to date
     const cacheFile = path.join(__dirname, '../knowledge/.cache/embeddings.json');
+    const cacheDir = path.dirname(cacheFile);
+
+    // Ensure cache directory exists
+    if (!fs.existsSync(cacheDir)) {
+      fs.mkdirSync(cacheDir, { recursive: true });
+    }
+
     let existingCache: EmbeddingCache | null = null;
 
     if (fs.existsSync(cacheFile)) {

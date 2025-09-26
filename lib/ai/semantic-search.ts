@@ -39,6 +39,7 @@ class SemanticSearchService {
   private cache: EmbeddingCache | null = null;
   private cacheLoadPromise: Promise<void> | null = null;
   private redis: RedisService;
+  private profileEmbeddingCache: Map<string, number[]> = new Map(); // In-memory session cache
 
   private constructor() {
     this.redis = RedisService.getInstance();
@@ -116,39 +117,85 @@ class SemanticSearchService {
   }
 
   /**
-   * Generate embedding for user profile
+   * Generate embedding for user profile with in-memory and Redis caching
    * Uses Vercel AI Gateway if available, falls back to direct OpenAI, then mock embeddings
    */
   async generateProfileEmbedding(profileText: string): Promise<number[]> {
     if (!this.cache) throw new Error('Embeddings cache not loaded');
+
+    const profileHash = await this.generateTextHash(profileText);
+
+    // Check in-memory cache first (fastest)
+    if (this.profileEmbeddingCache.has(profileHash)) {
+      console.log('⚡ Using in-memory cached profile embedding');
+      return this.profileEmbeddingCache.get(profileHash)!;
+    }
+
+    // Check Redis cache (slower but persistent across instances)
+    const cacheKey = RedisService.getProfileEmbeddingCacheKey(profileHash);
+    try {
+      const cachedEmbedding = await this.redis.getJson<number[]>(cacheKey);
+      if (cachedEmbedding) {
+        console.log('⚡ Using Redis cached profile embedding');
+        // Cache in memory for next time
+        this.profileEmbeddingCache.set(profileHash, cachedEmbedding);
+        return cachedEmbedding;
+      }
+    } catch (error) {
+      console.warn('⚠️ Failed to check profile embedding Redis cache:', error);
+    }
+
+    // Generate new embedding
+    const startTime = Date.now();
+    let embedding: number[];
 
     // Check if we should use real embeddings or mock embeddings based on cache model
     const isUsingMockEmbeddings = this.cache.model.includes('mock');
 
     if (isUsingMockEmbeddings) {
       console.log('🔧 Using mock embeddings for development (cache model: ' + this.cache.model + ')');
-      return this.generateMockEmbedding(profileText);
-    }
-
-    // Try Vercel AI Gateway first
-    const AI_GATEWAY_API_KEY = process.env.AI_GATEWAY_API_KEY;
-    if (AI_GATEWAY_API_KEY && AI_GATEWAY_API_KEY !== 'your_ai_gateway_api_key_here') {
-      try {
-        return await this.generateVercelEmbedding(profileText, AI_GATEWAY_API_KEY);
-      } catch (error) {
-        console.warn('⚠️ Vercel AI Gateway failed, trying direct OpenAI:', error);
+      embedding = await this.generateMockEmbedding(profileText);
+    } else {
+      // Try Vercel AI Gateway first
+      const AI_GATEWAY_API_KEY = process.env.AI_GATEWAY_API_KEY;
+      if (AI_GATEWAY_API_KEY && AI_GATEWAY_API_KEY !== 'your_ai_gateway_api_key_here') {
+        try {
+          embedding = await this.generateVercelEmbedding(profileText, AI_GATEWAY_API_KEY);
+        } catch (error) {
+          console.warn('⚠️ Vercel AI Gateway failed, trying direct OpenAI:', error);
+          const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+          if (OPENAI_API_KEY) {
+            embedding = await this.generateOpenAIEmbedding(profileText, OPENAI_API_KEY);
+          } else {
+            console.warn('⚠️ No embedding API available, falling back to mock embeddings');
+            embedding = await this.generateMockEmbedding(profileText);
+          }
+        }
+      } else {
+        // Fallback to direct OpenAI API
+        const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+        if (OPENAI_API_KEY) {
+          embedding = await this.generateOpenAIEmbedding(profileText, OPENAI_API_KEY);
+        } else {
+          // Final fallback to mock embeddings
+          console.warn('⚠️ No embedding API available, falling back to mock embeddings');
+          embedding = await this.generateMockEmbedding(profileText);
+        }
       }
     }
 
-    // Fallback to direct OpenAI API
-    const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-    if (OPENAI_API_KEY) {
-      return this.generateOpenAIEmbedding(profileText, OPENAI_API_KEY);
-    }
+    const embeddingTime = Date.now() - startTime;
+    console.log(`🧮 Generated profile embedding in ${embeddingTime}ms`);
 
-    // Final fallback to mock embeddings
-    console.warn('⚠️ No embedding API available, falling back to mock embeddings');
-    return this.generateMockEmbedding(profileText);
+    // Cache in memory immediately (fast)
+    this.profileEmbeddingCache.set(profileHash, embedding);
+
+    // Cache to Redis fire-and-forget (don't block the request)
+    void this.redis.setJson(cacheKey, embedding, 3600).catch(error =>
+      console.warn('⚠️ Failed to cache profile embedding to Redis (fire-and-forget):', error)
+    );
+
+    return embedding;
   }
 
   /**
@@ -212,6 +259,14 @@ class SemanticSearchService {
       console.error('Failed to generate OpenAI embedding:', error);
       throw new Error('Could not generate OpenAI embedding for profile');
     }
+  }
+
+  /**
+   * Generate hash for profile text
+   */
+  private async generateTextHash(text: string): Promise<string> {
+    const crypto = await import('crypto');
+    return crypto.createHash('sha256').update(text).digest('hex').substring(0, 16);
   }
 
   /**
@@ -348,6 +403,24 @@ class SemanticSearchService {
     this.cache = null;
     this.cacheLoadPromise = null;
     await this.loadCache();
+  }
+
+  /**
+   * Clear in-memory profile embedding cache
+   */
+  clearProfileEmbeddingCache(): void {
+    this.profileEmbeddingCache.clear();
+    console.log('🧹 Cleared in-memory profile embedding cache');
+  }
+
+  /**
+   * Get profile embedding cache stats
+   */
+  getProfileEmbeddingCacheStats() {
+    return {
+      inMemoryCacheSize: this.profileEmbeddingCache.size,
+      profiles: Array.from(this.profileEmbeddingCache.keys()).map(key => key.substring(0, 8) + '...')
+    };
   }
 }
 

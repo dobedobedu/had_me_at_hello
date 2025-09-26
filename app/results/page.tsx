@@ -16,6 +16,8 @@ import { Confetti } from '@/components/ui/confetti';
 import { SwipeableCards } from '@/components/ui/swipeable-cards';
 import { generateEmailTemplate, generateAdmissionsChecklist, copyToClipboard } from '@/lib/email-template';
 import { generateTourId, generateQRCode, saveTourPassData, createTourPassEmail, type TourPassData } from '@/lib/qr-generator';
+import { WarpBackground } from '@/components/ui/shadcn-io/warp-background';
+import { ABTestingService } from '@/lib/ai/ab-testing';
 
 export default function ResultsPage() {
   const router = useRouter();
@@ -59,7 +61,8 @@ export default function ResultsPage() {
 
         parsedQuizData = JSON.parse(quizDataStr);
         setQuizData(parsedQuizData);
-        
+
+
         // Use the AI service which respects admin settings
         const aiService = AIService.getInstance();
         
@@ -777,19 +780,25 @@ Full results: ${shareData.link}`);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <header className="px-6 py-4 bg-[#004b34]"><div className="max-w-6xl mx-auto h-5" /></header>
-        <main className="max-w-4xl mx-auto px-6 py-8">
-          <div className="animate-pulse space-y-6">
-            <div className="h-8 bg-gray-200 rounded w-1/3" />
-            <div className="h-48 bg-gray-200 rounded" />
-            <div className="grid grid-cols-2 gap-4">
-              <div className="h-24 bg-gray-200 rounded" />
-              <div className="h-24 bg-gray-200 rounded" />
-            </div>
-            <div className="h-10 bg-gray-200 rounded w-1/2" />
+      <div className="min-h-screen w-full bg-gradient-to-br from-green-900 to-emerald-950">
+        <WarpBackground
+          perspective={100}
+          beamsPerSide={8}
+          beamSize={6}
+          beamDuration={2}
+          gridColor="rgb(34 197 94 / 0.4)"
+          className="flex items-center justify-center min-h-screen"
+        >
+          <div className="text-center z-10">
+            <h1 className="text-6xl font-bold text-green-100 mb-6 tracking-tight">
+              Falcons Journey Starts Now
+            </h1>
+            <p className="text-xl text-green-200 mb-8">
+              Soaring at warp speed...
+            </p>
+            <div className="w-16 h-16 border-4 border-green-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
           </div>
-        </main>
+        </WarpBackground>
       </div>
     );
   }

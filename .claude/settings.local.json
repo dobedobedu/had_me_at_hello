@@ -17,7 +17,11 @@
       "mcp__vercel__search_vercel_documentation",
       "Bash(find:*)",
       "Bash(npm run build:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(npm run:*)",
+      "Bash(git push:*)",
+      "Bash(redis-cli:*)",
+      "Bash(printf:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
