@@ -222,7 +222,7 @@ export default function HomePage() {
             href="https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ1pPQ9xNbaHdCjn0RLmWLqhkuL5ePgy2tEp6YAT6tCvHG8emnJQr3gayPfmsnOPCbze_Q_ccJcD"
             target="_blank"
             rel="noopener noreferrer"
-            className="group relative inline-flex items-center rounded-full bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition-all duration-200 hover:bg-white/20 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/50"
+            className="group relative inline-flex items-center rounded-full bg-white/10 px-3 py-1.5 text-xs sm:text-sm font-medium text-white backdrop-blur-sm transition-all duration-200 hover:bg-white/20 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/40"
           >
             <span className="transition-transform group-hover:translate-x-0.5">Book Tour</span>
           </a>
@@ -230,7 +230,7 @@ export default function HomePage() {
       </nav>
 
       {/* Hero Section with Video Background */}
-      <section className="relative min-h-[600px] h-[70vh] overflow-hidden">
+      <section className="relative min-h-[600px] h-[70vh] overflow-hidden pt-24 sm:pt-28">
         {/* Video Background */}
         <div className="absolute -inset-10 w-[calc(100%+80px)] h-[calc(100%+80px)]">
           <video
@@ -307,7 +307,7 @@ export default function HomePage() {
       </section>
 
       {/* Value Props Grid - Shared Borders */}
-      <section className="py-8 md:py-16 px-4">
+      <section className="pt-12 md:pt-20 pb-12 md:pb-16 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-6 auto-rows-[minmax(110px,_auto)] gap-3 sm:grid-cols-6 lg:hidden">
             {statEntries.map(stat => {
