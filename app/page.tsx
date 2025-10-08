@@ -4,7 +4,133 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Calendar, Clock } from 'lucide-react';
 import Link from 'next/link';
 import { ShimmerButton } from '@/components/ui/shimmer-button-simple';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
+type StatEntry = {
+  id: string;
+  value: string;
+  label: string;
+  description: string;
+};
+
+const statEntries: StatEntry[] = [
+  {
+    id: 'students',
+    value: '683',
+    label: 'Students',
+    description: 'Pre-K through Grade 12',
+  },
+  {
+    id: 'class-size',
+    value: '14-18',
+    label: 'Students Per Class',
+    description: 'Smaller groups with focused attention',
+  },
+  {
+    id: 'college',
+    value: '100%',
+    label: 'College Acceptance',
+    description: 'Our graduates earn admission to top universities',
+  },
+  {
+    id: 'global',
+    value: 'Global Education',
+    label: 'Sister Schools Worldwide',
+    description: 'Denmark, Spain, Argentina, Japan, Tanzania, Honduras',
+  },
+  {
+    id: 'marine',
+    value: 'Marine Science',
+    label: '6,000 Square Foot Facility',
+    description: "The area’s only school with waterfront access",
+  },
+  {
+    id: 'merit',
+    value: '53',
+    label: 'National Merit Scholarship Finalists',
+    description: 'Recognized since 2005',
+  },
+  {
+    id: 'state-titles',
+    value: '20',
+    label: 'State Titles',
+    description: 'Football, Golf, Track, Tennis, Soccer',
+  },
+  {
+    id: 'sports',
+    value: '14',
+    label: 'Sports Offered',
+    description: 'Grades 6-12 compete in 14 varsity sports',
+  },
+  {
+    id: 'steam',
+    value: 'STEAM',
+    label: 'Innovation Center',
+    description: '16,000 square feet of hands-on learning',
+  },
+  {
+    id: 'niche',
+    value: 'A+',
+    label: 'Niche.com Ranking',
+    description: 'Top-rated independent school experience',
+  },
+];
+
+function StatFlipCard({ value, label, description }: StatEntry) {
+  const [flipped, setFlipped] = useState(false);
+
+  const toggle = useCallback(() => {
+    setFlipped(prev => !prev);
+  }, []);
+
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          toggle();
+        }
+      }}
+      aria-pressed={flipped}
+      className="relative w-full rounded-2xl border border-dotted border-gray-300 bg-white/90 p-4 text-left shadow-sm transition-transform duration-200 focus:outline-none focus:ring-2 focus:ring-[#004b34]/40"
+      style={{ perspective: '1200px' }}
+    >
+      <div
+        className={`relative min-h-[140px] w-full transition-transform duration-500 ${flipped ? '[transform:rotateY(180deg)]' : ''}`}
+        style={{ transformStyle: 'preserve-3d' }}
+      >
+        <div
+          className="absolute inset-0 flex h-full w-full flex-col items-start justify-center gap-2"
+          style={{ backfaceVisibility: 'hidden' }}
+        >
+          <span className="text-4xl font-schraft-medium text-[#003825] md:text-5xl">
+            {value}
+          </span>
+          <span className="text-sm font-schraft uppercase tracking-wider text-gray-600">
+            {label}
+          </span>
+          <span className="text-xs text-gray-400 font-schraft">
+            Tap for more
+          </span>
+        </div>
+
+        <div
+          className="absolute inset-0 flex h-full w-full flex-col justify-center gap-2 rounded-2xl bg-[#004b34]/5 px-2 py-4"
+          style={{ transform: 'rotateY(180deg)', backfaceVisibility: 'hidden' }}
+        >
+          <span className="text-base font-schraft-medium text-[#003825]">
+            {label}
+          </span>
+          <span className="text-sm text-gray-600 font-schraft leading-snug">
+            {description}
+          </span>
+        </div>
+      </div>
+    </button>
+  );
+}
 
 export default function HomePage() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -119,7 +245,13 @@ export default function HomePage() {
       {/* Value Props Grid - Shared Borders */}
       <section className="py-8 md:py-16 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-12 border-t border-l border-dotted border-gray-300">
+          <div className="flex flex-col gap-4 lg:hidden">
+            {statEntries.map(stat => (
+              <StatFlipCard key={stat.id} {...stat} />
+            ))}
+          </div>
+
+          <div className="hidden lg:grid grid-cols-12 border-t border-l border-dotted border-gray-300">
             
             {/* Student Body - Large */}
             <motion.div 
