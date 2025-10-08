@@ -13,8 +13,8 @@ type StatEntry = {
   detail: string;
   accent?: string;
   layout?: {
-    baseSpan?: 1 | 2;
-    smSpan?: 1 | 2 | 3;
+    baseSpan?: 1 | 2 | 3 | 4 | 5 | 6;
+    smSpan?: 1 | 2 | 3 | 4 | 5 | 6;
     activeSpan?: 1 | 2 | 3 | 4 | 5 | 6;
     activeSmSpan?: 1 | 2 | 3 | 4 | 5 | 6;
     size?: 'sm' | 'md' | 'lg';
