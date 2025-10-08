@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx mcp-shadcn:*)",
+      "Bash(npx:*)",
+      "Bash(git checkout:*)",
+      "WebFetch(domain:tweakcn.com)",
+      "WebSearch",
+      "Bash(claude --version)",
+      "Read(//Users/spacegreyodyssey/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/**)",
+      "Bash(node:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npm run build:embeddings:*)",
+      "Bash(tsx scripts/build-mock-embeddings.ts:*)",
+      "Bash(npm run typecheck:*)",
+      "Bash(mkdir:*)",
+      "mcp__vercel__search_vercel_documentation",
+      "Bash(find:*)",
+      "Bash(npm run build:*)",
+      "Bash(git add:*)",
+      "Bash(npm run:*)",
+      "Bash(git push:*)",
+      "Bash(redis-cli:*)",
+      "Bash(printf:*)",
+      "Bash(git commit:*)"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "shadcn"
+  ]
+}

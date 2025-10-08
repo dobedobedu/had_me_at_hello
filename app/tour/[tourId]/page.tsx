@@ -63,7 +63,7 @@ export default function ImprovedTourPassPage() {
               motivation: fullData.quizResults.motivation || 'Just exploring',
               timeline: fullData.quizResults.timeline || 'Fall 2025',
               parentValues: fullData.quizResults.parentValues || [],
-              aboutKids: fullData.quizResults.aboutKids || ''
+              aboutKids: fullData.quizResults.threeWords || fullData.quizResults.aboutKids || ''
             } : undefined
           };
           setTourData(simplified);
@@ -93,7 +93,7 @@ export default function ImprovedTourPassPage() {
                   motivation: fullData.quizResults.motivation || 'Just exploring',
                   timeline: fullData.quizResults.timeline || 'Fall 2025',
                   parentValues: fullData.quizResults.parentValues || [],
-                  aboutKids: fullData.quizResults.aboutKids || ''
+                  aboutKids: fullData.quizResults.threeWords || fullData.quizResults.aboutKids || ''
                 } : undefined
               };
               setTourData(simplified);

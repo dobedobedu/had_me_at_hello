@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# embedding cache (optional - can commit for faster deploys)
+knowledge/.cache/

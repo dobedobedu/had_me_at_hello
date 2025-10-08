@@ -1,0 +1,429 @@
+{
+  "personas": [
+    {
+      "id": "persona_01",
+      "name": "The Real Estate Mogul",
+      "location": "Miami → Lakewood Ranch",
+      "family": "Richard & Victoria Thompson, son Connor (5th grade)",
+      "timeline": "Summer 2025",
+      "background": "Richard built a commercial real estate empire in Miami. Victoria is former news anchor. Connor is extroverted but needs structure.",
+      "quizResponse": {
+        "gradeLevel": "intermediate",
+        "currentSituation": "Relocating after selling Miami properties",
+        "interests": ["leadership", "athletics", "public speaking"],
+        "familyValues": ["achievement", "character development", "networking"],
+        "timeline": "We need to start this fall",
+        "childDescription": "Confident, outgoing, natural leader",
+        "threeWords": "Confident, outgoing, natural leader"
+      }
+    },
+    {
+      "id": "persona_02",
+      "name": "The Pharmaceutical Executive",
+      "location": "Stamford, CT → Sarasota",
+      "family": "Dr. Michael & Lisa Chen, daughter Grace (7th grade)",
+      "timeline": "January 2025",
+      "background": "Michael is BigPharma VP, Lisa is pediatric dentist. Grace is academically gifted but socially anxious.",
+      "quizResponse": {
+        "gradeLevel": "middle",
+        "currentSituation": "Corporate relocation to manage Southeast operations",
+        "interests": ["science", "reading", "art"],
+        "familyValues": ["academic excellence", "individual attention", "kindness"],
+        "timeline": "Mid-year enrollment in January",
+        "childDescription": "Brilliant, shy, perfectionist",
+        "threeWords": "Brilliant, shy, perfectionist"
+      }
+    },
+    {
+      "id": "persona_03",
+      "name": "The Aerospace Engineer",
+      "location": "Seattle → Tampa",
+      "family": "Captain Jake & Dr. Emma Wilson, son Tyler (11th grade)",
+      "timeline": "Fall 2025",
+      "background": "Jake is Boeing engineer, Emma is aerospace research scientist. Tyler loves aviation and engineering.",
+      "quizResponse": {
+        "gradeLevel": "upper",
+        "currentSituation": "Boeing transfer to Tampa facility",
+        "interests": ["engineering", "aviation", "mathematics", "technology"],
+        "familyValues": ["innovation", "problem-solving", "college preparation"],
+        "timeline": "Starting junior year this fall",
+        "childDescription": "Analytical, curious, inventor",
+        "threeWords": "Analytical, curious, inventor"
+      }
+    },
+    {
+      "id": "persona_04",
+      "name": "The Entertainment Lawyer",
+      "location": "Beverly Hills → St. Pete",
+      "family": "Jessica Sterling (single mom), daughter Maya (6th grade)",
+      "timeline": "Immediate",
+      "background": "Jessica represents A-list celebrities, moving for lifestyle change. Maya is artistic and dramatic.",
+      "quizResponse": {
+        "gradeLevel": "middle",
+        "currentSituation": "Career change seeking better work-life balance",
+        "interests": ["theater", "music", "writing", "drama"],
+        "familyValues": ["creativity", "self-expression", "emotional growth"],
+        "timeline": "We need to start immediately",
+        "childDescription": "Dramatic, artistic, expressive",
+        "threeWords": "Dramatic, artistic, expressive"
+      }
+    },
+    {
+      "id": "persona_05",
+      "name": "The Cryptocurrency Millionaire",
+      "location": "Austin → Palmetto Bay",
+      "family": "Alex & Jordan Kim, son Daniel (8th grade)",
+      "timeline": "Fall 2025",
+      "background": "Alex made fortune in crypto, Jordan is tech startup founder. Daniel is tech-savvy but lacks social skills.",
+      "quizResponse": {
+        "gradeLevel": "middle",
+        "currentSituation": "Sold crypto business, semi-retired at 35",
+        "interests": ["technology", "gaming", "programming", "entrepreneurship"],
+        "familyValues": ["innovation", "independence", "future-readiness"],
+        "timeline": "Starting 8th grade this fall",
+        "childDescription": "Tech-savvy, introverted, logical",
+        "threeWords": "Tech-savvy, introverted, logical"
+      }
+    },
+    {
+      "id": "persona_06",
+      "name": "The Fashion Industry Executive",
+      "location": "Manhattan → Sarasota",
+      "family": "Pierre & Gabrielle Dubois, daughter Chloe (9th grade)",
+      "timeline": "Summer 2025",
+      "background": "Pierre runs luxury fashion house, Gabrielle is fashion photographer. Chloe is style-conscious and social.",
+      "quizResponse": {
+        "gradeLevel": "upper",
+        "currentSituation": "Opening Southeast fashion operations",
+        "interests": ["fashion", "photography", "art", "social activities"],
+        "familyValues": ["creativity", "cultural awareness", "sophistication"],
+        "timeline": "Summer move for high school start",
+        "childDescription": "Stylish, social, trend-setter",
+        "threeWords": "Stylish, social, trend-setter"
+      }
+    },
+    {
+      "id": "persona_07",
+      "name": "The Professional Athlete Family",
+      "location": "Dallas → Tampa",
+      "family": "Marcus & Tanya Jackson, son Malik (10th grade)",
+      "timeline": "Immediate",
+      "background": "Marcus is former NFL player turned sports agent, Tanya is sports psychologist. Malik is elite basketball prospect.",
+      "quizResponse": {
+        "gradeLevel": "upper",
+        "currentSituation": "Opened sports management firm in Tampa",
+        "interests": ["basketball", "athletics", "fitness", "competition"],
+        "familyValues": ["excellence", "discipline", "teamwork", "character"],
+        "timeline": "Need immediate enrollment",
+        "childDescription": "Athletic, competitive, dedicated",
+        "threeWords": "Athletic, competitive, dedicated"
+      }
+    },
+    {
+      "id": "persona_08",
+      "name": "The Art Gallery Owner",
+      "location": "SoHo, NY → St. Petersburg",
+      "family": "Isabella & Marco Rossi, daughter Sophia (7th grade)",
+      "timeline": "Fall 2025",
+      "background": "Isabella owns contemporary art galleries, Marco is art restoration expert. Sophia is creative and cultured.",
+      "quizResponse": {
+        "gradeLevel": "middle",
+        "currentSituation": "Expanding gallery presence to emerging art markets",
+        "interests": ["art", "museums", "creativity", "history"],
+        "familyValues": ["creativity", "cultural enrichment", "beauty", "tradition"],
+        "timeline": "Planning for fall semester",
+        "childDescription": "Artistic, sophisticated, cultured",
+        "threeWords": "Artistic, sophisticated, cultured"
+      }
+    },
+    {
+      "id": "persona_09",
+      "name": "The Venture Capitalist",
+      "location": "Palo Alto → Lakewood Ranch",
+      "family": "Sarah & David Park, son Kevin (12th grade)",
+      "timeline": "Fall 2025",
+      "background": "Sarah is partner at top VC firm, David is Stanford MBA consultant. Kevin needs Ivy League college prep.",
+      "quizResponse": {
+        "gradeLevel": "upper",
+        "currentSituation": "Opening East Coast VC operations",
+        "interests": ["business", "entrepreneurship", "debate", "economics"],
+        "familyValues": ["achievement", "networking", "college preparation", "leadership"],
+        "timeline": "Senior year starting fall",
+        "childDescription": "Ambitious, strategic, future-focused",
+        "threeWords": "Ambitious, strategic, future-focused"
+      }
+    },
+    {
+      "id": "persona_10",
+      "name": "The Renewable Energy CEO",
+      "location": "Portland → Sarasota",
+      "family": "Dr. Rachel & Tom Green, daughter Emma (6th grade)",
+      "timeline": "January 2025",
+      "background": "Rachel leads solar energy company, Tom is environmental engineer. Emma is passionate about sustainability.",
+      "quizResponse": {
+        "gradeLevel": "middle",
+        "currentSituation": "Expanding renewable energy business to Southeast",
+        "interests": ["environmental science", "sustainability", "outdoor activities"],
+        "familyValues": ["environmental responsibility", "innovation", "global citizenship"],
+        "timeline": "Mid-year transfer in January",
+        "childDescription": "Eco-conscious, thoughtful, activist",
+        "threeWords": "Eco-conscious, thoughtful, activist"
+      }
+    },
+    {
+      "id": "persona_11",
+      "name": "The Casino Owner",
+      "location": "Las Vegas → Tampa",
+      "family": "Vincent & Maria Castellano, son Anthony (9th grade)",
+      "timeline": "Summer 2025",
+      "background": "Vincent owns casino empire, Maria is hospitality executive. Anthony is street-smart but needs academic focus.",
+      "quizResponse": {
+        "gradeLevel": "upper",
+        "currentSituation": "Diversifying business interests to Florida",
+        "interests": ["business", "strategy", "social activities", "leadership"],
+        "familyValues": ["family loyalty", "hard work", "respect", "success"],
+        "timeline": "High school starting fall",
+        "childDescription": "Charismatic, street-smart, ambitious",
+        "threeWords": "Charismatic, street-smart, ambitious"
+      }
+    },
+    {
+      "id": "persona_12",
+      "name": "The Federal Judge",
+      "location": "Washington DC → St. Pete",
+      "family": "Hon. Patricia & Robert Adams, daughter Caroline (8th grade)",
+      "timeline": "Fall 2025",
+      "background": "Patricia is federal appeals judge, Robert is constitutional law professor. Caroline is debate champion and future lawyer.",
+      "quizResponse": {
+        "gradeLevel": "middle",
+        "currentSituation": "Appointed to 11th Circuit Court of Appeals",
+        "interests": ["debate", "government", "law", "public service"],
+        "familyValues": ["justice", "civic duty", "intellectual rigor", "service"],
+        "timeline": "Fall enrollment for 8th grade",
+        "childDescription": "Articulate, principled, logical",
+        "threeWords": "Articulate, principled, logical"
+      }
+    },
+    {
+      "id": "persona_13",
+      "name": "The Biotech Startup Founder",
+      "location": "Boston → Lakewood Ranch",
+      "family": "Dr. Jennifer & Mark Liu, twins Alex & Zoe (5th grade)",
+      "timeline": "Immediate",
+      "background": "Jennifer founded gene therapy company, Mark is biotech investor. Twins are academically gifted but very different personalities.",
+      "quizResponse": {
+        "gradeLevel": "intermediate",
+        "currentSituation": "IPO completed, relocating for lifestyle change",
+        "interests": ["science", "reading", "different interests for each twin"],
+        "familyValues": ["intellectual curiosity", "innovation", "individual development"],
+        "timeline": "Need to start immediately",
+        "childDescription": "Gifted, different personalities, curious",
+        "threeWords": "Gifted, different personalities, curious"
+      }
+    },
+    {
+      "id": "persona_14",
+      "name": "The Luxury Hotel Chain Owner",
+      "location": "Monaco → Sarasota",
+      "family": "Alessandro & Francesca Bianchi, son Lorenzo (11th grade)",
+      "timeline": "Fall 2025",
+      "background": "Alessandro owns boutique luxury hotels worldwide, Francesca is interior designer. Lorenzo is worldly but needs structure.",
+      "quizResponse": {
+        "gradeLevel": "upper",
+        "currentSituation": "Expanding luxury hospitality to US market",
+        "interests": ["travel", "languages", "hospitality", "international culture"],
+        "familyValues": ["sophistication", "cultural awareness", "excellence", "tradition"],
+        "timeline": "Junior year starting fall",
+        "childDescription": "Worldly, sophisticated, multilingual",
+        "threeWords": "Worldly, sophisticated, multilingual"
+      }
+    },
+    {
+      "id": "persona_15",
+      "name": "The Professional Golf Family",
+      "location": "Scottsdale → Tampa",
+      "family": "Brad & Kelly Morrison, daughter Madison (7th grade)",
+      "timeline": "Summer 2025",
+      "background": "Brad is PGA Tour pro, Kelly manages golf academies. Madison is golf prodigy but needs academic balance.",
+      "quizResponse": {
+        "gradeLevel": "middle",
+        "currentSituation": "Career winding down, focusing on golf instruction",
+        "interests": ["golf", "athletics", "fitness", "competition"],
+        "familyValues": ["discipline", "excellence", "balance", "sportsmanship"],
+        "timeline": "Summer move for middle school",
+        "childDescription": "Athletic, focused, competitive",
+        "threeWords": "Athletic, focused, competitive"
+      }
+    },
+    {
+      "id": "persona_16",
+      "name": "The Shipping Magnate",
+      "location": "Hamburg, Germany → Palmetto",
+      "family": "Klaus & Ingrid Mueller, son Hans (10th grade)",
+      "timeline": "January 2025",
+      "background": "Klaus owns international shipping company, Ingrid is maritime lawyer. Hans speaks 4 languages but struggles with American culture.",
+      "quizResponse": {
+        "gradeLevel": "upper",
+        "currentSituation": "Establishing US headquarters for shipping operations",
+        "interests": ["international business", "languages", "maritime history", "travel"],
+        "familyValues": ["global perspective", "hard work", "tradition", "excellence"],
+        "timeline": "Mid-year transfer needed",
+        "childDescription": "Multilingual, traditional, adjusting",
+        "threeWords": "Multilingual, traditional, adjusting"
+      }
+    },
+    {
+      "id": "persona_17",
+      "name": "The Music Industry Executive",
+      "location": "Nashville → St. Pete",
+      "family": "Johnny & Faith Carter, daughter Savannah (6th grade)",
+      "timeline": "Fall 2025",
+      "background": "Johnny is record label CEO, Faith is country music songwriter. Savannah is musically gifted and performs professionally.",
+      "quizResponse": {
+        "gradeLevel": "middle",
+        "currentSituation": "Expanding music business to broader markets",
+        "interests": ["music", "singing", "performance", "songwriting"],
+        "familyValues": ["creativity", "artistic expression", "authenticity", "hard work"],
+        "timeline": "6th grade starting fall",
+        "childDescription": "Musical, performing, talented",
+        "threeWords": "Musical, performing, talented"
+      }
+    },
+    {
+      "id": "persona_18",
+      "name": "The Private Equity Partner",
+      "location": "Greenwich → Lakewood Ranch",
+      "family": "William & Catherine Blackstone, son Harrison (12th grade)",
+      "timeline": "Fall 2025",
+      "background": "William is PE managing partner, Catherine chairs museum board. Harrison needs elite college placement for Wall Street career.",
+      "quizResponse": {
+        "gradeLevel": "upper",
+        "currentSituation": "Tax optimization move while maintaining business",
+        "interests": ["finance", "economics", "tennis", "networking"],
+        "familyValues": ["achievement", "networking", "tradition", "excellence"],
+        "timeline": "Senior year for college prep",
+        "childDescription": "Privileged, ambitious, traditional",
+        "threeWords": "Privileged, ambitious, traditional"
+      }
+    },
+    {
+      "id": "persona_19",
+      "name": "The Cybersecurity Executive",
+      "location": "Northern Virginia → Sarasota",
+      "family": "Colonel Sarah & Mark Singh, son Raj (8th grade)",
+      "timeline": "Summer 2025",
+      "background": "Sarah is retired military cybersecurity expert, Mark is defense contractor. Raj is tech genius but socially awkward.",
+      "quizResponse": {
+        "gradeLevel": "middle",
+        "currentSituation": "Defense consulting work allows remote location",
+        "interests": ["cybersecurity", "coding", "chess", "military history"],
+        "familyValues": ["discipline", "service", "integrity", "excellence"],
+        "timeline": "8th grade starting fall",
+        "childDescription": "Brilliant, disciplined, introverted",
+        "threeWords": "Brilliant, disciplined, introverted"
+      }
+    },
+    {
+      "id": "persona_20",
+      "name": "The Yacht Designer",
+      "location": "Newport, RI → Tampa",
+      "family": "Captain James & Dr. Sophie Harbor, daughter Marina (9th grade)",
+      "timeline": "Immediate",
+      "background": "James designs superyachts, Sophie is marine biologist. Marina loves sailing and marine conservation.",
+      "quizResponse": {
+        "gradeLevel": "upper",
+        "currentSituation": "Growing yacht design business with wealthy clientele",
+        "interests": ["sailing", "marine biology", "environmental science", "ocean conservation"],
+        "familyValues": ["adventure", "environmental stewardship", "excellence", "exploration"],
+        "timeline": "Need immediate enrollment",
+        "childDescription": "Adventurous, ocean-loving, environmental",
+        "threeWords": "Adventurous, ocean-loving, environmental"
+      }
+    },
+    {
+      "id": "persona_21",
+      "name": "The Plastic Surgery Practice",
+      "location": "Beverly Hills → St. Petersburg",
+      "family": "Dr. Michael & Lisa Stefano, son Michael Jr. (7th grade)",
+      "timeline": "Fall 2025",
+      "background": "Michael is celebrity plastic surgeon, Lisa manages medical spas. Michael Jr. is image-conscious but kind-hearted.",
+      "quizResponse": {
+        "gradeLevel": "middle",
+        "currentSituation": "Expanding practice to serve wealthy Florida clientele",
+        "interests": ["medicine", "helping others", "social activities", "fitness"],
+        "familyValues": ["helping others", "excellence", "appearance", "success"],
+        "timeline": "7th grade starting fall",
+        "childDescription": "Caring, image-conscious, helpful",
+        "threeWords": "Caring, image-conscious, helpful"
+      }
+    },
+    {
+      "id": "persona_22",
+      "name": "The Mining Industry Family",
+      "location": "Denver → Lakewood Ranch",
+      "family": "Rex & Martha Coleman, son Colt (10th grade)",
+      "timeline": "Summer 2025",
+      "background": "Rex owns mining operations, Martha is rancher. Colt is outdoorsy, loves geology and environmental science.",
+      "quizResponse": {
+        "gradeLevel": "upper",
+        "currentSituation": "Diversifying business interests beyond mining",
+        "interests": ["geology", "environmental science", "outdoor activities", "conservation"],
+        "familyValues": ["hard work", "land stewardship", "practical knowledge", "independence"],
+        "timeline": "High school starting fall",
+        "childDescription": "Outdoorsy, practical, environmental",
+        "threeWords": "Outdoorsy, practical, environmental"
+      }
+    },
+    {
+      "id": "persona_23",
+      "name": "The Food & Beverage Empire",
+      "location": "Chicago → Tampa",
+      "family": "Giuseppe & Maria Romano, daughter Isabella (6th grade)",
+      "timeline": "Fall 2025",
+      "background": "Giuseppe owns restaurant chains, Maria is celebrity chef. Isabella loves cooking and wants to continue family business.",
+      "quizResponse": {
+        "gradeLevel": "middle",
+        "currentSituation": "Expanding restaurant empire to Florida markets",
+        "interests": ["cooking", "business", "hospitality", "Italian culture"],
+        "familyValues": ["family tradition", "hard work", "hospitality", "excellence"],
+        "timeline": "6th grade starting fall",
+        "childDescription": "Culinary, family-oriented, entrepreneurial",
+        "threeWords": "Culinary, family-oriented, entrepreneurial"
+      }
+    },
+    {
+      "id": "persona_24",
+      "name": "The Professional Racing Family",
+      "location": "Indianapolis → Sarasota",
+      "family": "Tony & Jennifer Speed, son Jake (11th grade)",
+      "timeline": "January 2025",
+      "background": "Tony is former IndyCar driver, now team owner. Jennifer manages racing operations. Jake races go-karts competitively.",
+      "quizResponse": {
+        "gradeLevel": "upper",
+        "currentSituation": "Racing season allows Florida winter training base",
+        "interests": ["racing", "engineering", "mechanics", "competition"],
+        "familyValues": ["speed", "precision", "teamwork", "calculated risk"],
+        "timeline": "Mid-year transfer for racing season",
+        "childDescription": "Fast, precise, competitive",
+        "threeWords": "Fast, precise, competitive"
+      }
+    },
+    {
+      "id": "persona_25",
+      "name": "The Luxury Watch Dealer",
+      "location": "Geneva, Switzerland → Palmetto",
+      "family": "Jean-Claude & Monique Dubois, son Philippe (8th grade)",
+      "timeline": "Fall 2025",
+      "background": "Jean-Claude deals rare luxury watches, Monique is jewelry designer. Philippe appreciates craftsmanship and precision.",
+      "quizResponse": {
+        "gradeLevel": "middle",
+        "currentSituation": "Establishing US luxury goods market presence",
+        "interests": ["craftsmanship", "precision engineering", "luxury goods", "history"],
+        "familyValues": ["quality", "tradition", "craftsmanship", "excellence"],
+        "timeline": "8th grade starting fall",
+        "childDescription": "Meticulous, appreciates quality, refined",
+        "threeWords": "Meticulous, appreciates quality, refined"
+      }
+    }
+  ]
+}

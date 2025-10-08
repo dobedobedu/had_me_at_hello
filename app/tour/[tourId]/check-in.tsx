@@ -74,7 +74,7 @@ export default function CheckInForm({ tourId, studentName, onCheckIn }: CheckInF
             value={formData.fullName}
             onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
             placeholder="Enter full name"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004b34] focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900 bg-white placeholder-gray-500"
             required
           />
         </div>
@@ -88,7 +88,7 @@ export default function CheckInForm({ tourId, studentName, onCheckIn }: CheckInF
           <select
             value={formData.currentGrade}
             onChange={(e) => setFormData({ ...formData, currentGrade: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004b34] focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900 bg-white"
             required
           >
             <option value="">Select grade...</option>
@@ -121,14 +121,14 @@ export default function CheckInForm({ tourId, studentName, onCheckIn }: CheckInF
             value={formData.currentSchool}
             onChange={(e) => setFormData({ ...formData, currentSchool: e.target.value })}
             placeholder="Enter current school name"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004b34] focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900 bg-white placeholder-gray-500"
             required
           />
         </div>
 
         <button
           type="submit"
-          className="w-full py-3 bg-[#004b34] text-white font-semibold rounded-lg hover:bg-[#003825] transition-colors"
+          className="w-full py-3 bg-green-700 text-white font-semibold rounded-lg hover:bg-green-800 transition-colors"
         >
           Complete Check-In
         </button>

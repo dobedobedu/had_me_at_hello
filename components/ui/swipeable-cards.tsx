@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Card {
   id: string;
-  type: 'alumni' | 'faculty';
+  type: 'alumni' | 'faculty' | 'student';
   content: React.ReactNode;
 }
 
@@ -127,7 +127,7 @@ export function SwipeableCards({ cards, className = '', disableDrag = false, hea
       {/* Navigation arrows removed per KISS request */}
 
       {/* Pagination Dots */}
-      <div className="flex justify-center gap-2 mt-6">
+      <div className="flex justify-center gap-2 mt-8">
         {cards.map((_, index) => (
           <button
             key={index}

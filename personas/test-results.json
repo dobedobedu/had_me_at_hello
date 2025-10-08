@@ -1,0 +1,406 @@
+{
+  "timestamp": "2025-09-26T04:02:30.275Z",
+  "totalPersonas": 5,
+  "successful": 5,
+  "failed": 0,
+  "results": [
+    {
+      "id": "persona_01",
+      "name": "The Real Estate Mogul",
+      "family": "Richard & Victoria Thompson, son Connor (5th grade)",
+      "quizResponse": {
+        "gradeLevel": "intermediate",
+        "currentSituation": "Relocating after selling Miami properties",
+        "interests": [
+          "leadership",
+          "athletics",
+          "public speaking"
+        ],
+        "familyValues": [
+          "achievement",
+          "character development",
+          "networking"
+        ],
+        "timeline": "We need to start this fall",
+        "childDescription": "Confident, outgoing, natural leader",
+        "threeWords": "Confident, outgoing, natural leader"
+      },
+      "results": {
+        "matchScore": 96,
+        "personalizedMessage": "Your child's natural leadership and passion for athletics remind me so much of Isabelle, whose journey at Saint Stephen's has built her confidence through team sports and competitive spirit—imagine your outgoing leader thriving in our supportive environment starting this fall. Under Mr. Hudson's guidance as Athletic Director, they'll develop not just skills but character, much like alumni Chase Brown, who credits our program for his NFL success and leadership mindset. We'd love to connect you with these stories during your visit to see how Saint Stephen's can nurture your family's vision for achievement and growth.",
+        "matchedStudents": [
+          {
+            "id": "isabelle_athletics",
+            "name": "Isabelle",
+            "achievement": "Athletic excellence with strong competitive spirit and team dedication",
+            "interests": [
+              "athletics",
+              "sports",
+              "competition",
+              "determination",
+              "fitness",
+              "teamwork"
+            ]
+          },
+          {
+            "id": "chase-brown-2018",
+            "name": "Chase",
+            "achievement": "Running Back at Cincinnati Bengals",
+            "interests": [
+              "sports",
+              "nfl",
+              "football",
+              "athletics"
+            ]
+          }
+        ],
+        "matchedFaculty": [
+          {
+            "id": "cole_hudson",
+            "name": "Cole Hudson",
+            "title": "Athletic Director",
+            "department": "Athletics",
+            "specializes": [
+              "athletics",
+              "character_building",
+              "competition",
+              "leadership"
+            ]
+          }
+        ],
+        "matchedAlumni": [
+          {
+            "id": "chase-brown-2018",
+            "firstName": "Chase",
+            "lastName": "Brown",
+            "classYear": "2018",
+            "currentRole": "Running Back at Cincinnati Bengals",
+            "photoUrl": "https://img.youtube.com/vi/Xq3HJUqallU/maxresdefault.jpg",
+            "videoUrl": "https://www.youtube.com/watch?v=Xq3HJUqallU",
+            "interests": [
+              "sports",
+              "nfl",
+              "football",
+              "athletics"
+            ],
+            "storyTldr": "The focus on academics and the relationships I built at Sain...",
+            "achievement": "Running Back at Cincinnati Bengals",
+            "quote": "My leadership skills, work ethic, my whole mindset started at SSES.",
+            "gradeLevel": "high"
+          }
+        ],
+        "provider": "hybrid:semantic+llm",
+        "processingTime": 4064,
+        "semanticResultsCount": {
+          "students": 5,
+          "faculty": 4,
+          "alumni": 4
+        }
+      }
+    },
+    {
+      "id": "persona_02",
+      "name": "The Pharmaceutical Executive",
+      "family": "Dr. Michael & Lisa Chen, daughter Grace (7th grade)",
+      "quizResponse": {
+        "gradeLevel": "middle",
+        "currentSituation": "Corporate relocation to manage Southeast operations",
+        "interests": [
+          "science",
+          "reading",
+          "art"
+        ],
+        "familyValues": [
+          "academic excellence",
+          "individual attention",
+          "kindness"
+        ],
+        "timeline": "Mid-year enrollment in January",
+        "childDescription": "Brilliant, shy, perfectionist",
+        "threeWords": "Brilliant, shy, perfectionist"
+      },
+      "results": {
+        "matchScore": 94,
+        "personalizedMessage": "Dear [Family Name], your brilliant, shy perfectionist sounds like a natural fit for our community, much like the students in our academic excellence stories who thrive with personalized challenges in science and beyond. Imagine your child exploring hands-on experiments with Mr. Angelo, our inspiring middle school science teacher, while building confidence through individualized support that honors their love of reading and art. Our alumni like Dr. Hamilton show how this foundation leads to extraordinary paths in science— we'd love to discuss how we can welcome your child mid-year in January.",
+        "matchedStudents": [
+          {
+            "id": "academic_excellence",
+            "name": "Academic Students",
+            "achievement": "High academic achievement with personalized support and advanced opportunities",
+            "interests": [
+              "academics",
+              "science",
+              "math",
+              "technology",
+              "research",
+              "stem",
+              "college_prep",
+              "marine science",
+              "ocean"
+            ]
+          },
+          {
+            "id": "dr_hamilton_graduate",
+            "name": "Dr. Hamilton",
+            "achievement": "Successful medical doctor serving the community",
+            "interests": [
+              "medicine",
+              "healthcare",
+              "science",
+              "academics",
+              "STEM",
+              "college_prep",
+              "research"
+            ]
+          }
+        ],
+        "matchedFaculty": [
+          {
+            "id": "andrew_angelo",
+            "name": "Andrew Angelo",
+            "title": "Middle School Science Teacher",
+            "department": "Science",
+            "specializes": [
+              "science",
+              "middle_school",
+              "hands_on_learning",
+              "inquiry_based"
+            ]
+          }
+        ],
+        "matchedAlumni": [
+          {
+            "id": "dr_hamilton_graduate",
+            "firstName": "Dr. Hamilton",
+            "lastName": "Hamilton",
+            "classYear": "Unknown",
+            "currentRole": "Medical Doctor",
+            "photoUrl": "https://img.youtube.com/vi/LoDBAZi8saM/maxresdefault.jpg",
+            "videoUrl": "https://www.youtube.com/watch?v=LoDBAZi8saM",
+            "interests": [
+              "medicine",
+              "healthcare",
+              "science",
+              "academics",
+              "STEM",
+              "college_prep",
+              "research"
+            ],
+            "storyTldr": "Saint Stephen's graduate who became a medical doctor",
+            "achievement": "Successful medical doctor serving the community",
+            "quote": "Saint Stephen's provided the academic foundation and character development that prepared me for medical school and beyond",
+            "gradeLevel": "high",
+            "interestKeywords": [
+              "pre-med preparation",
+              "critical thinking foundation",
+              "medical school readiness",
+              "residency discipline"
+            ],
+            "personaDescriptors": [
+              "mission-driven physician",
+              "disciplined scholar"
+            ],
+            "outcomeHighlights": [
+              "Credits SSES with the discipline and curiosity that carried through medical training"
+            ]
+          }
+        ],
+        "provider": "hybrid:semantic+llm",
+        "processingTime": 3501,
+        "semanticResultsCount": {
+          "students": 5,
+          "faculty": 4,
+          "alumni": 4
+        }
+      }
+    },
+    {
+      "id": "persona_03",
+      "name": "The Aerospace Engineer",
+      "family": "Captain Jake & Dr. Emma Wilson, son Tyler (11th grade)",
+      "quizResponse": {
+        "gradeLevel": "upper",
+        "currentSituation": "Boeing transfer to Tampa facility",
+        "interests": [
+          "engineering",
+          "aviation",
+          "mathematics",
+          "technology"
+        ],
+        "familyValues": [
+          "innovation",
+          "problem-solving",
+          "college preparation"
+        ],
+        "timeline": "Starting junior year this fall",
+        "childDescription": "Analytical, curious, inventor",
+        "threeWords": "Analytical, curious, inventor"
+      },
+      "results": {
+        "matchScore": 96,
+        "personalizedMessage": "Based on \"Analytical, curious, inventor\", we think Academic Students and Mr. Cotton would be wonderful connections for your family to explore at Saint Stephen's. We'd love to arrange a visit where you can meet them and see our campus firsthand.",
+        "matchedStudents": [
+          {
+            "id": "academic_excellence",
+            "name": "Academic Students",
+            "achievement": "High academic achievement with personalized support and advanced opportunities",
+            "interests": [
+              "academics",
+              "science",
+              "math",
+              "technology",
+              "research",
+              "stem",
+              "college_prep",
+              "marine science",
+              "ocean"
+            ]
+          }
+        ],
+        "matchedFaculty": [
+          {
+            "id": "tyler_cotton",
+            "name": "Tyler Cotton",
+            "title": "Upper School Math & Engineering Teacher",
+            "department": "Mathematics",
+            "specializes": [
+              "mathematics",
+              "engineering",
+              "problem_solving",
+              "upper_school",
+              "STEAM"
+            ]
+          }
+        ],
+        "matchedAlumni": [],
+        "provider": "deterministic:fallback",
+        "processingTime": 2513
+      }
+    },
+    {
+      "id": "persona_04",
+      "name": "The Entertainment Lawyer",
+      "family": "Jessica Sterling (single mom), daughter Maya (6th grade)",
+      "quizResponse": {
+        "gradeLevel": "middle",
+        "currentSituation": "Career change seeking better work-life balance",
+        "interests": [
+          "theater",
+          "music",
+          "writing",
+          "drama"
+        ],
+        "familyValues": [
+          "creativity",
+          "self-expression",
+          "emotional growth"
+        ],
+        "timeline": "We need to start immediately",
+        "childDescription": "Dramatic, artistic, expressive",
+        "threeWords": "Dramatic, artistic, expressive"
+      },
+      "results": {
+        "matchScore": 96,
+        "personalizedMessage": "Based on \"Dramatic, artistic, expressive\", we think Betsy and Ms. Elisha would be wonderful connections for your family to explore at Saint Stephen's. We'd love to arrange a visit where you can meet them and see our campus firsthand.",
+        "matchedStudents": [
+          {
+            "id": "creative_arts",
+            "name": "Betsy",
+            "achievement": "Flourishing in multiple creative disciplines with dedicated faculty support",
+            "interests": [
+              "arts",
+              "creativity",
+              "theater",
+              "music",
+              "performance",
+              "visual_arts",
+              "creative"
+            ]
+          }
+        ],
+        "matchedFaculty": [
+          {
+            "id": "jeannine_elisha",
+            "name": "Jeannine Elisha",
+            "title": "Arts Teacher (All Levels)",
+            "department": "Arts",
+            "specializes": [
+              "theater",
+              "drama",
+              "performance",
+              "arts",
+              "all_levels",
+              "creative_expression"
+            ]
+          }
+        ],
+        "matchedAlumni": [],
+        "provider": "deterministic:fallback",
+        "processingTime": 2696
+      }
+    },
+    {
+      "id": "persona_05",
+      "name": "The Cryptocurrency Millionaire",
+      "family": "Alex & Jordan Kim, son Daniel (8th grade)",
+      "quizResponse": {
+        "gradeLevel": "middle",
+        "currentSituation": "Sold crypto business, semi-retired at 35",
+        "interests": [
+          "technology",
+          "gaming",
+          "programming",
+          "entrepreneurship"
+        ],
+        "familyValues": [
+          "innovation",
+          "independence",
+          "future-readiness"
+        ],
+        "timeline": "Starting 8th grade this fall",
+        "childDescription": "Tech-savvy, introverted, logical",
+        "threeWords": "Tech-savvy, introverted, logical"
+      },
+      "results": {
+        "matchScore": 96,
+        "personalizedMessage": "Based on \"Tech-savvy, introverted, logical\", we think Academic Students and Mr. Cotton would be wonderful connections for your family to explore at Saint Stephen's. We'd love to arrange a visit where you can meet them and see our campus firsthand.",
+        "matchedStudents": [
+          {
+            "id": "academic_excellence",
+            "name": "Academic Students",
+            "achievement": "High academic achievement with personalized support and advanced opportunities",
+            "interests": [
+              "academics",
+              "science",
+              "math",
+              "technology",
+              "research",
+              "stem",
+              "college_prep",
+              "marine science",
+              "ocean"
+            ]
+          }
+        ],
+        "matchedFaculty": [
+          {
+            "id": "tyler_cotton",
+            "name": "Tyler Cotton",
+            "title": "Upper School Math & Engineering Teacher",
+            "department": "Mathematics",
+            "specializes": [
+              "mathematics",
+              "engineering",
+              "problem_solving",
+              "upper_school",
+              "STEAM"
+            ]
+          }
+        ],
+        "matchedAlumni": [],
+        "provider": "deterministic:fallback",
+        "processingTime": 3821
+      }
+    }
+  ]
+}

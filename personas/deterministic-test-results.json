@@ -1,0 +1,30 @@
+{
+  "timestamp": "2025-09-26T03:54:56.601Z",
+  "results": [
+    {
+      "success": false,
+      "persona": "The Real Estate Mogul",
+      "error": "Either AI_GATEWAY_API_KEY or OPENROUTER_API_KEY is required for LLM selection"
+    },
+    {
+      "success": false,
+      "persona": "The Pharmaceutical Executive",
+      "error": "Either AI_GATEWAY_API_KEY or OPENROUTER_API_KEY is required for LLM selection"
+    },
+    {
+      "success": false,
+      "persona": "The Aerospace Engineer",
+      "error": "Either AI_GATEWAY_API_KEY or OPENROUTER_API_KEY is required for LLM selection"
+    },
+    {
+      "success": false,
+      "persona": "The Entertainment Lawyer",
+      "error": "Either AI_GATEWAY_API_KEY or OPENROUTER_API_KEY is required for LLM selection"
+    },
+    {
+      "success": false,
+      "persona": "The Cryptocurrency Millionaire",
+      "error": "Either AI_GATEWAY_API_KEY or OPENROUTER_API_KEY is required for LLM selection"
+    }
+  ]
+}

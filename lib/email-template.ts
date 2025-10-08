@@ -11,6 +11,7 @@ interface EmailTemplateData extends QuizData {
     firstName: string;
     lastName?: string;
     title: string;
+    formalTitle?: string;
   }>;
   selectedTourItems?: string[];
 }
@@ -191,7 +192,7 @@ ${quizData.matchedStories?.slice(0, 2).map(story =>
 ).join('\n') || '  □ No story matches'}
 
 ${quizData.matchedFaculty?.slice(0, 2).map(faculty => 
-  `  □ Introduce to ${faculty.firstName} ${faculty.lastName || ''} (${faculty.title})`.replace('  ', ' ')
+  `  □ Introduce to ${faculty.formalTitle || 'Mr./Ms.'} ${faculty.lastName || ''} (${faculty.title})`.replace('  ', ' ')
 ).join('\n') || '  □ No faculty matches'}
 
 □ FOLLOW-UP ACTIONS

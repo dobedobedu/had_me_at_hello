@@ -10,21 +10,21 @@
     {
       "id": "class_size_elementary",
       "gradeLevel": "elementary",
-      "fact": "Average class size of 14 students with two teachers per classroom",
+      "fact": "Average class size of 14-18 students with two teachers per classroom",
       "context": "Lower School maintains optimal learning ratios",
       "category": "environment"
     },
     {
       "id": "class_size_middle",
       "gradeLevel": "middle",
-      "fact": "Student-teacher ratio of 8:1 in Middle School",
+      "fact": "Average class size of 14-18 students in Middle School",
       "context": "Personalized attention during crucial developmental years",
       "category": "environment"
     },
     {
       "id": "class_size_high",
       "gradeLevel": "high",
-      "fact": "Average class size of 12 in Upper School with 30+ AP offerings",
+      "fact": "Average class size of 14-18 students in Upper School with 30+ AP offerings",
       "context": "College-level preparation with personal attention",
       "category": "environment"
     },

@@ -1,0 +1,345 @@
+{
+  "timestamp": "2025-09-26T03:55:46.756Z",
+  "totalTested": 10,
+  "averageMatchScore": 96,
+  "patterns": {
+    "artistic": 2,
+    "academic": 2,
+    "athletic": 1,
+    "social": 2
+  },
+  "results": [
+    {
+      "persona": "The Real Estate Mogul",
+      "id": "persona_01",
+      "childDescription": "Confident, outgoing, natural leader",
+      "matchScore": 96,
+      "studentMatch": {
+        "name": "Student Athletes",
+        "achievement": "Competing and excelling across multiple sports programs",
+        "score": 81,
+        "interests": [
+          "athletics",
+          "sports",
+          "competition",
+          "teamwork",
+          "fitness"
+        ]
+      },
+      "facultyMatch": {
+        "name": "Cole Hudson",
+        "title": "Athletic Director",
+        "score": 105,
+        "specializes": [
+          "athletics",
+          "character_building",
+          "competition",
+          "leadership"
+        ]
+      },
+      "alumniMatch": null
+    },
+    {
+      "persona": "The Pharmaceutical Executive",
+      "id": "persona_02",
+      "childDescription": "Brilliant, shy, perfectionist",
+      "matchScore": 96,
+      "studentMatch": {
+        "name": "Betsy",
+        "achievement": "Flourishing in multiple creative disciplines with dedicated faculty support",
+        "score": 88,
+        "interests": [
+          "arts",
+          "creativity",
+          "theater",
+          "music",
+          "performance",
+          "visual_arts",
+          "creative"
+        ]
+      },
+      "facultyMatch": {
+        "name": "Jeannine Elisha",
+        "title": "Arts Teacher (All Levels)",
+        "score": 121,
+        "specializes": [
+          "theater",
+          "drama",
+          "performance",
+          "arts",
+          "all_levels",
+          "creative_expression"
+        ]
+      },
+      "alumniMatch": null
+    },
+    {
+      "persona": "The Aerospace Engineer",
+      "id": "persona_03",
+      "childDescription": "Analytical, curious, inventor",
+      "matchScore": 96,
+      "studentMatch": {
+        "name": "Academic Students",
+        "achievement": "High academic achievement with personalized support and advanced opportunities",
+        "score": 81,
+        "interests": [
+          "academics",
+          "science",
+          "math",
+          "technology",
+          "research",
+          "stem",
+          "college_prep",
+          "marine science",
+          "ocean"
+        ]
+      },
+      "facultyMatch": {
+        "name": "Tyler Cotton",
+        "title": "Upper School Math & Engineering Teacher",
+        "score": 142,
+        "specializes": [
+          "mathematics",
+          "engineering",
+          "problem_solving",
+          "upper_school",
+          "STEAM"
+        ]
+      },
+      "alumniMatch": null
+    },
+    {
+      "persona": "The Entertainment Lawyer",
+      "id": "persona_04",
+      "childDescription": "Dramatic, artistic, expressive",
+      "matchScore": 96,
+      "studentMatch": {
+        "name": "Betsy",
+        "achievement": "Flourishing in multiple creative disciplines with dedicated faculty support",
+        "score": 93,
+        "interests": [
+          "arts",
+          "creativity",
+          "theater",
+          "music",
+          "performance",
+          "visual_arts",
+          "creative"
+        ]
+      },
+      "facultyMatch": {
+        "name": "Jeannine Elisha",
+        "title": "Arts Teacher (All Levels)",
+        "score": 129,
+        "specializes": [
+          "theater",
+          "drama",
+          "performance",
+          "arts",
+          "all_levels",
+          "creative_expression"
+        ]
+      },
+      "alumniMatch": null
+    },
+    {
+      "persona": "The Cryptocurrency Millionaire",
+      "id": "persona_05",
+      "childDescription": "Tech-savvy, introverted, logical",
+      "matchScore": 96,
+      "studentMatch": {
+        "name": "Academic Students",
+        "achievement": "High academic achievement with personalized support and advanced opportunities",
+        "score": 76,
+        "interests": [
+          "academics",
+          "science",
+          "math",
+          "technology",
+          "research",
+          "stem",
+          "college_prep",
+          "marine science",
+          "ocean"
+        ]
+      },
+      "facultyMatch": {
+        "name": "Tyler Cotton",
+        "title": "Upper School Math & Engineering Teacher",
+        "score": 115,
+        "specializes": [
+          "mathematics",
+          "engineering",
+          "problem_solving",
+          "upper_school",
+          "STEAM"
+        ]
+      },
+      "alumniMatch": null
+    },
+    {
+      "persona": "The Fashion Industry Executive",
+      "id": "persona_06",
+      "childDescription": "Stylish, social, trend-setter",
+      "matchScore": 96,
+      "studentMatch": {
+        "name": "Betsy",
+        "achievement": "Flourishing in multiple creative disciplines with dedicated faculty support",
+        "score": 88,
+        "interests": [
+          "arts",
+          "creativity",
+          "theater",
+          "music",
+          "performance",
+          "visual_arts",
+          "creative"
+        ]
+      },
+      "facultyMatch": {
+        "name": "Jeannine Elisha",
+        "title": "Arts Teacher (All Levels)",
+        "score": 121,
+        "specializes": [
+          "theater",
+          "drama",
+          "performance",
+          "arts",
+          "all_levels",
+          "creative_expression"
+        ]
+      },
+      "alumniMatch": null
+    },
+    {
+      "persona": "The Professional Athlete Family",
+      "id": "persona_07",
+      "childDescription": "Athletic, competitive, dedicated",
+      "matchScore": 96,
+      "studentMatch": {
+        "name": "Student Athletes",
+        "achievement": "Competing and excelling across multiple sports programs",
+        "score": 85,
+        "interests": [
+          "athletics",
+          "sports",
+          "competition",
+          "teamwork",
+          "fitness"
+        ]
+      },
+      "facultyMatch": {
+        "name": "Cole Hudson",
+        "title": "Athletic Director",
+        "score": 112,
+        "specializes": [
+          "athletics",
+          "character_building",
+          "competition",
+          "leadership"
+        ]
+      },
+      "alumniMatch": null
+    },
+    {
+      "persona": "The Art Gallery Owner",
+      "id": "persona_08",
+      "childDescription": "Artistic, sophisticated, cultured",
+      "matchScore": 96,
+      "studentMatch": {
+        "name": "Betsy",
+        "achievement": "Flourishing in multiple creative disciplines with dedicated faculty support",
+        "score": 88,
+        "interests": [
+          "arts",
+          "creativity",
+          "theater",
+          "music",
+          "performance",
+          "visual_arts",
+          "creative"
+        ]
+      },
+      "facultyMatch": {
+        "name": "Jeannine Elisha",
+        "title": "Arts Teacher (All Levels)",
+        "score": 121,
+        "specializes": [
+          "theater",
+          "drama",
+          "performance",
+          "arts",
+          "all_levels",
+          "creative_expression"
+        ]
+      },
+      "alumniMatch": null
+    },
+    {
+      "persona": "The Venture Capitalist",
+      "id": "persona_09",
+      "childDescription": "Ambitious, strategic, future-focused",
+      "matchScore": 96,
+      "studentMatch": {
+        "name": "Mak",
+        "achievement": "Excellence in athletics with strong team spirit and dedication",
+        "score": 60,
+        "interests": [
+          "athletics",
+          "sports",
+          "competition",
+          "teamwork",
+          "fitness",
+          "dedication"
+        ]
+      },
+      "facultyMatch": {
+        "name": "Bernie Yanelli",
+        "title": "Upper School History & Economics Teacher",
+        "score": 110,
+        "specializes": [
+          "history",
+          "economics",
+          "entrepreneurship",
+          "business",
+          "upper_school"
+        ]
+      },
+      "alumniMatch": null
+    },
+    {
+      "persona": "The Renewable Energy CEO",
+      "id": "persona_10",
+      "childDescription": "Eco-conscious, thoughtful, activist",
+      "matchScore": 96,
+      "studentMatch": {
+        "name": "Academic Students",
+        "achievement": "High academic achievement with personalized support and advanced opportunities",
+        "score": 76,
+        "interests": [
+          "academics",
+          "science",
+          "math",
+          "technology",
+          "research",
+          "stem",
+          "college_prep",
+          "marine science",
+          "ocean"
+        ]
+      },
+      "facultyMatch": {
+        "name": "Andrew Angelo",
+        "title": "Middle School Science Teacher",
+        "score": 116,
+        "specializes": [
+          "science",
+          "middle_school",
+          "hands_on_learning",
+          "inquiry_based"
+        ]
+      },
+      "alumniMatch": null
+    }
+  ]
+}

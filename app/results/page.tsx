@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Share2, Calendar, Check, Home, Mail, Copy, CheckCircle, ChevronDown, Play, Send, QrCode, Download, X } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { AIService } from '@/lib/ai/ai-service';
 import { QuizResponse, AnalysisResult } from '@/lib/ai/types';
@@ -15,6 +16,8 @@ import { Confetti } from '@/components/ui/confetti';
 import { SwipeableCards } from '@/components/ui/swipeable-cards';
 import { generateEmailTemplate, generateAdmissionsChecklist, copyToClipboard } from '@/lib/email-template';
 import { generateTourId, generateQRCode, saveTourPassData, createTourPassEmail, type TourPassData } from '@/lib/qr-generator';
+import { WarpBackground } from '@/components/ui/shadcn-io/warp-background';
+import { ABTestingService } from '@/lib/ai/ab-testing';
 
 export default function ResultsPage() {
   const router = useRouter();
@@ -32,11 +35,31 @@ export default function ResultsPage() {
   const [tourPassData, setTourPassData] = useState<TourPassData | null>(null);
   const [qrCode, setQrCode] = useState<string | null>(null);
   const [generatingTourPass, setGeneratingTourPass] = useState(false);
+  const [imageLoadingStates, setImageLoadingStates] = useState({
+    student: true,
+    faculty: true,
+    alumni: true
+  });
+  const hasRequestedAnalysis = useRef(false);
 
   useEffect(() => {
+    // Prevent duplicate analysis calls using ref
+    if (results || hasRequestedAnalysis.current) return;
+
+    // Mark that we've started analysis to prevent duplicates
+    hasRequestedAnalysis.current = true;
+
+    // Set a reasonable timeout to prevent infinite loading
+    const loadingTimeout = setTimeout(() => {
+      if (!results) {
+        console.warn('Analysis taking too long, showing fallback results');
+        setLoading(false);
+      }
+    }, 15000); // 15 second timeout
+
     const analyzeQuizData = async () => {
       let parsedQuizData: QuizResponse | null = null;
-      
+
       try {
         const quizDataStr = sessionStorage.getItem('quizData');
         if (!quizDataStr) {
@@ -46,7 +69,8 @@ export default function ResultsPage() {
 
         parsedQuizData = JSON.parse(quizDataStr);
         setQuizData(parsedQuizData);
-        
+
+
         // Use the AI service which respects admin settings
         const aiService = AIService.getInstance();
         
@@ -369,10 +393,14 @@ export default function ResultsPage() {
         } as any);
       } finally {
         setLoading(false);
+        clearTimeout(loadingTimeout);
       }
     };
 
     analyzeQuizData();
+
+    // Cleanup timeout on unmount
+    return () => clearTimeout(loadingTimeout);
   }, [router]);
 
   const handleCopyEmailTemplate = async () => {
@@ -593,7 +621,7 @@ Full results: ${shareData.link}`);
       // Always include meeting the matched faculty
       {
         id: 'meet-faculty',
-        title: `Meet ${results.matchedFaculty?.[0]?.firstName || 'Your Mentor'}`,
+        title: `Meet ${results.matchedFaculty?.[0] ? (results.matchedFaculty[0].formalTitle + ' ' + results.matchedFaculty[0].lastName) : 'Your Mentor'}`,
         description: `${results.matchedFaculty?.[0]?.title || 'Faculty Member'} - Your personalized connection`,
         priority: 1,
         categories: ['all']
@@ -764,19 +792,19 @@ Full results: ${shareData.link}`);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <header className="px-6 py-4 bg-[#004b34]"><div className="max-w-6xl mx-auto h-5" /></header>
-        <main className="max-w-4xl mx-auto px-6 py-8">
-          <div className="animate-pulse space-y-6">
-            <div className="h-8 bg-gray-200 rounded w-1/3" />
-            <div className="h-48 bg-gray-200 rounded" />
-            <div className="grid grid-cols-2 gap-4">
-              <div className="h-24 bg-gray-200 rounded" />
-              <div className="h-24 bg-gray-200 rounded" />
-            </div>
-            <div className="h-10 bg-gray-200 rounded w-1/2" />
-          </div>
-        </main>
+      <div className="min-h-screen w-full bg-gradient-to-br from-green-900 to-emerald-950 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-4xl md:text-6xl font-bold text-green-100 mb-6 tracking-tight">
+            Finding Your Perfect Match
+          </h1>
+          <p className="text-lg md:text-xl text-green-200 mb-8">
+            Analyzing your responses...
+          </p>
+          <div className="w-16 h-16 border-4 border-green-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-sm text-green-300 mt-4">
+            This usually takes just a few seconds
+          </p>
+        </div>
       </div>
     );
   }
@@ -838,96 +866,202 @@ Full results: ${shareData.link}`);
                 disableDrag={false}
                 headerOffset={56}
                 cards={[
-                  // Alumni Story Card
-                  {
-                    id: 'alumni-story',
-                    type: 'alumni' as const,
-                    content: (
-                      <div className="rounded-2xl overflow-hidden shadow-sm bg-white">
-                        <div className="p-4">
-                          <h3 className="text-lg font-bold text-gray-900">{(() => {
-                            const id = results.matchedStories[0]?.id; 
-                            switch (id) {
-                              case 'creative_arts': return 'Meet Betsy';
-                              case 'athletics_excellence': return 'Meet the Falcons';
-                              case 'athletics_spotlight': return 'Explore Falcons Athletics';
-                              case 'lower_school_parents': return 'Meet Our Families';
-                              case 'academic_excellence': return 'Meet Our Academic Team';
-                              default: return 'Hear From Our Students';
-                            }
-                          })()}</h3>
-                          {(() => {
-                            const interests = (quizData?.interests || []).slice(0,3).join(', ');
-                            const three = (quizData?.childDescription || '').split(/[,\s]+/).filter(Boolean).slice(0,3).join(' ');
-                            const txt = interests ? `You mentioned: ${interests}` : (three ? `You said: ${three}` : '');
-                            return txt ? <p className="text-xs text-gray-600 mt-1">{txt}</p> : null;
-                          })()}
-                        </div>
-                        <div className="relative w-full aspect-video bg-black">
-                          {(results.matchedStories[0] as any)?.videoUrl && playingVideo === 'alumni-story' ? (
-                            <iframe
-                              className="w-full h-full"
-                              src={`https://www.youtube.com/embed/${((results.matchedStories[0] as any)?.videoUrl || '').split('v=')[1]?.split('&')[0] || ((results.matchedStories[0] as any)?.videoUrl || '').split('/').pop()}?autoplay=1&rel=0`}
-                              title={`${results.matchedStories[0].firstName} ${(results.matchedStories[0] as any).lastName || ''}`}
-                              frameBorder="0"
-                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                              allowFullScreen
-                            />
-                          ) : (
-                            <button className="absolute inset-0" onClick={() => setPlayingVideo('alumni-story')} aria-label="Play video">
-                              <img src={results.matchedStories[0]?.photoUrl || ''} alt="" className="w-full h-full object-cover" />
-                              <div className="absolute inset-0 flex items-center justify-center">
-                                <div className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-2xl">
-                                  <Play className="w-8 h-8 text-white ml-1" fill="currentColor" />
+                  // Current Student Card (1 max) - exclude alumni stories (those with classYear)
+                  ...(() => {
+                    const currentStudents = results.matchedStories?.filter(story => !(story as any).classYear) || [];
+                    const firstCurrentStudent = currentStudents[0];
+                    return firstCurrentStudent ? [{
+                      id: 'current-student',
+                      type: 'student' as const,
+                      content: (
+                        <div className="rounded-2xl overflow-hidden shadow-sm bg-white">
+                          <div className="p-4">
+                            <h3 className="text-lg font-bold text-gray-900">{(() => {
+                              const id = firstCurrentStudent?.id;
+                              switch (id) {
+                                case 'creative_arts': return 'Meet Betsy';
+                                case 'athletics_excellence': return 'Meet the Falcons';
+                                case 'athletics_spotlight': return 'Explore Falcons Athletics';
+                                case 'lower_school_parents': return 'Meet Our Families';
+                                case 'academic_excellence': return 'Meet Our Academic Team';
+                                case 'sophia_camden_community': return 'Meet Sophia & Camden';
+                                case 'mak_athletics': return 'Meet Mak';
+                                case 'leah_jaida_athletics_academics': return 'Meet Leah & Jaida';
+                                case 'keymani_athletics_academics': return 'Meet Keymani';
+                                case 'julie_journalism_social_media': return 'Meet Julie';
+                                case 'isabelle_athletics': return 'Meet Isabelle';
+                                case 'grace_pearson_clubs_academics': return 'Meet Grace & Pearson';
+                                case 'student_teacher_relationships': return 'Hear From Our Students';
+                                default: return `Meet ${firstCurrentStudent.firstName}`;
+                              }
+                            })()}</h3>
+                            {(() => {
+                              const interests = (quizData?.interests || []).slice(0,3).join(', ');
+                              const three = (quizData?.childDescription || '').split(/[,\s]+/).filter(Boolean).slice(0,3).join(' ');
+                              const txt = interests ? `You mentioned: ${interests}` : (three ? `You said: ${three}` : '');
+                              return txt ? <p className="text-xs text-gray-600 mt-1">{txt}</p> : null;
+                            })()}
+                          </div>
+                          <div className="relative w-full aspect-video bg-black">
+                            {(firstCurrentStudent as any)?.videoUrl && playingVideo === 'current-student' ? (
+                              <iframe
+                                className="w-full h-full"
+                                src={`https://www.youtube.com/embed/${((firstCurrentStudent as any)?.videoUrl || '').split('v=')[1]?.split('&')[0] || ((firstCurrentStudent as any)?.videoUrl || '').split('/').pop()}?autoplay=1&rel=0`}
+                                title={`${firstCurrentStudent.firstName} ${(firstCurrentStudent as any).lastName || ''}`}
+                                frameBorder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowFullScreen
+                              />
+                            ) : (firstCurrentStudent as any)?.videoUrl ? (
+                              <button className="absolute inset-0" onClick={() => setPlayingVideo('current-student')} aria-label="Play video">
+                                <>
+                                  <Image
+                                    src={firstCurrentStudent?.photoUrl || ''}
+                                    alt={`${firstCurrentStudent?.firstName || 'Student'} photo`}
+                                    fill
+                                    className="object-cover"
+                                    priority
+                                    sizes="(max-width: 768px) 100vw, 400px"
+                                    placeholder="blur"
+                                    blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyejN5QzBWjQfzj9fiGttF+87aDEi2YQBm6Iqs3E7HRwJLNSLvlX9vfvEAqWnUEgBZK87Fy1pDOwrNKFiYxZRxGjgCEW/q3M5OqB4WOEQiZbAg3b4IjqB2HrJDzlqxvKWCo8SfLfASLMEw2LctfJlojfFSBOQUVKYgWHBpNcgdKO+vPCL9Zkg4ry98fFgPT0Y3fKK3CW0o+VHNyRzOx5CJwgWLf7e9iqkfwAThNNSLFJ5vHfHlTWuC0TFKuN3F3bSlGK8F5F5rYNmQ7cTB0EyKQxh7xzfJF8NP7nBwBQr8B4j/2Q=="
+                                    onLoad={() => setImageLoadingStates(prev => ({...prev, student: false}))}
+                                  />
+                                  {imageLoadingStates.student && (
+                                    <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center">
+                                      <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                                    </div>
+                                  )}
+                                </>
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                  <div className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-2xl">
+                                    <Play className="w-8 h-8 text-white ml-1" fill="currentColor" />
+                                  </div>
                                 </div>
-                              </div>
-                            </button>
-                          )}
+                              </button>
+                            ) : (
+                              <Image
+                                src={firstCurrentStudent?.photoUrl || ''}
+                                alt={`${firstCurrentStudent?.firstName || 'Student'} photo`}
+                                fill
+                                className="object-cover"
+                                sizes="(max-width: 768px) 100vw, 400px"
+                                placeholder="blur"
+                                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyejN5QzBWjQfzj9fiGttF+87aDEi2YQBm6Iqs3E7HRwJLNSLvlX9vfvEAqWnUEgBZK87Fy1pDOwrNKFiYxZRxGjgCEW/q3M5OqB4WOEQiZbAg3b4IjqB2HrJDzlqxvKWCo8SfLfASLMEw2LctfJlojfFSBOQUVKYgWHBpNcgdKO+vPCL9Zkg4ry98fFgPT0Y3fKK3CW0o+VHNyRzOx5CJwgWLf7e9iqkfwAThNNSLFJ5vHfHlTWuC0TFKuN3F3bSlGK8F5F5rYNmQ7cTB0EyKQxh7xzfJF8NP7nBwBQr8B4j/2Q=="
+                              />
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    )
-                  },
-                  // Faculty Cards - map all matched faculty
-                  ...(results.matchedFaculty && results.matchedFaculty.length > 0 ? results.matchedFaculty.map((faculty, index) => ({
-                    id: `faculty-match-${index}`,
-                    type: 'faculty' as const,
-                    content: (
-                      <div className="rounded-2xl overflow-hidden shadow-sm bg-white">
-                        <div className="p-4">
-                          <h3 className="text-lg font-bold text-gray-900">Meet {faculty.firstName} {faculty.lastName}</h3>
-                          {(() => {
-                            const interests = (quizData?.interests || []).slice(0,3).join(', ');
-                            const three = (quizData?.childDescription || '').split(/[,\s]+/).filter(Boolean).slice(0,3).join(' ');
-                            const txt = interests ? `You mentioned: ${interests}` : (three ? `You said: ${three}` : '');
-                            return txt ? <p className="text-xs text-gray-600 mt-1">{txt}</p> : null;
-                          })()}
-                        </div>
-                        <div className="relative w-full aspect-video bg-black">
-                          {faculty?.videoUrl && playingVideo === `faculty-match-${index}` ? (
-                            <iframe
-                              className="w-full h-full"
-                              src={`https://www.youtube.com/embed/${(faculty.videoUrl || '').split('v=')[1]?.split('&')[0] || (faculty.videoUrl || '').split('/').pop()}?autoplay=1&rel=0`}
-                              title={`${faculty.firstName} ${faculty.lastName || ''}`}
-                              frameBorder="0"
-                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                              allowFullScreen
-                            />
-                          ) : faculty?.videoUrl ? (
-                            <button className="absolute inset-0" onClick={() => setPlayingVideo(`faculty-match-${index}`)} aria-label="Play video">
-                              <img src={faculty.photoUrl || ''} alt="" className="w-full h-full object-cover" />
-                              <div className="absolute inset-0 flex items-center justify-center">
-                                <div className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-2xl">
-                                  <Play className="w-8 h-8 text-white ml-1" fill="currentColor" />
+                      )
+                    }] : [];
+                  })(),
+                  // Faculty Card (1 max)
+                  ...(() => {
+                    const firstFaculty = results.matchedFaculty?.[0];
+                    return firstFaculty ? [{
+                      id: 'faculty-match',
+                      type: 'faculty' as const,
+                      content: (
+                        <div className="rounded-2xl overflow-hidden shadow-sm bg-white">
+                          <div className="p-4">
+                            <h3 className="text-lg font-bold text-gray-900">Meet {firstFaculty.formalTitle || 'Mr./Ms.'} {firstFaculty.lastName}</h3>
+                            {(() => {
+                              const interests = (quizData?.interests || []).slice(0,3).join(', ');
+                              const three = (quizData?.childDescription || '').split(/[,\s]+/).filter(Boolean).slice(0,3).join(' ');
+                              const txt = interests ? `You mentioned: ${interests}` : (three ? `You said: ${three}` : '');
+                              return txt ? <p className="text-xs text-gray-600 mt-1">{txt}</p> : null;
+                            })()}
+                          </div>
+                          <div className="relative w-full aspect-video bg-black">
+                            {firstFaculty?.videoUrl && playingVideo === 'faculty-match' ? (
+                              <iframe
+                                className="w-full h-full"
+                                src={`https://www.youtube.com/embed/${(firstFaculty.videoUrl || '').split('v=')[1]?.split('&')[0] || (firstFaculty.videoUrl || '').split('/').pop()}?autoplay=1&rel=0`}
+                                title={`${firstFaculty.formalTitle || 'Mr./Ms.'} ${firstFaculty.lastName || ''}`}
+                                frameBorder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowFullScreen
+                              />
+                            ) : firstFaculty?.videoUrl ? (
+                              <button className="absolute inset-0" onClick={() => setPlayingVideo('faculty-match')} aria-label="Play video">
+                                <Image
+                                  src={firstFaculty.photoUrl || ''}
+                                  alt={`${firstFaculty.formalTitle} ${firstFaculty.lastName} photo`}
+                                  fill
+                                  className="object-cover"
+                                  sizes="(max-width: 768px) 100vw, 400px"
+                                />
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                  <div className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-2xl">
+                                    <Play className="w-8 h-8 text-white ml-1" fill="currentColor" />
+                                  </div>
                                 </div>
-                              </div>
-                            </button>
-                          ) : (
-                            <img src={faculty.photoUrl || ''} alt="" className="w-full h-full object-cover" />
-                          )}
+                              </button>
+                            ) : (
+                              <Image
+                                src={firstFaculty.photoUrl || ''}
+                                alt={`${firstFaculty.formalTitle} ${firstFaculty.lastName} photo`}
+                                fill
+                                className="object-cover"
+                                sizes="(max-width: 768px) 100vw, 400px"
+                              />
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    )
-                  })) : [])
+                      )
+                    }] : [];
+                  })(),
+                  // Alumni Card (1 max) - only alumni stories (those with classYear)
+                  ...(() => {
+                    const alumni = results.matchedStories?.filter(story => (story as any).classYear) || [];
+                    const firstAlumni = alumni[0];
+                    return firstAlumni ? [{
+                      id: 'alumni-story',
+                      type: 'alumni' as const,
+                      content: (
+                        <div className="rounded-2xl overflow-hidden shadow-sm bg-white">
+                          <div className="p-4">
+                            <h3 className="text-lg font-bold text-gray-900">Meet {firstAlumni.firstName} {(firstAlumni as any).lastName || ''}</h3>
+                            <p className="text-xs text-gray-600 mt-1">Class of {(firstAlumni as any).classYear} • {(firstAlumni as any).currentRole || 'Alumni'}</p>
+                          </div>
+                          <div className="relative w-full aspect-video bg-black">
+                            {(firstAlumni as any)?.videoUrl && playingVideo === 'alumni-story' ? (
+                              <iframe
+                                className="w-full h-full"
+                                src={`https://www.youtube.com/embed/${((firstAlumni as any)?.videoUrl || '').split('v=')[1]?.split('&')[0] || ((firstAlumni as any)?.videoUrl || '').split('/').pop()}?autoplay=1&rel=0`}
+                                title={`${firstAlumni.firstName} ${(firstAlumni as any).lastName || ''}`}
+                                frameBorder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowFullScreen
+                              />
+                            ) : (firstAlumni as any)?.videoUrl ? (
+                              <button className="absolute inset-0" onClick={() => setPlayingVideo('alumni-story')} aria-label="Play video">
+                                <Image
+                                  src={firstAlumni?.photoUrl || ''}
+                                  alt={`${firstAlumni?.firstName} ${firstAlumni?.lastName} photo`}
+                                  fill
+                                  className="object-cover"
+                                  sizes="(max-width: 768px) 100vw, 400px"
+                                />
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                  <div className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-2xl">
+                                    <Play className="w-8 h-8 text-white ml-1" fill="currentColor" />
+                                  </div>
+                                </div>
+                              </button>
+                            ) : (
+                              <Image
+                                src={firstAlumni?.photoUrl || ''}
+                                alt={`${firstAlumni?.firstName} ${firstAlumni?.lastName} photo`}
+                                fill
+                                className="object-cover"
+                                sizes="(max-width: 768px) 100vw, 400px"
+                              />
+                            )}
+                          </div>
+                        </div>
+                      )
+                    }] : [];
+                  })()
                 ]}
               />
             </motion.div>
@@ -1051,9 +1185,6 @@ Full results: ${shareData.link}`);
               })}
             </div>
             
-            <div className="mt-4 text-center text-sm text-gray-600">
-              {selectedTourItems.length}/5 selected
-            </div>
 
           </motion.div>
 

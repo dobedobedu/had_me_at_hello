@@ -11,7 +11,21 @@
       "parentQuote": "The teacher-student relationships at SSES are transformative",
       "studentQuote": "Our teachers really know us and help us grow as individuals",
       "gradeLevel": "all",
-      "category": "default"
+      "category": "default",
+      "gradeBands": ["lower", "intermediate", "middle", "upper"],
+      "interestKeywords": [
+        "teacher mentorship",
+        "small class relationships",
+        "advisory connections",
+        "supportive community"
+      ],
+      "personaDescriptors": [
+        "relationship-driven",
+        "community-focused"
+      ],
+      "outcomeHighlights": [
+        "Families cite transformational teacher partnerships across divisions"
+      ]
     },
     {
       "id": "academic_excellence",
@@ -24,7 +38,21 @@
       "parentQuote": "The academic rigor prepares students for success at top colleges",
       "studentQuote": "The academic programs here challenge us to reach our full potential",
       "gradeLevel": "all",
-      "category": "academic"
+      "category": "academic",
+      "gradeBands": ["middle", "upper"],
+      "interestKeywords": [
+        "honors coursework",
+        "marine science research",
+        "STEM innovation labs",
+        "college counseling support"
+      ],
+      "personaDescriptors": [
+        "driven scholar",
+        "curious researcher"
+      ],
+      "outcomeHighlights": [
+        "Students earn admission to top universities with strong academic portfolios"
+      ]
     },
     {
       "id": "creative_arts",
@@ -37,7 +65,21 @@
       "parentQuote": "The arts program has helped Betsy discover her creative voice",
       "studentQuote": "The teachers here really understand how to nurture creativity",
       "gradeLevel": "all",
-      "category": "creative"
+      "category": "creative",
+      "gradeBands": ["middle", "upper"],
+      "interestKeywords": [
+        "visual arts studio",
+        "theater ensemble",
+        "music performance opportunities",
+        "creative writing collaborations"
+      ],
+      "personaDescriptors": [
+        "multitalented artist",
+        "expressive storyteller"
+      ],
+      "outcomeHighlights": [
+        "Students showcase original work in campus galleries and performances"
+      ]
     },
     {
       "id": "athletics_excellence",
@@ -50,7 +92,21 @@
       "parentQuote": "SSES proves you can be a champion athlete and top student",
       "studentQuote": "Our coaches teach us to win with character and integrity",
       "gradeLevel": "all",
-      "category": "athletics"
+      "category": "athletics",
+      "gradeBands": ["middle", "upper"],
+      "interestKeywords": [
+        "varsity athletics",
+        "falcon football tradition",
+        "state championship culture",
+        "scholar-athlete balance"
+      ],
+      "personaDescriptors": [
+        "competitive leader",
+        "team-first scholar"
+      ],
+      "outcomeHighlights": [
+        "Teams capture state titles while maintaining high GPAs"
+      ]
     },
     {
       "id": "athletics_spotlight",
@@ -76,7 +132,212 @@
       "parentQuote": "The Lower School feels like a family where our child is known and supported.",
       "studentQuote": "",
       "gradeLevel": "lower",
-      "category": "default"
+      "category": "default",
+      "gradeBands": ["lower"],
+      "interestKeywords": [
+        "foundation years community",
+        "homeroom family feel",
+        "early literacy experiences",
+        "lower school traditions"
+      ],
+      "personaDescriptors": [
+        "warm community",
+        "nurturing environment"
+      ],
+      "outcomeHighlights": [
+        "Families note seamless transition into the SSES lower school family"
+      ]
+    },
+    {
+      "id": "sophia_camden_community",
+      "firstName": "Sophia & Camden",
+      "photoUrl": "https://img.youtube.com/vi/gRxuxFHYrJI/maxresdefault.jpg",
+      "videoUrl": "https://www.youtube.com/watch?v=gRxuxFHYrJI",
+      "interests": ["community", "middle_school", "7th_grade", "relationships", "belonging", "friendship"],
+      "storyTldr": "Sophia and Camden discuss how starting in 7th grade, they love the community feeling at Saint Stephen's",
+      "achievement": "Finding belonging and community connection starting in middle school",
+      "parentQuote": "They found their place immediately in the welcoming Saint Stephen's community",
+      "studentQuote": "We love the community feeling here - everyone knows each other and cares",
+      "gradeLevel": "middle",
+      "category": "community",
+      "gradeBands": ["middle"],
+      "interestKeywords": [
+        "seamless middle school transition",
+        "collaborative classroom culture",
+        "supportive peer community",
+        "strong academic foundation"
+      ],
+      "personaDescriptors": [
+        "community-oriented scholar",
+        "welcoming ambassador"
+      ],
+      "outcomeHighlights": [
+        "Students thrive academically while finding instant belonging in middle school"
+      ]
+    },
+    {
+      "id": "mak_athletics",
+      "firstName": "Mak",
+      "photoUrl": "https://img.youtube.com/vi/9cmokO_7nD0/maxresdefault.jpg",
+      "videoUrl": "https://www.youtube.com/watch?v=9cmokO_7nD0",
+      "interests": ["athletics", "sports", "competition", "teamwork", "fitness", "dedication"],
+      "storyTldr": "Mak shares his passion for athletics at Saint Stephen's",
+      "achievement": "Excellence in athletics with strong team spirit and dedication",
+      "parentQuote": "The athletic program has developed both his skills and character",
+      "studentQuote": "Athletics here teaches you discipline and teamwork that applies everywhere",
+      "gradeLevel": "all",
+      "category": "athletics",
+      "gradeBands": ["upper"],
+      "interestKeywords": [
+        "varsity soccer leadership",
+        "lacrosse teamwork",
+        "high academic standards",
+        "multi-sport discipline"
+      ],
+      "personaDescriptors": [
+        "driven junior athlete",
+        "team-first scholar"
+      ],
+      "outcomeHighlights": [
+        "Junior balances rigorous academics with varsity soccer and lacrosse success"
+      ]
+    },
+    {
+      "id": "leah_jaida_athletics_academics",
+      "firstName": "Leah & Jaida",
+      "photoUrl": "https://img.youtube.com/vi/GHYUA7aINPw/maxresdefault.jpg",
+      "videoUrl": "https://www.youtube.com/watch?v=GHYUA7aINPw",
+      "interests": ["athletics", "small_class_size", "personalized_attention", "sports", "academics", "community"],
+      "storyTldr": "Leah and Jaida highlight the benefits of small class sizes and athletics at Saint Stephen's",
+      "achievement": "Thriving in small class environments while excelling in athletics",
+      "parentQuote": "The small class sizes allow for personalized attention that makes all the difference",
+      "studentQuote": "Small classes mean teachers really know us, and we can excel in both sports and academics",
+      "gradeLevel": "all",
+      "category": "athletics",
+      "gradeBands": ["upper"],
+      "interestKeywords": [
+        "volleyball leadership",
+        "track and field dedication",
+        "personalized upper school classrooms",
+        "tight-knit student community"
+      ],
+      "personaDescriptors": [
+        "upper school scholar-athletes",
+        "community-minded leaders"
+      ],
+      "outcomeHighlights": [
+        "Sophomore and junior excel in volleyball and track while thriving in small classes"
+      ]
+    },
+    {
+      "id": "keymani_athletics_academics",
+      "firstName": "Keymani",
+      "photoUrl": "https://img.youtube.com/vi/T65H1yl_oxA/maxresdefault.jpg",
+      "videoUrl": "https://www.youtube.com/watch?v=T65H1yl_oxA",
+      "interests": ["athletics", "academics", "balance", "excellence", "college_prep", "leadership"],
+      "storyTldr": "Keymani discusses balancing athletics and academics at Saint Stephen's",
+      "achievement": "Successfully balancing high-level athletics with academic excellence",
+      "parentQuote": "Saint Stephen's teaches students how to excel in multiple areas simultaneously",
+      "studentQuote": "Here you don't have to choose between sports and academics - you can excel at both",
+      "gradeLevel": "all",
+      "category": "athletics",
+      "gradeBands": ["upper"],
+      "interestKeywords": [
+        "state champion track athlete",
+        "school culture ambassador",
+        "creative writing voice",
+        "college prep mindset"
+      ],
+      "personaDescriptors": [
+        "resilient culture keeper",
+        "writer-athlete"
+      ],
+      "outcomeHighlights": [
+        "Track state champion channels writing passion within a supportive school culture"
+      ]
+    },
+    {
+      "id": "julie_journalism_social_media",
+      "firstName": "Julie",
+      "photoUrl": "https://img.youtube.com/vi/pDBB47oQ2tc/maxresdefault.jpg",
+      "videoUrl": "https://www.youtube.com/watch?v=pDBB47oQ2tc",
+      "interests": ["journalism", "social_media", "community", "communication", "writing", "media", "storytelling"],
+      "storyTldr": "Julie shares her passion for journalism, social media, and community engagement",
+      "achievement": "Developing journalism and media skills while building community connections",
+      "parentQuote": "The program has helped her find her voice and passion for storytelling",
+      "studentQuote": "I love using journalism and social media to tell our school's story and connect our community",
+      "gradeLevel": "all",
+      "category": "creative",
+      "gradeBands": ["upper"],
+      "interestKeywords": [
+        "student media team",
+        "digital storytelling",
+        "broadcast journalism",
+        "social media strategy",
+        "falcon since lower school"
+      ],
+      "personaDescriptors": [
+        "long-time falcon storyteller",
+        "community connector"
+      ],
+      "outcomeHighlights": [
+        "Upper school journalist amplifies campus stories across digital channels"
+      ]
+    },
+    {
+      "id": "isabelle_athletics",
+      "firstName": "Isabelle",
+      "photoUrl": "https://img.youtube.com/vi/H3VyTwuUOlI/maxresdefault.jpg",
+      "videoUrl": "https://www.youtube.com/watch?v=H3VyTwuUOlI",
+      "interests": ["athletics", "sports", "competition", "determination", "fitness", "teamwork"],
+      "storyTldr": "Isabelle discusses her athletic journey and experiences at Saint Stephen's",
+      "achievement": "Athletic excellence with strong competitive spirit and team dedication",
+      "parentQuote": "The athletic program has built her confidence and leadership skills",
+      "studentQuote": "Athletics here pushes you to be your best while supporting your teammates",
+      "gradeLevel": "all",
+      "category": "athletics",
+      "gradeBands": ["upper"],
+      "interestKeywords": [
+        "varsity soccer",
+        "volleyball teamwork",
+        "student government leadership",
+        "continuous learning mindset",
+        "club involvement"
+      ],
+      "personaDescriptors": [
+        "multi-sport leader",
+        "community advocate"
+      ],
+      "outcomeHighlights": [
+        "Upper school athlete balances soccer, volleyball, and student government"
+      ]
+    },
+    {
+      "id": "grace_pearson_clubs_academics",
+      "firstName": "Grace & Pearson",
+      "photoUrl": "https://img.youtube.com/vi/EFdzjAsOmJY/maxresdefault.jpg",
+      "videoUrl": "https://www.youtube.com/watch?v=EFdzjAsOmJY",
+      "interests": ["clubs", "academics", "extracurricular", "leadership", "community_involvement", "school_spirit"],
+      "storyTldr": "Grace and Pearson share their involvement in clubs and academic excellence",
+      "achievement": "Leading in both academic pursuits and extracurricular club involvement",
+      "parentQuote": "The variety of opportunities allows them to explore their interests and develop leadership",
+      "studentQuote": "There are so many clubs and academic opportunities - you can really find your passion here",
+      "gradeLevel": "all",
+      "category": "academic",
+      "gradeBands": ["upper"],
+      "interestKeywords": [
+        "club leadership pathways",
+        "advanced coursework success",
+        "service and spirit initiatives",
+        "collaborative honors projects"
+      ],
+      "personaDescriptors": [
+        "student leaders",
+        "high-achieving collaborators"
+      ],
+      "outcomeHighlights": [
+        "Students pair top academics with extensive club leadership roles"
+      ]
     }
   ]
 }

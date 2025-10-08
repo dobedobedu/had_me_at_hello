@@ -30,6 +30,10 @@ export interface StudentStory {
   parentQuote?: string;
   quote?: string;
   gradeLevel?: string;
+  gradeBands?: string[];
+  interestKeywords?: string[];
+  personaDescriptors?: string[];
+  outcomeHighlights?: string[];
 }
 
 export interface FacultyProfile {
@@ -37,6 +41,7 @@ export interface FacultyProfile {
   firstName: string;
   lastName?: string;
   title: string;
+  formalTitle?: string;
   photoUrl?: string;
   videoUrl?: string;
   videoUrl2?: string;
@@ -49,6 +54,10 @@ export interface FacultyProfile {
   notableAlumni?: string[];
   achievements?: string[];
   isAdministrator?: boolean;
+  gradeBands?: string[];
+  interestKeywords?: string[];
+  personaDescriptors?: string[];
+  outcomeHighlights?: string[];
 }
 
 export interface SchoolFact {
