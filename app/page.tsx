@@ -175,23 +175,18 @@ export default function HomePage() {
               </div>
             </motion.div>
 
-            {/* Diversity - Narrow on mobile */}
+            {/* Global Education */}
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
               className="col-span-4 sm:col-span-6 md:col-span-2 lg:col-span-2 row-span-1 sm:row-span-1 md:row-span-2 border-b border-r border-dotted border-gray-300 p-3 md:p-6"
             >
-              <p className="text-xs uppercase tracking-wider text-gray-500 mb-3 md:mb-6 font-schraft">From</p>
-              <div className="space-y-3 md:space-y-6">
-                <div className="text-center">
-                  <div className="text-3xl md:text-5xl font-schraft-medium text-[#003825]">12</div>
-                  <p className="text-xs text-gray-600 mt-1 font-schraft">Countries</p>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl md:text-5xl font-schraft-medium text-[#003825]">18</div>
-                  <p className="text-xs text-gray-600 mt-1 font-schraft">States</p>
-                </div>
+              <div className="h-full flex flex-col justify-center text-center">
+                <p className="text-xs uppercase tracking-wider text-[#2f7c4c] font-schraft mb-2">Global Education</p>
+                <p className="text-xs md:text-sm text-gray-600 font-schraft leading-relaxed">
+                  Sister schools in Denmark, Spain, Argentina, Japan, Tanzania, and Honduras
+                </p>
               </div>
             </motion.div>
 
@@ -203,10 +198,15 @@ export default function HomePage() {
               className="col-span-8 sm:col-span-6 md:col-span-4 lg:col-span-4 row-span-1 md:row-span-2 border-b border-r border-dotted border-gray-300 p-4 md:p-8"
             >
               <div className="h-full flex flex-col justify-center items-center">
-                <div className="text-xs uppercase tracking-wider text-blue-600 mb-1 md:mb-2">Living</div>
-                <div className="text-4xl md:text-6xl lg:text-7xl font-schraft-medium text-transparent bg-clip-text bg-gradient-to-b from-blue-600 to-[#004b34]">REEF</div>
-                <p className="text-xs md:text-sm text-gray-600 mt-2 md:mt-3 font-schraft">Marine Science Lab</p>
-                <p className="text-xs text-gray-400 mt-1">Research on Campus</p>
+                <div className="text-3xl md:text-4xl lg:text-5xl font-schraft-medium text-transparent bg-clip-text bg-gradient-to-b from-blue-600 to-[#004b34]">
+                  Marine Science
+                </div>
+                <p className="text-xs md:text-sm text-gray-600 mt-2 md:mt-3 font-schraft uppercase tracking-wider">
+                  6,000 Square Foot Facility
+                </p>
+                <p className="text-xs text-gray-500 mt-2 text-center font-schraft leading-relaxed">
+                  The area&apos;s only school with waterfront access
+                </p>
               </div>
             </motion.div>
 
@@ -217,27 +217,37 @@ export default function HomePage() {
               transition={{ delay: 0.6 }}
               className="col-span-3 sm:col-span-3 md:col-span-2 lg:col-span-2 border-b border-r border-dotted border-gray-300 p-3 md:p-6 flex flex-col items-center justify-center"
             >
-              <div className="text-3xl md:text-5xl font-schraft-medium text-[#d4a017]">52</div>
-              <p className="text-xs uppercase tracking-wider text-gray-600 mt-2 md:mt-3 font-schraft leading-relaxed">National<br/>Merit<br/>Finalists</p>
+              <div className="text-3xl md:text-5xl font-schraft-medium text-[#d4a017]">53</div>
+              <p className="text-xs uppercase tracking-wider text-gray-600 mt-2 md:mt-3 font-schraft leading-relaxed text-center">
+                National Merit Scholarship Finalists<br/>Since 2005
+              </p>
             </motion.div>
 
-            {/* Athletics - Spans most width on mobile */}
+            {/* Athletics - State Titles */}
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.65 }}
               className="col-span-9 sm:col-span-9 md:col-span-6 lg:col-span-6 border-b border-r border-dotted border-gray-300 p-3 md:p-6"
             >
-              <div className="flex justify-around items-center">
-                <div className="text-center">
-                  <div className="text-3xl md:text-5xl font-schraft-medium text-[#003825]">20</div>
-                  <p className="text-xs uppercase tracking-wider text-gray-600 mt-1 font-schraft">State Titles</p>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl md:text-5xl font-schraft-medium text-[#003825]">19</div>
-                  <p className="text-xs uppercase tracking-wider text-gray-600 mt-1 font-schraft">Sports</p>
-                </div>
+              <div className="text-center">
+                <div className="text-3xl md:text-5xl font-schraft-medium text-[#003825]">20</div>
+                <p className="text-xs uppercase tracking-wider text-gray-600 mt-1 font-schraft">State Titles</p>
+                <p className="text-xs text-gray-500 mt-2 font-schraft">Football, Golf, Track, Tennis, Soccer</p>
               </div>
+            </motion.div>
+
+            {/* Athletics - Sports Offered */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.68 }}
+              className="col-span-3 sm:col-span-3 md:col-span-2 lg:col-span-2 border-b border-r border-dotted border-gray-300 p-3 md:p-6 flex flex-col items-center justify-center"
+            >
+              <div className="text-3xl md:text-5xl font-schraft-medium text-[#003825]">14</div>
+              <p className="text-xs uppercase tracking-wider text-gray-600 mt-1 font-schraft text-center leading-relaxed">
+                Sports Offered<br/>Grades 6-12
+              </p>
             </motion.div>
 
             {/* STEAM Center - Medium on mobile */}
@@ -250,6 +260,7 @@ export default function HomePage() {
               <div className="text-center">
                 <div className="text-3xl md:text-5xl font-schraft-medium text-[#d4a017]">STEAM</div>
                 <p className="text-xs md:text-sm uppercase tracking-wider text-gray-600 mt-1 md:mt-2 font-schraft">Innovation Center</p>
+                <p className="text-xs text-gray-500 mt-2 font-schraft">16,000 Square Feet</p>
               </div>
             </motion.div>
 
@@ -273,7 +284,7 @@ export default function HomePage() {
                   <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-amber-400 to-yellow-500 rounded-full shadow-lg animate-pulse" />
                 </div>
               </div>
-              <p className="text-xs uppercase tracking-wider text-gray-600 mt-2 font-schraft group-hover:text-gray-700 transition-colors">Niche.com</p>
+              <p className="text-xs uppercase tracking-wider text-gray-600 mt-2 font-schraft group-hover:text-gray-700 transition-colors">Niche.com Ranking</p>
             </motion.div>
 
           </div>
