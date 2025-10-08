@@ -10,7 +10,6 @@ import type { KeyboardEvent as ReactKeyboardEvent } from 'react';
 type StatEntry = {
   id: string;
   headline: string;
-  caption?: string;
   detail: string;
   accent?: string;
 };
@@ -19,72 +18,62 @@ const statEntries: StatEntry[] = [
   {
     id: 'students',
     headline: '683',
-    caption: 'Students',
     detail: 'Pre-K through Grade 12.',
     accent: 'bg-gradient-to-br from-emerald-50 via-white to-white',
   },
   {
-    id: 'class-size',
-    headline: '14-18',
-    caption: 'Average per class',
-    detail: 'Average students per class.',
-    accent: 'bg-gradient-to-br from-lime-50 via-white to-white',
-  },
-  {
     id: 'college',
     headline: '100%',
-    caption: 'College acceptance',
     detail: '100% college acceptance rate.',
     accent: 'bg-gradient-to-br from-emerald-100/40 via-white to-white',
   },
   {
-    id: 'global',
-    headline: '🌍',
-    caption: 'Global education',
-    detail: 'Sister schools worldwide: Denmark, Spain, Argentina, Japan, Tanzania, Honduras.',
-    accent: 'bg-gradient-to-br from-sky-50 via-white to-white',
-  },
-  {
-    id: 'marine',
-    headline: '🐬',
-    caption: 'Marine science',
-    detail: '6,000 square foot marine science facility— the area’s only school with waterfront access.',
-    accent: 'bg-gradient-to-br from-cyan-50 via-white to-white',
-  },
-  {
-    id: 'merit',
-    headline: '53',
-    caption: 'Merit finalists',
-    detail: 'National Merit Scholarship finalists since 2005.',
-    accent: 'bg-gradient-to-br from-amber-50 via-white to-white',
-  },
-  {
     id: 'state-titles',
     headline: '20',
-    caption: 'State championships',
-    detail: 'State championships in football, golf, track, tennis, soccer.',
+    detail: 'State championships in football, golf, track, tennis, and soccer.',
     accent: 'bg-gradient-to-br from-emerald-50/70 via-white to-white',
-  },
-  {
-    id: 'sports',
-    headline: '14',
-    caption: 'Varsity sports',
-    detail: '14 varsity sports offered.',
-    accent: 'bg-gradient-to-br from-teal-50 via-white to-white',
-  },
-  {
-    id: 'steam',
-    headline: 'STEAM',
-    caption: 'Innovation center',
-    detail: '16,000 square feet state-of-the-art hands-on learning STEAM center.',
-    accent: 'bg-gradient-to-br from-yellow-50 via-white to-white',
   },
   {
     id: 'niche',
     headline: 'A+',
-    caption: 'Niche.com',
-    detail: 'A+ rating on Niche.com, top-rated independent school.',
+    detail: 'A+ rating on Niche.com — top-rated independent school.',
     accent: 'bg-gradient-to-br from-amber-50 via-white to-white',
+  },
+  {
+    id: 'steam',
+    headline: 'STEAM',
+    detail: '16,000 sq. ft. state-of-the-art, hands-on STEAM center.',
+    accent: 'bg-gradient-to-br from-yellow-50 via-white to-white',
+  },
+  {
+    id: 'marine',
+    headline: '🐬',
+    detail: '6,000 sq. ft. marine science facility — the only waterfront program in the area.',
+    accent: 'bg-gradient-to-br from-cyan-50 via-white to-white',
+  },
+  {
+    id: 'class-size',
+    headline: '14-18',
+    detail: 'Average students per class.',
+    accent: 'bg-gradient-to-br from-lime-50 via-white to-white',
+  },
+  {
+    id: 'global',
+    headline: '🌍',
+    detail: 'Sister schools worldwide: Denmark, Spain, Argentina, Japan, Tanzania, Honduras.',
+    accent: 'bg-gradient-to-br from-sky-50 via-white to-white',
+  },
+  {
+    id: 'merit',
+    headline: '53',
+    detail: 'National Merit Scholarship finalists since 2005.',
+    accent: 'bg-gradient-to-br from-amber-50 via-white to-white',
+  },
+  {
+    id: 'sports',
+    headline: '14',
+    detail: '14 varsity sports offered.',
+    accent: 'bg-gradient-to-br from-teal-50 via-white to-white',
   },
 ];
 
@@ -95,7 +84,8 @@ type StatCardProps = {
 };
 
 function StatCard({ entry, isActive, onToggle }: StatCardProps) {
-  const { headline, caption, detail, accent } = entry;
+  const { headline, detail, accent } = entry;
+  const detailId = `${entry.id}-detail`;
 
   const handleKeyDown = useCallback(
     (event: ReactKeyboardEvent<HTMLButtonElement>) => {
@@ -114,40 +104,29 @@ function StatCard({ entry, isActive, onToggle }: StatCardProps) {
       onClick={onToggle}
       onKeyDown={handleKeyDown}
       aria-expanded={isActive}
-      className={`group relative flex w-full flex-col rounded-2xl border border-gray-200 p-3 text-left transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#004b34]/40 ${accent ?? 'bg-white/90'} ${isActive ? 'col-span-2 sm:col-span-3 shadow-lg ring-1 ring-[#004b34]/10' : 'hover:shadow-md'}`}
+      aria-controls={detailId}
+      className={`group relative flex w-full flex-col rounded-2xl border border-gray-200 p-4 text-left transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#004b34]/40 ${isActive ? 'bg-[#004b34] text-white shadow-xl ring-1 ring-[#2d7a5a]/40' : `${accent ?? 'bg-white/90'} text-[#003825] hover:shadow-md`}`}
+      transition={{ layout: { duration: 0.2, ease: 'easeOut' } }}
     >
-      <div className="flex items-baseline gap-2">
-        <span className="text-3xl font-schraft-medium text-[#003825] sm:text-4xl">{headline}</span>
-        {caption && (
-          <span className="text-[11px] font-schraft uppercase tracking-[0.2em] text-gray-500">
-            {caption}
-          </span>
-        )}
+      <div className="flex items-center justify-between">
+        <span className={`text-4xl font-schraft-medium sm:text-5xl ${isActive ? 'text-white' : 'text-[#003825]'}`}>
+          {headline}
+        </span>
       </div>
 
       <AnimatePresence initial={false} mode="wait">
-        {isActive ? (
+        {isActive && (
           <motion.p
+            id={detailId}
             key="detail"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.18 }}
-            className="mt-3 text-sm font-schraft leading-snug text-gray-700"
+            className="mt-3 text-sm font-schraft leading-snug text-white/90"
           >
             {detail}
           </motion.p>
-        ) : (
-          <motion.span
-            key="prompt"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
-            className="mt-3 text-[10px] font-schraft uppercase tracking-[0.3em] text-gray-400"
-          >
-            tap to expand
-          </motion.span>
         )}
       </AnimatePresence>
     </motion.button>
@@ -268,7 +247,7 @@ export default function HomePage() {
       {/* Value Props Grid - Shared Borders */}
       <section className="py-8 md:py-16 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 grid-flow-row-dense lg:hidden">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:hidden">
             {statEntries.map(stat => {
               const isActive = activeStat === stat.id;
               return (
