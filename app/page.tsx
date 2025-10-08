@@ -1,7 +1,7 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowRight, Calendar, Clock } from 'lucide-react';
+import { ArrowRight, Clock } from 'lucide-react';
 import Link from 'next/link';
 import { ShimmerButton } from '@/components/ui/shimmer-button-simple';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -13,83 +13,86 @@ type StatEntry = {
   detail: string;
   accent?: string;
   layout?: {
-    baseSpan?: 1 | 2;
-    smSpan?: 1 | 2 | 3;
+    baseSpan?: 1 | 2 | 3 | 4 | 5 | 6;
+    smSpan?: 1 | 2 | 3 | 4 | 5 | 6;
+    activeSpan?: 1 | 2 | 3 | 4 | 5 | 6;
+    activeSmSpan?: 1 | 2 | 3 | 4 | 5 | 6;
     size?: 'sm' | 'md' | 'lg';
   };
 };
 
 const statEntries: StatEntry[] = [
   {
-    id: 'students',
-    headline: '683',
-    detail: 'Students across Pre-K through grade 12.',
-    accent: 'bg-gradient-to-br from-emerald-50 via-white to-white',
-    layout: { size: 'md' },
-  },
-  {
     id: 'college',
     headline: '100%',
     detail: 'Every graduate earns college admission.',
     accent: 'bg-gradient-to-br from-emerald-100/40 via-white to-white',
-    layout: { size: 'md' },
+    layout: { baseSpan: 3, smSpan: 3, activeSpan: 4, activeSmSpan: 4, size: 'md' },
   },
   {
     id: 'state-titles',
     headline: '20',
     detail: 'State championships in football, golf, track, tennis, and soccer.',
     accent: 'bg-gradient-to-br from-emerald-50/70 via-white to-white',
-    layout: { size: 'sm' },
+    layout: { baseSpan: 2, smSpan: 2, activeSpan: 3, activeSmSpan: 3, size: 'sm' },
   },
   {
     id: 'niche',
     headline: 'A+',
     detail: 'Top-rated independent school on Niche.com.',
     accent: 'bg-gradient-to-br from-amber-50 via-white to-white',
-    layout: { size: 'sm' },
-  },
-  {
-    id: 'steam',
-    headline: 'STEAM',
-    detail: '16,000 sq. ft. state-of-the-art, hands-on STEAM center.',
-    accent: 'bg-gradient-to-br from-yellow-50 via-white to-white',
-    layout: { baseSpan: 2, smSpan: 3, size: 'lg' },
+    layout: { baseSpan: 1, smSpan: 1, activeSpan: 2, activeSmSpan: 2, size: 'sm' },
   },
   {
     id: 'marine',
     headline: '🐬',
     detail: '6,000 sq. ft. marine science facility with waterfront access.',
     accent: 'bg-gradient-to-br from-cyan-50 via-white to-white',
-    layout: { size: 'md' },
-  },
-  {
-    id: 'class-size',
-    headline: '14-18',
-    detail: 'Average students per class.',
-    accent: 'bg-gradient-to-br from-lime-50 via-white to-white',
-    layout: { size: 'sm' },
+    layout: { baseSpan: 3, smSpan: 3, activeSpan: 4, activeSmSpan: 4, size: 'md' },
   },
   {
     id: 'global',
     headline: '🌍',
     detail: 'Sister schools in Denmark, Spain, Argentina, Japan, Tanzania, and Honduras.',
     accent: 'bg-gradient-to-br from-sky-50 via-white to-white',
-    layout: { size: 'sm' },
+    layout: { baseSpan: 3, smSpan: 3, activeSpan: 3, activeSmSpan: 3, size: 'sm' },
+  },
+  {
+    id: 'steam',
+    headline: 'STEAM',
+    detail: '16,000 sq. ft. state-of-the-art, hands-on STEAM center.',
+    accent: 'bg-gradient-to-br from-yellow-50 via-white to-white',
+    layout: { baseSpan: 6, smSpan: 6, activeSpan: 6, activeSmSpan: 6, size: 'lg' },
+  },
+  {
+    id: 'students',
+    headline: '683',
+    detail: 'Students across Pre-K through grade 12.',
+    accent: 'bg-gradient-to-br from-emerald-50 via-white to-white',
+    layout: { baseSpan: 3, smSpan: 3, activeSpan: 4, activeSmSpan: 4, size: 'md' },
+  },
+  {
+    id: 'class-size',
+    headline: '14-18',
+    detail: 'Average students per class.',
+    accent: 'bg-gradient-to-br from-lime-50 via-white to-white',
+    layout: { baseSpan: 3, smSpan: 3, activeSpan: 3, activeSmSpan: 3, size: 'sm' },
   },
   {
     id: 'merit',
     headline: '53',
     detail: 'National Merit Scholarship finalists since 2005.',
     accent: 'bg-gradient-to-br from-amber-50 via-white to-white',
-    layout: { size: 'sm' },
+    layout: { baseSpan: 3, smSpan: 3, activeSpan: 3, activeSmSpan: 3, size: 'sm' },
   },
   {
     id: 'sports',
     headline: '14',
     detail: 'Varsity sports available to grades 6–12.',
     accent: 'bg-gradient-to-br from-teal-50 via-white to-white',
-    layout: { size: 'sm' },
+    layout: { baseSpan: 3, smSpan: 3, activeSpan: 3, activeSmSpan: 3, size: 'sm' },
   },
+
 ];
 
 type StatCardProps = {
@@ -101,18 +104,49 @@ type StatCardProps = {
 function StatCard({ entry, isActive, onToggle }: StatCardProps) {
   const { headline, detail, accent } = entry;
   const detailId = `${entry.id}-detail`;
+
+  const spanClassMap: Record<number, string> = {
+    1: 'col-span-1',
+    2: 'col-span-2',
+    3: 'col-span-3',
+    4: 'col-span-4',
+    5: 'col-span-5',
+    6: 'col-span-6',
+  };
+  const smSpanClassMap: Record<number, string> = {
+    1: 'sm:col-span-1',
+    2: 'sm:col-span-2',
+    3: 'sm:col-span-3',
+    4: 'sm:col-span-4',
+    5: 'sm:col-span-5',
+    6: 'sm:col-span-6',
+  };
+
+  const baseSpan = entry.layout?.baseSpan ?? 3;
+  const activeSpan = entry.layout?.activeSpan ?? baseSpan;
+  const baseSmSpan = entry.layout?.smSpan ?? baseSpan;
+  const activeSmSpan = entry.layout?.activeSmSpan ?? entry.layout?.activeSpan ?? baseSmSpan;
+
   const spanClasses = [
-    entry.layout?.baseSpan === 2 ? 'col-span-2' : 'col-span-1',
-    entry.layout?.smSpan === 3 ? 'sm:col-span-3' : entry.layout?.smSpan === 2 ? 'sm:col-span-2' : '',
+    spanClassMap[isActive ? activeSpan : baseSpan] ?? 'col-span-3',
+    smSpanClassMap[isActive ? activeSmSpan : baseSmSpan] ?? '',
   ]
     .filter(Boolean)
     .join(' ');
 
-  const sizeClass = entry.layout?.size === 'lg'
-    ? 'min-h-[170px]'
-    : entry.layout?.size === 'md'
-      ? 'min-h-[140px]'
-      : 'min-h-[115px]';
+  const sizeBaseClassMap: Record<'sm' | 'md' | 'lg', string> = {
+    sm: 'px-4 py-3 min-h-[110px]',
+    md: 'px-4 py-4 min-h-[140px]',
+    lg: 'px-4 py-5 min-h-[170px]',
+  };
+  const sizeActiveClassMap: Record<'sm' | 'md' | 'lg', string> = {
+    sm: 'px-4 py-6 min-h-[165px]',
+    md: 'px-5 py-7 min-h-[205px]',
+    lg: 'px-5 py-8 min-h-[240px]',
+  };
+
+  const baseSize = entry.layout?.size ?? 'sm';
+  const sizeClass = isActive ? sizeActiveClassMap[baseSize] : sizeBaseClassMap[baseSize];
 
   const handleKeyDown = useCallback(
     (event: ReactKeyboardEvent<HTMLButtonElement>) => {
@@ -132,13 +166,14 @@ function StatCard({ entry, isActive, onToggle }: StatCardProps) {
       onKeyDown={handleKeyDown}
       aria-expanded={isActive}
       aria-controls={detailId}
-      className={`group relative flex w-full flex-col rounded-2xl border border-gray-200 p-4 text-left transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#004b34]/40 ${spanClasses} ${sizeClass} ${isActive ? 'bg-[#004b34] text-white shadow-xl ring-1 ring-[#2d7a5a]/40' : `${accent ?? 'bg-white/90'} text-[#003825] hover:shadow-md`}`}
-      transition={{ layout: { duration: 0.2, ease: 'easeOut' } }}
+      className={`group relative flex w-full flex-col rounded-2xl border border-gray-200 text-left transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#004b34]/40 ${spanClasses} ${sizeClass} ${isActive ? 'bg-[#004b34] text-white shadow-2xl ring-1 ring-[#2d7a5a]/40 scale-[1.02]' : `${accent ?? 'bg-white/90'} text-[#003825] hover:shadow-lg`}`}
+      transition={{ layout: { duration: 0.3, ease: 'easeOut' } }}
     >
-      <div className="flex items-center justify-between">
-        <span className={`text-4xl font-schraft-medium sm:text-5xl ${isActive ? 'text-white' : 'text-[#003825]'}`}>
+      <div className="flex items-center justify-between gap-2">
+        <span className={`text-4xl font-schraft-medium sm:text-5xl transition-colors duration-200 ${isActive ? 'text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.18)]' : 'text-[#003825]'}`}>
           {headline}
         </span>
+        <span className={`h-1.5 w-10 rounded-full transition-transform duration-300 ${isActive ? 'scale-x-125 bg-emerald-200/90' : 'scale-x-75 bg-[#003825]/10 group-hover:bg-[#003825]/20'}`} />
       </div>
 
       <AnimatePresence initial={false} mode="wait">
@@ -146,11 +181,11 @@ function StatCard({ entry, isActive, onToggle }: StatCardProps) {
           <motion.p
             id={detailId}
             key="detail"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.18 }}
-            className="mt-3 text-sm font-schraft leading-snug text-white/90"
+            initial={{ opacity: 0, height: 0, y: -12 }}
+            animate={{ opacity: 1, height: 'auto', y: 0 }}
+            exit={{ opacity: 0, height: 0, y: -10 }}
+            transition={{ duration: 0.28, ease: 'easeOut' }}
+            className="mt-4 text-sm font-schraft leading-snug text-white/90"
           >
             {detail}
           </motion.p>
@@ -159,6 +194,7 @@ function StatCard({ entry, isActive, onToggle }: StatCardProps) {
     </motion.button>
   );
 }
+
 
 export default function HomePage() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -186,16 +222,15 @@ export default function HomePage() {
             href="https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ1pPQ9xNbaHdCjn0RLmWLqhkuL5ePgy2tEp6YAT6tCvHG8emnJQr3gayPfmsnOPCbze_Q_ccJcD"
             target="_blank"
             rel="noopener noreferrer"
-            className="group relative inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition-all duration-200 hover:bg-white/20 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/50"
+            className="group relative inline-flex items-center rounded-full bg-white/10 px-3 py-1.5 text-xs sm:text-sm font-medium text-white backdrop-blur-sm transition-all duration-200 hover:bg-white/20 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/40"
           >
-            <Calendar className="h-4 w-4 transition-transform group-hover:scale-110" />
-            Book Tour
+            <span className="transition-transform group-hover:translate-x-0.5">Book Tour</span>
           </a>
         </div>
       </nav>
 
       {/* Hero Section with Video Background */}
-      <section className="relative min-h-[600px] h-[70vh] overflow-hidden">
+      <section className="relative min-h-[600px] h-[70vh] overflow-hidden pt-24 sm:pt-28">
         {/* Video Background */}
         <div className="absolute -inset-10 w-[calc(100%+80px)] h-[calc(100%+80px)]">
           <video
@@ -272,9 +307,9 @@ export default function HomePage() {
       </section>
 
       {/* Value Props Grid - Shared Borders */}
-      <section className="py-8 md:py-16 px-4">
+      <section className="pt-12 md:pt-20 pb-12 md:pb-16 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:hidden">
+          <div className="grid grid-cols-6 auto-rows-[minmax(110px,_auto)] gap-3 sm:grid-cols-6 lg:hidden">
             {statEntries.map(stat => {
               const isActive = activeStat === stat.id;
               return (
