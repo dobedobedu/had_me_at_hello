@@ -1,140 +1,163 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRight, Calendar, Clock } from 'lucide-react';
 import Link from 'next/link';
 import { ShimmerButton } from '@/components/ui/shimmer-button-simple';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import type { KeyboardEvent as ReactKeyboardEvent } from 'react';
 
 type StatEntry = {
   id: string;
-  value: string;
-  label: string;
-  description: string;
+  headline: string;
+  caption?: string;
+  detail: string;
+  accent?: string;
 };
 
 const statEntries: StatEntry[] = [
   {
     id: 'students',
-    value: '683',
-    label: 'Students',
-    description: 'Pre-K through Grade 12',
+    headline: '683',
+    caption: 'Students',
+    detail: 'Pre-K through Grade 12.',
+    accent: 'bg-gradient-to-br from-emerald-50 via-white to-white',
   },
   {
     id: 'class-size',
-    value: '14-18',
-    label: 'Students Per Class',
-    description: 'Smaller groups with focused attention',
+    headline: '14-18',
+    caption: 'Average per class',
+    detail: 'Average students per class.',
+    accent: 'bg-gradient-to-br from-lime-50 via-white to-white',
   },
   {
     id: 'college',
-    value: '100%',
-    label: 'College Acceptance',
-    description: 'Our graduates earn admission to top universities',
+    headline: '100%',
+    caption: 'College acceptance',
+    detail: '100% college acceptance rate.',
+    accent: 'bg-gradient-to-br from-emerald-100/40 via-white to-white',
   },
   {
     id: 'global',
-    value: 'Global Education',
-    label: 'Sister Schools Worldwide',
-    description: 'Denmark, Spain, Argentina, Japan, Tanzania, Honduras',
+    headline: '🌍',
+    caption: 'Global education',
+    detail: 'Sister schools worldwide: Denmark, Spain, Argentina, Japan, Tanzania, Honduras.',
+    accent: 'bg-gradient-to-br from-sky-50 via-white to-white',
   },
   {
     id: 'marine',
-    value: 'Marine Science',
-    label: '6,000 Square Foot Facility',
-    description: "The area’s only school with waterfront access",
+    headline: '🐬',
+    caption: 'Marine science',
+    detail: '6,000 square foot marine science facility— the area’s only school with waterfront access.',
+    accent: 'bg-gradient-to-br from-cyan-50 via-white to-white',
   },
   {
     id: 'merit',
-    value: '53',
-    label: 'National Merit Scholarship Finalists',
-    description: 'Recognized since 2005',
+    headline: '53',
+    caption: 'Merit finalists',
+    detail: 'National Merit Scholarship finalists since 2005.',
+    accent: 'bg-gradient-to-br from-amber-50 via-white to-white',
   },
   {
     id: 'state-titles',
-    value: '20',
-    label: 'State Titles',
-    description: 'Football, Golf, Track, Tennis, Soccer',
+    headline: '20',
+    caption: 'State championships',
+    detail: 'State championships in football, golf, track, tennis, soccer.',
+    accent: 'bg-gradient-to-br from-emerald-50/70 via-white to-white',
   },
   {
     id: 'sports',
-    value: '14',
-    label: 'Sports Offered',
-    description: 'Grades 6-12 compete in 14 varsity sports',
+    headline: '14',
+    caption: 'Varsity sports',
+    detail: '14 varsity sports offered.',
+    accent: 'bg-gradient-to-br from-teal-50 via-white to-white',
   },
   {
     id: 'steam',
-    value: 'STEAM',
-    label: 'Innovation Center',
-    description: '16,000 square feet of hands-on learning',
+    headline: 'STEAM',
+    caption: 'Innovation center',
+    detail: '16,000 square feet state-of-the-art hands-on learning STEAM center.',
+    accent: 'bg-gradient-to-br from-yellow-50 via-white to-white',
   },
   {
     id: 'niche',
-    value: 'A+',
-    label: 'Niche.com Ranking',
-    description: 'Top-rated independent school experience',
+    headline: 'A+',
+    caption: 'Niche.com',
+    detail: 'A+ rating on Niche.com, top-rated independent school.',
+    accent: 'bg-gradient-to-br from-amber-50 via-white to-white',
   },
 ];
 
-function StatFlipCard({ value, label, description }: StatEntry) {
-  const [flipped, setFlipped] = useState(false);
+type StatCardProps = {
+  entry: StatEntry;
+  isActive: boolean;
+  onToggle: () => void;
+};
 
-  const toggle = useCallback(() => {
-    setFlipped(prev => !prev);
-  }, []);
+function StatCard({ entry, isActive, onToggle }: StatCardProps) {
+  const { headline, caption, detail, accent } = entry;
+
+  const handleKeyDown = useCallback(
+    (event: ReactKeyboardEvent<HTMLButtonElement>) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        onToggle();
+      }
+    },
+    [onToggle]
+  );
 
   return (
-    <button
+    <motion.button
+      layout
       type="button"
-      onClick={toggle}
-      onKeyDown={(event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          toggle();
-        }
-      }}
-      aria-pressed={flipped}
-      className="relative w-full rounded-2xl border border-dotted border-gray-300 bg-white/90 p-4 text-left shadow-sm transition-transform duration-200 focus:outline-none focus:ring-2 focus:ring-[#004b34]/40"
-      style={{ perspective: '1200px' }}
+      onClick={onToggle}
+      onKeyDown={handleKeyDown}
+      aria-expanded={isActive}
+      className={`group relative flex w-full flex-col rounded-2xl border border-gray-200 p-3 text-left transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#004b34]/40 ${accent ?? 'bg-white/90'} ${isActive ? 'col-span-2 sm:col-span-3 shadow-lg ring-1 ring-[#004b34]/10' : 'hover:shadow-md'}`}
     >
-      <div
-        className={`relative min-h-[140px] w-full transition-transform duration-500 ${flipped ? '[transform:rotateY(180deg)]' : ''}`}
-        style={{ transformStyle: 'preserve-3d' }}
-      >
-        <div
-          className="absolute inset-0 flex h-full w-full flex-col items-start justify-center gap-2"
-          style={{ backfaceVisibility: 'hidden' }}
-        >
-          <span className="text-4xl font-schraft-medium text-[#003825] md:text-5xl">
-            {value}
+      <div className="flex items-baseline gap-2">
+        <span className="text-3xl font-schraft-medium text-[#003825] sm:text-4xl">{headline}</span>
+        {caption && (
+          <span className="text-[11px] font-schraft uppercase tracking-[0.2em] text-gray-500">
+            {caption}
           </span>
-          <span className="text-sm font-schraft uppercase tracking-wider text-gray-600">
-            {label}
-          </span>
-          <span className="text-xs text-gray-400 font-schraft">
-            Tap for more
-          </span>
-        </div>
-
-        <div
-          className="absolute inset-0 flex h-full w-full flex-col justify-center gap-2 rounded-2xl bg-[#004b34]/5 px-2 py-4"
-          style={{ transform: 'rotateY(180deg)', backfaceVisibility: 'hidden' }}
-        >
-          <span className="text-base font-schraft-medium text-[#003825]">
-            {label}
-          </span>
-          <span className="text-sm text-gray-600 font-schraft leading-snug">
-            {description}
-          </span>
-        </div>
+        )}
       </div>
-    </button>
+
+      <AnimatePresence initial={false} mode="wait">
+        {isActive ? (
+          <motion.p
+            key="detail"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.18 }}
+            className="mt-3 text-sm font-schraft leading-snug text-gray-700"
+          >
+            {detail}
+          </motion.p>
+        ) : (
+          <motion.span
+            key="prompt"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            className="mt-3 text-[10px] font-schraft uppercase tracking-[0.3em] text-gray-400"
+          >
+            tap to expand
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </motion.button>
   );
 }
 
 export default function HomePage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoReady, setVideoReady] = useState(false);
+  const [activeStat, setActiveStat] = useState<string | null>(null);
 
   useEffect(() => {
     // Ensure video plays on mount and set playback speed
@@ -245,10 +268,18 @@ export default function HomePage() {
       {/* Value Props Grid - Shared Borders */}
       <section className="py-8 md:py-16 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col gap-4 lg:hidden">
-            {statEntries.map(stat => (
-              <StatFlipCard key={stat.id} {...stat} />
-            ))}
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 grid-flow-row-dense lg:hidden">
+            {statEntries.map(stat => {
+              const isActive = activeStat === stat.id;
+              return (
+                <StatCard
+                  key={stat.id}
+                  entry={stat}
+                  isActive={isActive}
+                  onToggle={() => setActiveStat(prev => (prev === stat.id ? null : stat.id))}
+                />
+              );
+            })}
           </div>
 
           <div className="hidden lg:grid grid-cols-12 border-t border-l border-dotted border-gray-300">
