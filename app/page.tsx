@@ -12,68 +12,83 @@ type StatEntry = {
   headline: string;
   detail: string;
   accent?: string;
+  layout?: {
+    baseSpan?: 1 | 2;
+    smSpan?: 1 | 2 | 3;
+    size?: 'sm' | 'md' | 'lg';
+  };
 };
 
 const statEntries: StatEntry[] = [
   {
     id: 'students',
     headline: '683',
-    detail: 'Pre-K through Grade 12.',
+    detail: 'Students across Pre-K through grade 12.',
     accent: 'bg-gradient-to-br from-emerald-50 via-white to-white',
+    layout: { size: 'md' },
   },
   {
     id: 'college',
     headline: '100%',
-    detail: '100% college acceptance rate.',
+    detail: 'Every graduate earns college admission.',
     accent: 'bg-gradient-to-br from-emerald-100/40 via-white to-white',
+    layout: { size: 'md' },
   },
   {
     id: 'state-titles',
     headline: '20',
     detail: 'State championships in football, golf, track, tennis, and soccer.',
     accent: 'bg-gradient-to-br from-emerald-50/70 via-white to-white',
+    layout: { size: 'sm' },
   },
   {
     id: 'niche',
     headline: 'A+',
-    detail: 'A+ rating on Niche.com — top-rated independent school.',
+    detail: 'Top-rated independent school on Niche.com.',
     accent: 'bg-gradient-to-br from-amber-50 via-white to-white',
+    layout: { size: 'sm' },
   },
   {
     id: 'steam',
     headline: 'STEAM',
     detail: '16,000 sq. ft. state-of-the-art, hands-on STEAM center.',
     accent: 'bg-gradient-to-br from-yellow-50 via-white to-white',
+    layout: { baseSpan: 2, smSpan: 3, size: 'lg' },
   },
   {
     id: 'marine',
     headline: '🐬',
-    detail: '6,000 sq. ft. marine science facility — the only waterfront program in the area.',
+    detail: '6,000 sq. ft. marine science facility with waterfront access.',
     accent: 'bg-gradient-to-br from-cyan-50 via-white to-white',
+    layout: { size: 'md' },
   },
   {
     id: 'class-size',
     headline: '14-18',
     detail: 'Average students per class.',
     accent: 'bg-gradient-to-br from-lime-50 via-white to-white',
+    layout: { size: 'sm' },
   },
   {
     id: 'global',
     headline: '🌍',
-    detail: 'Sister schools worldwide: Denmark, Spain, Argentina, Japan, Tanzania, Honduras.',
+    detail: 'Sister schools in Denmark, Spain, Argentina, Japan, Tanzania, and Honduras.',
     accent: 'bg-gradient-to-br from-sky-50 via-white to-white',
+    layout: { size: 'sm' },
   },
   {
     id: 'merit',
     headline: '53',
     detail: 'National Merit Scholarship finalists since 2005.',
     accent: 'bg-gradient-to-br from-amber-50 via-white to-white',
+    layout: { size: 'sm' },
   },
   {
     id: 'sports',
     headline: '14',
-    detail: '14 varsity sports offered.',
+    detail: 'Varsity sports available to grades 6–12.',
     accent: 'bg-gradient-to-br from-teal-50 via-white to-white',
+    layout: { size: 'sm' },
   },
 ];
 
@@ -86,6 +101,18 @@ type StatCardProps = {
 function StatCard({ entry, isActive, onToggle }: StatCardProps) {
   const { headline, detail, accent } = entry;
   const detailId = `${entry.id}-detail`;
+  const spanClasses = [
+    entry.layout?.baseSpan === 2 ? 'col-span-2' : 'col-span-1',
+    entry.layout?.smSpan === 3 ? 'sm:col-span-3' : entry.layout?.smSpan === 2 ? 'sm:col-span-2' : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  const sizeClass = entry.layout?.size === 'lg'
+    ? 'min-h-[170px]'
+    : entry.layout?.size === 'md'
+      ? 'min-h-[140px]'
+      : 'min-h-[115px]';
 
   const handleKeyDown = useCallback(
     (event: ReactKeyboardEvent<HTMLButtonElement>) => {
@@ -105,7 +132,7 @@ function StatCard({ entry, isActive, onToggle }: StatCardProps) {
       onKeyDown={handleKeyDown}
       aria-expanded={isActive}
       aria-controls={detailId}
-      className={`group relative flex w-full flex-col rounded-2xl border border-gray-200 p-4 text-left transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#004b34]/40 ${isActive ? 'bg-[#004b34] text-white shadow-xl ring-1 ring-[#2d7a5a]/40' : `${accent ?? 'bg-white/90'} text-[#003825] hover:shadow-md`}`}
+      className={`group relative flex w-full flex-col rounded-2xl border border-gray-200 p-4 text-left transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#004b34]/40 ${spanClasses} ${sizeClass} ${isActive ? 'bg-[#004b34] text-white shadow-xl ring-1 ring-[#2d7a5a]/40' : `${accent ?? 'bg-white/90'} text-[#003825] hover:shadow-md`}`}
       transition={{ layout: { duration: 0.2, ease: 'easeOut' } }}
     >
       <div className="flex items-center justify-between">
