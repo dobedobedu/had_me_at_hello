@@ -1,6 +1,6 @@
 'use client';
 
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, LayoutGroup, motion } from 'framer-motion';
 import { ArrowRight, Clock } from 'lucide-react';
 import Link from 'next/link';
 import { ShimmerButton } from '@/components/ui/shimmer-button-simple';
@@ -18,6 +18,7 @@ type StatEntry = {
     activeSpan?: 1 | 2 | 3 | 4 | 5 | 6;
     activeSmSpan?: 1 | 2 | 3 | 4 | 5 | 6;
     size?: 'sm' | 'md' | 'lg';
+    activeMinWidth?: string;
   };
 };
 
@@ -41,7 +42,14 @@ const statEntries: StatEntry[] = [
     headline: 'A+',
     detail: 'Top-rated independent school on Niche.com.',
     accent: 'bg-gradient-to-br from-amber-50 via-white to-white',
-    layout: { baseSpan: 1, smSpan: 1, activeSpan: 2, activeSmSpan: 2, size: 'sm' },
+    layout: {
+      baseSpan: 1,
+      smSpan: 1,
+      activeSpan: 4,
+      activeSmSpan: 4,
+      size: 'sm',
+      activeMinWidth: 'min(65vw, 380px)',
+    },
   },
   {
     id: 'marine',
@@ -135,14 +143,14 @@ function StatCard({ entry, isActive, onToggle }: StatCardProps) {
     .join(' ');
 
   const sizeBaseClassMap: Record<'sm' | 'md' | 'lg', string> = {
-    sm: 'px-4 py-3 min-h-[110px]',
-    md: 'px-4 py-4 min-h-[140px]',
-    lg: 'px-4 py-5 min-h-[170px]',
+    sm: 'px-3 py-2 min-h-[60px]',
+    md: 'px-4 py-2.5 min-h-[80px]',
+    lg: 'px-5 py-3 min-h-[96px]',
   };
   const sizeActiveClassMap: Record<'sm' | 'md' | 'lg', string> = {
-    sm: 'px-4 py-6 min-h-[165px]',
-    md: 'px-5 py-7 min-h-[205px]',
-    lg: 'px-5 py-8 min-h-[240px]',
+    sm: 'px-4 py-5 min-h-[150px]',
+    md: 'px-5 py-6 min-h-[210px]',
+    lg: 'px-6 py-7 min-h-[250px]',
   };
 
   const baseSize = entry.layout?.size ?? 'sm';
@@ -158,6 +166,10 @@ function StatCard({ entry, isActive, onToggle }: StatCardProps) {
     [onToggle]
   );
 
+  const minWidthStyle = {
+    minWidth: isActive && entry.layout?.activeMinWidth ? entry.layout.activeMinWidth : undefined,
+  };
+
   return (
     <motion.button
       layout
@@ -166,11 +178,18 @@ function StatCard({ entry, isActive, onToggle }: StatCardProps) {
       onKeyDown={handleKeyDown}
       aria-expanded={isActive}
       aria-controls={detailId}
-      className={`group relative flex w-full flex-col rounded-2xl border border-gray-200 text-left transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#004b34]/40 ${spanClasses} ${sizeClass} ${isActive ? 'bg-[#004b34] text-white shadow-2xl ring-1 ring-[#2d7a5a]/40 scale-[1.02]' : `${accent ?? 'bg-white/90'} text-[#003825] hover:shadow-lg`}`}
-      transition={{ layout: { duration: 0.3, ease: 'easeOut' } }}
+      className={`group relative flex w-full flex-col rounded-2xl border border-gray-200 text-left transition-colors duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-[#004b34]/40 ${spanClasses} ${sizeClass} ${isActive ? 'bg-[#004b34] text-white shadow-2xl ring-1 ring-[#2d7a5a]/40' : `${accent ?? 'bg-white/90'} text-[#003825] hover:shadow-lg`}`}
+      style={minWidthStyle}
+      transition={{
+        layout: {
+          type: 'spring',
+          stiffness: 260,
+          damping: 28,
+        },
+      }}
     >
       <div className="flex items-center justify-between gap-2">
-        <span className={`text-4xl font-schraft-medium sm:text-5xl transition-colors duration-200 ${isActive ? 'text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.18)]' : 'text-[#003825]'}`}>
+        <span className={`text-4xl sm:text-5xl font-schraft-medium leading-none tracking-tight transition-colors duration-200 ${isActive ? 'text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.18)]' : 'text-[#003825]'} whitespace-nowrap`}>
           {headline}
         </span>
         <span className={`h-1.5 w-10 rounded-full transition-transform duration-300 ${isActive ? 'scale-x-125 bg-emerald-200/90' : 'scale-x-75 bg-[#003825]/10 group-hover:bg-[#003825]/20'}`} />
@@ -179,6 +198,7 @@ function StatCard({ entry, isActive, onToggle }: StatCardProps) {
       <AnimatePresence initial={false} mode="wait">
         {isActive && (
           <motion.p
+            layout
             id={detailId}
             key="detail"
             initial={{ opacity: 0, height: 0, y: -12 }}
@@ -309,19 +329,21 @@ export default function HomePage() {
       {/* Value Props Grid - Shared Borders */}
       <section className="pt-12 md:pt-20 pb-12 md:pb-16 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-6 auto-rows-[minmax(110px,_auto)] gap-3 sm:grid-cols-6 lg:hidden">
-            {statEntries.map(stat => {
-              const isActive = activeStat === stat.id;
-              return (
-                <StatCard
-                  key={stat.id}
-                  entry={stat}
-                  isActive={isActive}
-                  onToggle={() => setActiveStat(prev => (prev === stat.id ? null : stat.id))}
-                />
-              );
-            })}
-          </div>
+          <LayoutGroup id="mobile-stat-grid">
+            <div className="grid grid-cols-6 auto-rows-[minmax(60px,_auto)] gap-3 sm:grid-cols-6 lg:hidden">
+              {statEntries.map(stat => {
+                const isActive = activeStat === stat.id;
+                return (
+                  <StatCard
+                    key={stat.id}
+                    entry={stat}
+                    isActive={isActive}
+                    onToggle={() => setActiveStat(prev => (prev === stat.id ? null : stat.id))}
+                  />
+                );
+              })}
+            </div>
+          </LayoutGroup>
 
           <div className="hidden lg:grid grid-cols-12 border-t border-l border-dotted border-gray-300">
             
