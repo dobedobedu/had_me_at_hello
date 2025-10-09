@@ -177,7 +177,9 @@ export default function ResultsPage() {
           <div className="rounded-2xl overflow-hidden shadow-sm bg-white">
             <div className="p-4">
               <h3 className="text-lg font-bold text-gray-900">Meet {firstFaculty.firstName} {firstFaculty.lastName}</h3>
-              <p className="text-xs text-gray-600 mt-1">{firstFaculty.role || 'Faculty Member'} • {firstFaculty.department || 'Department'}</p>
+              <p className="text-xs text-gray-600 mt-1">
+                {(firstFaculty.title || firstFaculty.formalTitle || 'Faculty Member')} • {firstFaculty.department || 'Department'}
+              </p>
             </div>
             <div className="relative w-full aspect-video bg-black">
               {firstFaculty?.videoUrl && playingVideo === 'faculty-match' ? (
