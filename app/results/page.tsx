@@ -50,6 +50,8 @@ export default function ResultsPage() {
   const hasRequestedAnalysis = useRef(false);
   const [carouselApi, setCarouselApi] = useState<CarouselApi | undefined>();
   const [activeSlide, setActiveSlide] = useState(0);
+  const [canScrollPrev, setCanScrollPrev] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(false);
   const carouselOptions = useMemo(() => ({
     loop: false,
     draggable: !playingVideo,
@@ -302,6 +304,8 @@ export default function ResultsPage() {
       const index = carouselApi.selectedScrollSnap() ?? 0;
       setActiveSlide(index);
       setPlayingVideo(null);
+      setCanScrollPrev(carouselApi.canScrollPrev());
+      setCanScrollNext(carouselApi.canScrollNext());
     };
 
     carouselApi.on('select', handleSelect);
@@ -1156,27 +1160,57 @@ Full results: ${shareData.link}`);
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                {totalStorySlides > 1 && (
+                {totalStorySlides > 1 && canScrollPrev && (
                   <>
-                    <CarouselPrevious className="h-10 w-10 md:h-12 md:w-12" />
-                    <CarouselNext className="h-10 w-10 md:h-12 md:w-12" />
+                    <CarouselPrevious
+                      className="hidden md:flex h-10 w-10 md:h-12 md:w-12"
+                      disabled={!canScrollPrev}
+                    />
                   </>
+                )}
+                {totalStorySlides > 1 && canScrollNext && (
+                  <CarouselNext
+                    className="hidden md:flex h-10 w-10 md:h-12 md:w-12"
+                    disabled={!canScrollNext}
+                  />
                 )}
               </Carousel>
               {totalStorySlides > 1 && (
-                <div className="mt-6 flex justify-center gap-2">
-                  {storyCards.map((_, index) => (
+                <div className="mt-6 flex justify-center">
+                  <div className="flex items-center gap-3">
                     <button
-                      key={index}
-                      onClick={() => carouselApi?.scrollTo(index)}
-                      className={`transition-all ${
-                        index === activeSlide
-                          ? 'w-8 h-2 bg-[#004b34] rounded-full'
-                          : 'w-2 h-2 bg-gray-300 rounded-full hover:bg-gray-400'
-                      }`}
-                      aria-label={`Go to card ${index + 1}`}
-                    />
-                  ))}
+                      type="button"
+                      className="md:hidden h-9 w-9 rounded-full bg-white shadow-sm border border-gray-200 flex items-center justify-center text-[#004b34] disabled:opacity-40 disabled:cursor-not-allowed"
+                      onClick={() => carouselApi?.scrollPrev()}
+                      disabled={!canScrollPrev}
+                      aria-label="Previous story"
+                    >
+                      <ChevronDown className="h-4 w-4 -rotate-90" />
+                    </button>
+                    <div className="flex items-center gap-2">
+                      {storyCards.map((_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => carouselApi?.scrollTo(index)}
+                          className={`transition-all ${
+                            index === activeSlide
+                              ? 'w-8 h-2 bg-[#004b34] rounded-full'
+                              : 'w-2 h-2 bg-gray-300 rounded-full hover:bg-gray-400'
+                          }`}
+                          aria-label={`Go to card ${index + 1}`}
+                        />
+                      ))}
+                    </div>
+                    <button
+                      type="button"
+                      className="md:hidden h-9 w-9 rounded-full bg-white shadow-sm border border-gray-200 flex items-center justify-center text-[#004b34] disabled:opacity-40 disabled:cursor-not-allowed"
+                      onClick={() => carouselApi?.scrollNext()}
+                      disabled={!canScrollNext}
+                      aria-label="Next story"
+                    >
+                      <ChevronDown className="h-4 w-4 rotate-90" />
+                    </button>
+                  </div>
                 </div>
               )}
             </motion.div>
