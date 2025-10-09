@@ -15,9 +15,20 @@ interface SwipeableCardsProps {
   className?: string;
   disableDrag?: boolean;
   headerOffset?: number; // extra pixels above video (title/subtitle paddings)
+  onSwipeStart?: () => void;
+  onSwipeEnd?: () => void;
+  onIndexChange?: (index: number) => void;
 }
 
-export function SwipeableCards({ cards, className = '', disableDrag = false, headerOffset = 56 }: SwipeableCardsProps) {
+export function SwipeableCards({
+  cards,
+  className = '',
+  disableDrag = false,
+  headerOffset = 56,
+  onSwipeStart,
+  onSwipeEnd,
+  onIndexChange,
+}: SwipeableCardsProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
@@ -41,7 +52,10 @@ export function SwipeableCards({ cards, className = '', disableDrag = false, hea
   }, []);
 
   const goToCard = (index: number) => {
-    setCurrentIndex(Math.max(0, Math.min(index, cards.length - 1)));
+    const nextIndex = Math.max(0, Math.min(index, cards.length - 1));
+    if (nextIndex === currentIndex) return;
+    setCurrentIndex(nextIndex);
+    onIndexChange?.(nextIndex);
   };
 
   const goToPrevious = () => goToCard(currentIndex - 1);
@@ -49,6 +63,7 @@ export function SwipeableCards({ cards, className = '', disableDrag = false, hea
 
   // Swipe handlers
   const handleDragEnd = (event: any, info: any) => {
+    onSwipeEnd?.();
     const threshold = 50;
     if (info.offset.x > threshold && currentIndex > 0) {
       goToPrevious();
@@ -105,6 +120,9 @@ export function SwipeableCards({ cards, className = '', disableDrag = false, hea
                   drag={isActive && !disableDrag && !prefersReducedMotion ? "x" : false}
                   dragConstraints={{ left: 0, right: 0 }}
                   dragElastic={1}
+                  onDragStart={() => onSwipeStart?.()}
+                  onPointerDown={() => onSwipeStart?.()}
+                  onPointerUp={() => onSwipeEnd?.()}
                   onDragEnd={handleDragEnd}
                   className={`absolute inset-0 ${isNext ? 'pointer-events-none' : ''}`}
                   style={{

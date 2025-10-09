@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Share2, Calendar, Check, Home, Mail, Copy, CheckCircle, ChevronDown, Play, Send, QrCode, Download, X } from 'lucide-react';
 import Link from 'next/link';
@@ -41,6 +41,14 @@ export default function ResultsPage() {
     alumni: true
   });
   const hasRequestedAnalysis = useRef(false);
+
+  const handleStorySwipeStart = useCallback(() => {
+    setPlayingVideo(prev => (prev ? null : prev));
+  }, []);
+
+  const handleStoryCardChange = useCallback(() => {
+    setPlayingVideo(null);
+  }, []);
 
   useEffect(() => {
     // Prevent duplicate analysis calls using ref
@@ -865,6 +873,8 @@ Full results: ${shareData.link}`);
               <SwipeableCards 
                 disableDrag={false}
                 headerOffset={56}
+                onSwipeStart={handleStorySwipeStart}
+                onIndexChange={handleStoryCardChange}
                 cards={[
                   // Current Student Card (1 max) - exclude alumni stories (those with classYear)
                   ...(() => {
