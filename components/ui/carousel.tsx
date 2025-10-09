@@ -1,24 +1,24 @@
 "use client";
 
 import * as React from "react";
-import type {
-  EmblaCarouselType,
-  EmblaOptionsType,
-  EmblaPluginType,
-} from "embla-carousel-react";
+import type { EmblaOptionsType, EmblaPluginType, UseEmblaCarouselType } from "embla-carousel-react";
 import useEmblaCarousel from "embla-carousel-react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-export type CarouselApi = EmblaCarouselType;
+type EmblaHookReturn = UseEmblaCarouselType;
+type EmblaCarouselRef = EmblaHookReturn[0];
+type EmblaCarouselApi = EmblaHookReturn[1];
+
+export type CarouselApi = NonNullable<EmblaCarouselApi>;
 export type CarouselOptions = EmblaOptionsType;
 export type CarouselPlugin = EmblaPluginType;
 
 interface CarouselContextValue {
-  carouselRef: ReturnType<typeof useEmblaCarousel>[0];
-  api: CarouselApi | undefined;
+  carouselRef: EmblaCarouselRef;
+  api: EmblaCarouselApi;
 }
 
 const CarouselContext = React.createContext<CarouselContextValue | null>(null);
@@ -33,11 +33,10 @@ function useCarouselContext(component: string) {
   return context;
 }
 
-export interface CarouselProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+export interface CarouselProps extends React.HTMLAttributes<HTMLDivElement> {
   opts?: CarouselOptions;
   plugins?: CarouselPlugin[];
-  setApi?: (api: CarouselApi | undefined) => void;
+  setApi?: (api: EmblaCarouselApi) => void;
 }
 
 export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
