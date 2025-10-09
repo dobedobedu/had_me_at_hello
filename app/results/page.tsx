@@ -50,6 +50,10 @@ export default function ResultsPage() {
   const hasRequestedAnalysis = useRef(false);
   const [carouselApi, setCarouselApi] = useState<CarouselApi | undefined>();
   const [activeSlide, setActiveSlide] = useState(0);
+  const carouselOptions = useMemo(() => ({
+    loop: false,
+    draggable: !playingVideo,
+  }), [playingVideo]);
 
   const storyCards = useMemo(() => {
     const cards: Array<{ id: string; type: 'student' | 'faculty' | 'alumni'; hasVideo: boolean; node: ReactNode }> = [];
@@ -1144,18 +1148,18 @@ Full results: ${shareData.link}`);
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
             >
-              <Carousel className="w-full" opts={{ loop: false }} setApi={setCarouselApi}>
-                <CarouselContent className="ml-0">
+              <Carousel className="w-full" opts={carouselOptions} setApi={setCarouselApi}>
+                <CarouselContent className="-ml-3 sm:-ml-4 md:-ml-6">
                   {storyCards.map(card => (
-                    <CarouselItem key={card.id} className="pl-0">
+                    <CarouselItem key={card.id} className="pl-3 sm:pl-4 md:pl-6">
                       {card.node}
                     </CarouselItem>
                   ))}
                 </CarouselContent>
                 {totalStorySlides > 1 && (
                   <>
-                    <CarouselPrevious className="hidden md:flex" />
-                    <CarouselNext className="hidden md:flex" />
+                    <CarouselPrevious className="h-10 w-10 md:h-12 md:w-12" />
+                    <CarouselNext className="h-10 w-10 md:h-12 md:w-12" />
                   </>
                 )}
               </Carousel>
