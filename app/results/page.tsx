@@ -43,7 +43,7 @@ export default function ResultsPage() {
   const hasRequestedAnalysis = useRef(false);
 
   const handleStorySwipeStart = useCallback(() => {
-    setPlayingVideo(prev => (prev ? null : prev));
+    setPlayingVideo(null);
   }, []);
 
   const handleStoryCardChange = useCallback(() => {

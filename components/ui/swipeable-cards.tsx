@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion, useDragControls } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Card {
@@ -82,62 +82,20 @@ export function SwipeableCards({
       >
         <div className="relative" style={{ height: containerHeight }}>
           <AnimatePresence initial={false} custom={currentIndex}>
-            {cards.map((card, index) => {
-              const isActive = index === currentIndex;
-              const isPrevious = index === currentIndex - 1;
-              const isNext = index === currentIndex + 1;
-              const isVisible = isActive || isPrevious || isNext;
-
-              if (!isVisible) return null;
-
-              return (
-                <motion.div
-                  key={card.id}
-                  custom={currentIndex}
-                  initial={prefersReducedMotion ? false : { 
-                    x: index > currentIndex ? containerWidth : -containerWidth,
-                    opacity: 0
-                  }}
-                  animate={prefersReducedMotion ? {
-                    x: isActive ? 0 : 0,
-                    opacity: isActive ? 1 : 0.6,
-                    scale: 1,
-                    zIndex: isActive ? 10 : 0
-                  } : {
-                    x: isActive ? 0 : index < currentIndex ? -containerWidth * 0.9 : containerWidth * 0.1,
-                    opacity: isActive ? 1 : 0.3,
-                    scale: isActive ? 1 : 0.95,
-                    zIndex: isActive ? 10 : 0
-                  }}
-                  exit={prefersReducedMotion ? { opacity: 0 } : {
-                    x: index < currentIndex ? -containerWidth : containerWidth,
-                    opacity: 0
-                  }}
-                  transition={prefersReducedMotion ? { duration: 0 } : {
-                    x: { type: "spring", stiffness: 300, damping: 30 },
-                    opacity: { duration: 0.2 }
-                  }}
-                  drag={isActive && !disableDrag && !prefersReducedMotion ? "x" : false}
-                  dragConstraints={{ left: 0, right: 0 }}
-                  dragElastic={1}
-                  onDragStart={() => onSwipeStart?.()}
-                  onPointerDown={() => onSwipeStart?.()}
-                  onPointerUp={() => onSwipeEnd?.()}
-                  onDragEnd={handleDragEnd}
-                  className={`absolute inset-0 ${isNext ? 'pointer-events-none' : ''}`}
-                  style={{
-                    cursor: isActive && !prefersReducedMotion ? 'grab' : 'default',
-                    touchAction: 'pan-y'
-                  }}
-                  whileDrag={{ cursor: 'grabbing' }}
-                  dragMomentum={false}
-                >
-                  <div className="h-full">
-                    {card.content}
-                  </div>
-                </motion.div>
-              );
-            })}
+            {cards.map((card, index) => (
+              <SwipeableCardSlide
+                key={card.id}
+                card={card}
+                index={index}
+                currentIndex={currentIndex}
+                containerWidth={containerWidth}
+                disableDrag={disableDrag}
+                prefersReducedMotion={prefersReducedMotion}
+                handleDragEnd={handleDragEnd}
+                onSwipeStart={onSwipeStart}
+                onSwipeEnd={onSwipeEnd}
+              />
+            ))}
           </AnimatePresence>
         </div>
       </div>
@@ -167,5 +125,91 @@ export function SwipeableCards({
         </p>
       )}
     </div>
+  );
+}
+
+type SwipeableCardSlideProps = {
+  card: Card;
+  index: number;
+  currentIndex: number;
+  containerWidth: number;
+  disableDrag: boolean;
+  prefersReducedMotion: boolean;
+  handleDragEnd: (event: any, info: any) => void;
+  onSwipeStart?: () => void;
+  onSwipeEnd?: () => void;
+};
+
+function SwipeableCardSlide({
+  card,
+  index,
+  currentIndex,
+  containerWidth,
+  disableDrag,
+  prefersReducedMotion,
+  handleDragEnd,
+  onSwipeStart,
+  onSwipeEnd,
+}: SwipeableCardSlideProps) {
+  const dragControls = useDragControls();
+  const isActive = index === currentIndex;
+  const isPrevious = index === currentIndex - 1;
+  const isNext = index === currentIndex + 1;
+  const isVisible = isActive || isPrevious || isNext;
+
+  if (!isVisible) return null;
+
+  return (
+    <motion.div
+      key={card.id}
+      custom={currentIndex}
+      initial={prefersReducedMotion ? false : {
+        x: index > currentIndex ? containerWidth : -containerWidth,
+        opacity: 0,
+      }}
+      animate={prefersReducedMotion ? {
+        x: 0,
+        opacity: isActive ? 1 : 0.6,
+        scale: 1,
+        zIndex: isActive ? 10 : 0,
+      } : {
+        x: isActive ? 0 : index < currentIndex ? -containerWidth * 0.9 : containerWidth * 0.1,
+        opacity: isActive ? 1 : 0.3,
+        scale: isActive ? 1 : 0.95,
+        zIndex: isActive ? 10 : 0,
+      }}
+      exit={prefersReducedMotion ? { opacity: 0 } : {
+        x: index < currentIndex ? -containerWidth : containerWidth,
+        opacity: 0,
+      }}
+      transition={prefersReducedMotion ? { duration: 0 } : {
+        x: { type: 'spring', stiffness: 300, damping: 30 },
+        opacity: { duration: 0.2 },
+      }}
+      drag={isActive && !disableDrag && !prefersReducedMotion ? 'x' : false}
+      dragControls={dragControls}
+      dragListener={false}
+      dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={1}
+      onDragEnd={handleDragEnd}
+      className={`absolute inset-0 ${isNext ? 'pointer-events-none' : ''}`}
+      style={{
+        cursor: isActive && !prefersReducedMotion ? 'grab' : 'default',
+        touchAction: 'pan-y',
+      }}
+      whileDrag={{ cursor: 'grabbing' }}
+      dragMomentum={false}
+      onPointerDown={(event) => {
+        if (isActive && !disableDrag && !prefersReducedMotion) {
+          onSwipeStart?.();
+          dragControls.start(event);
+        }
+      }}
+      onPointerUp={() => onSwipeEnd?.()}
+    >
+      <div className="h-full" data-swipe-card>
+        {card.content}
+      </div>
+    </motion.div>
   );
 }

@@ -152,8 +152,15 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: hidden;
+    overscroll-behavior-x: contain;
+    overscroll-behavior-inline: contain;
+  }
   body {
     @apply bg-background text-foreground;
+    touch-action: pan-y;
   }
 }
-
