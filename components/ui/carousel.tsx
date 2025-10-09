@@ -1,8 +1,8 @@
 "use client";
 
 import * as React from "react";
-import type { EmblaOptionsType, EmblaPluginType, UseEmblaCarouselType } from "embla-carousel-react";
-import useEmblaCarousel from "embla-carousel-react";
+import useEmblaCarousel, { type UseEmblaCarouselType } from "embla-carousel-react";
+import type { EmblaCarouselType, EmblaOptionsType, EmblaPluginType } from "embla-carousel";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -12,7 +12,7 @@ type EmblaHookReturn = UseEmblaCarouselType;
 type EmblaCarouselRef = EmblaHookReturn[0];
 type EmblaCarouselApi = EmblaHookReturn[1];
 
-export type CarouselApi = NonNullable<EmblaCarouselApi>;
+export type CarouselApi = EmblaCarouselType;
 export type CarouselOptions = EmblaOptionsType;
 export type CarouselPlugin = EmblaPluginType;
 
