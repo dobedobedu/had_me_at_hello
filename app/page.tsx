@@ -116,27 +116,24 @@ function StatCard({ entry, isActive, onToggle }: StatCardProps) {
   const spanClassMap: Record<number, string> = {
     1: 'col-span-1',
     2: 'col-span-2',
-    3: 'col-span-3',
-    4: 'col-span-4',
-    5: 'col-span-5',
-    6: 'col-span-6',
   };
   const smSpanClassMap: Record<number, string> = {
     1: 'sm:col-span-1',
     2: 'sm:col-span-2',
-    3: 'sm:col-span-3',
-    4: 'sm:col-span-4',
-    5: 'sm:col-span-5',
-    6: 'sm:col-span-6',
   };
 
-  const baseSpan = entry.layout?.baseSpan ?? 3;
-  const activeSpan = entry.layout?.activeSpan ?? baseSpan;
-  const baseSmSpan = entry.layout?.smSpan ?? baseSpan;
-  const activeSmSpan = entry.layout?.activeSmSpan ?? entry.layout?.activeSpan ?? baseSmSpan;
+  const clampSpan = (value: number | undefined, max: number) => {
+    if (!value) return Math.min(1, max);
+    return Math.min(Math.max(value, 1), max);
+  };
+
+  const baseSpan = clampSpan(entry.layout?.baseSpan, 2);
+  const activeSpan = clampSpan(entry.layout?.activeSpan ?? entry.layout?.baseSpan, 2);
+  const baseSmSpan = clampSpan(entry.layout?.smSpan ?? entry.layout?.baseSpan, 2);
+  const activeSmSpan = clampSpan(entry.layout?.activeSmSpan ?? entry.layout?.activeSpan ?? entry.layout?.smSpan, 2);
 
   const spanClasses = [
-    spanClassMap[isActive ? activeSpan : baseSpan] ?? 'col-span-3',
+    spanClassMap[isActive ? activeSpan : baseSpan] ?? 'col-span-1',
     smSpanClassMap[isActive ? activeSmSpan : baseSmSpan] ?? '',
   ]
     .filter(Boolean)
@@ -166,10 +163,6 @@ function StatCard({ entry, isActive, onToggle }: StatCardProps) {
     [onToggle]
   );
 
-  const minWidthStyle = {
-    minWidth: isActive && entry.layout?.activeMinWidth ? entry.layout.activeMinWidth : undefined,
-  };
-
   return (
     <motion.button
       layout
@@ -179,7 +172,6 @@ function StatCard({ entry, isActive, onToggle }: StatCardProps) {
       aria-expanded={isActive}
       aria-controls={detailId}
       className={`group relative flex w-full flex-col rounded-2xl border border-gray-200 text-left transition-colors duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-[#004b34]/40 ${spanClasses} ${sizeClass} ${isActive ? 'bg-[#004b34] text-white shadow-2xl ring-1 ring-[#2d7a5a]/40' : `${accent ?? 'bg-white/90'} text-[#003825] hover:shadow-lg`}`}
-      style={minWidthStyle}
       transition={{
         layout: {
           type: 'spring',
@@ -330,7 +322,7 @@ export default function HomePage() {
       <section className="pt-12 md:pt-20 pb-12 md:pb-16 px-4">
         <div className="max-w-7xl mx-auto">
           <LayoutGroup id="mobile-stat-grid">
-            <div className="grid grid-cols-6 auto-rows-[minmax(60px,_auto)] gap-3 sm:grid-cols-6 lg:hidden">
+            <div className="grid grid-cols-1 auto-rows-[minmax(72px,_auto)] gap-4 sm:grid-cols-2 lg:hidden">
               {statEntries.map(stat => {
                 const isActive = activeStat === stat.id;
                 return (
