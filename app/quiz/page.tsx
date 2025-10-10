@@ -2,8 +2,6 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
-import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import GradeLevelQuestion from '@/components/quiz/GradeLevelQuestion';
 import CurrentSituationQuestion from '@/components/quiz/CurrentSituationQuestion';
@@ -100,29 +98,10 @@ function QuizPageContent() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="px-4 py-3 bg-[#004b34]">
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <Link 
-            href="/"
-            className="flex items-center text-white hover:text-white/80 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Home
-          </Link>
-          <div className="text-sm text-white/80">
-            Step {currentStep} of {QUIZ_STEPS.length}
-          </div>
-        </div>
-      </header>
-
-      {/* Progress Bar */}
       <ProgressBar 
         currentStep={currentStep} 
         totalSteps={QUIZ_STEPS.length} 
         onStepClick={handleStepClick}
-        onBack={handleBack}
-        stepLabels={QUIZ_STEPS.map(s => s.title)}
       />
 
       {/* Quiz Content */}

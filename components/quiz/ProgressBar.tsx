@@ -4,42 +4,12 @@ interface ProgressBarProps {
   currentStep: number;
   totalSteps: number;
   onStepClick?: (step: number) => void;
-  onBack?: () => void;
-  stepLabels?: string[];
 }
 
-export default function ProgressBar({ currentStep, totalSteps, onStepClick, onBack, stepLabels }: ProgressBarProps) {
-  const progress = (currentStep / totalSteps) * 100;
-
+export default function ProgressBar({ currentStep, totalSteps, onStepClick }: ProgressBarProps) {
   return (
-    <div className="w-full bg-gradient-to-b from-white to-gray-50/50 border-b border-gray-200/60 backdrop-blur-sm">
-      <div className="max-w-4xl mx-auto px-6 py-5">
-        <div className="flex items-center justify-between mb-4">
-          {onBack && (
-            <button
-              onClick={onBack}
-              disabled={currentStep === 1}
-              className={`group inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
-                currentStep === 1
-                  ? 'text-gray-400 cursor-not-allowed bg-gray-50'
-                  : 'text-[#004b34] hover:text-white hover:bg-[#004b34] bg-[#004b34]/5 hover:shadow-md hover:scale-105'
-              }`}
-            >
-              <svg className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              Back
-            </button>
-          )}
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-50/80 border border-gray-200/50">
-            <div className="w-2 h-2 rounded-full bg-[#d4a017] animate-pulse" />
-            <span className="text-sm font-medium text-gray-700">
-              {currentStep === totalSteps
-                ? 'Almost done!'
-                : `${totalSteps - currentStep} questions remaining`}
-            </span>
-          </div>
-        </div>
+    <div className="w-full bg-gradient-to-b from-white to-gray-50/70 border-b border-gray-200/60 backdrop-blur-sm">
+      <div className="max-w-4xl mx-auto px-4 md:px-6 py-6">
         <div className="flex items-center justify-between">
           {Array.from({ length: totalSteps }).map((_, index) => (
             <div key={index} className="flex items-center flex-1">

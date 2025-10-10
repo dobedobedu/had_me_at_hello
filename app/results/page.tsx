@@ -50,6 +50,12 @@ export default function ResultsPage() {
   const hasRequestedAnalysis = useRef(false);
   const [carouselApi, setCarouselApi] = useState<CarouselApi | undefined>();
   const [activeSlide, setActiveSlide] = useState(0);
+  const [canScrollPrev, setCanScrollPrev] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(false);
+  const carouselOptions = useMemo(() => ({
+    loop: false,
+    draggable: !playingVideo,
+  }), [playingVideo]);
 
   const storyCards = useMemo(() => {
     const cards: Array<{ id: string; type: 'student' | 'faculty' | 'alumni'; hasVideo: boolean; node: ReactNode }> = [];
@@ -161,7 +167,6 @@ export default function ResultsPage() {
                 </div>
               )}
             </div>
-            </div>
           </div>
         ),
       });
@@ -178,7 +183,9 @@ export default function ResultsPage() {
           <div className="rounded-2xl overflow-hidden shadow-sm bg-white">
             <div className="p-4">
               <h3 className="text-lg font-bold text-gray-900">Meet {firstFaculty.firstName} {firstFaculty.lastName}</h3>
-              <p className="text-xs text-gray-600 mt-1">{firstFaculty.role || 'Faculty Member'} • {firstFaculty.department || 'Department'}</p>
+              <p className="text-xs text-gray-600 mt-1">
+                {(firstFaculty.title || firstFaculty.formalTitle || 'Faculty Member')} • {firstFaculty.department || 'Department'}
+              </p>
             </div>
             <div className="relative w-full aspect-video bg-black">
               {firstFaculty?.videoUrl && playingVideo === 'faculty-match' ? (
@@ -297,6 +304,8 @@ export default function ResultsPage() {
       const index = carouselApi.selectedScrollSnap() ?? 0;
       setActiveSlide(index);
       setPlayingVideo(null);
+      setCanScrollPrev(carouselApi.canScrollPrev());
+      setCanScrollNext(carouselApi.canScrollNext());
     };
 
     carouselApi.on('select', handleSelect);
@@ -1143,35 +1152,65 @@ Full results: ${shareData.link}`);
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
             >
-              <Carousel className="w-full" opts={{ loop: false }} setApi={setCarouselApi}>
-                <CarouselContent className="ml-0">
+              <Carousel className="w-full" opts={carouselOptions} setApi={setCarouselApi}>
+                <CarouselContent className="-ml-3 sm:-ml-4 md:-ml-6">
                   {storyCards.map(card => (
-                    <CarouselItem key={card.id} className="pl-0">
+                    <CarouselItem key={card.id} className="pl-3 sm:pl-4 md:pl-6">
                       {card.node}
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                {totalStorySlides > 1 && (
+                {totalStorySlides > 1 && canScrollPrev && (
                   <>
-                    <CarouselPrevious className="hidden md:flex" />
-                    <CarouselNext className="hidden md:flex" />
+                    <CarouselPrevious
+                      className="hidden md:flex h-10 w-10 md:h-12 md:w-12"
+                      disabled={!canScrollPrev}
+                    />
                   </>
+                )}
+                {totalStorySlides > 1 && canScrollNext && (
+                  <CarouselNext
+                    className="hidden md:flex h-10 w-10 md:h-12 md:w-12"
+                    disabled={!canScrollNext}
+                  />
                 )}
               </Carousel>
               {totalStorySlides > 1 && (
-                <div className="mt-6 flex justify-center gap-2">
-                  {storyCards.map((_, index) => (
+                <div className="mt-6 flex justify-center">
+                  <div className="flex items-center gap-3">
                     <button
-                      key={index}
-                      onClick={() => carouselApi?.scrollTo(index)}
-                      className={`transition-all ${
-                        index === activeSlide
-                          ? 'w-8 h-2 bg-[#004b34] rounded-full'
-                          : 'w-2 h-2 bg-gray-300 rounded-full hover:bg-gray-400'
-                      }`}
-                      aria-label={`Go to card ${index + 1}`}
-                    />
-                  ))}
+                      type="button"
+                      className="md:hidden h-9 w-9 rounded-full bg-white shadow-sm border border-gray-200 flex items-center justify-center text-[#004b34] disabled:opacity-40 disabled:cursor-not-allowed"
+                      onClick={() => carouselApi?.scrollPrev()}
+                      disabled={!canScrollPrev}
+                      aria-label="Previous story"
+                    >
+                      <ChevronDown className="h-4 w-4 -rotate-90" />
+                    </button>
+                    <div className="flex items-center gap-2">
+                      {storyCards.map((_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => carouselApi?.scrollTo(index)}
+                          className={`transition-all ${
+                            index === activeSlide
+                              ? 'w-8 h-2 bg-[#004b34] rounded-full'
+                              : 'w-2 h-2 bg-gray-300 rounded-full hover:bg-gray-400'
+                          }`}
+                          aria-label={`Go to card ${index + 1}`}
+                        />
+                      ))}
+                    </div>
+                    <button
+                      type="button"
+                      className="md:hidden h-9 w-9 rounded-full bg-white shadow-sm border border-gray-200 flex items-center justify-center text-[#004b34] disabled:opacity-40 disabled:cursor-not-allowed"
+                      onClick={() => carouselApi?.scrollNext()}
+                      disabled={!canScrollNext}
+                      aria-label="Next story"
+                    >
+                      <ChevronDown className="h-4 w-4 rotate-90" />
+                    </button>
+                  </div>
                 </div>
               )}
             </motion.div>
